@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Чат</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        #messages {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        input {
+            width: 80%;
+            padding: 8px;
+        }
+        button {
+            padding: 8px 15px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Сообщения</h2>
+
+<div id="messages"></div>
+
+<input type="text" id="messageInput" placeholder="Введите сообщение">
+<button onclick="sendMessage()">Отправить</button>
+
+<script>
+function sendMessage() {
+    const input = document.getElementById("messageInput");
+    const message = input.value;
+
+    if (!message) return;
+
+    fetch("/send", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: message })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.innerHTML += `<div>${data.message}</div>`;
+        input.value = "";
+    });
+}
+</script>
+
+</body>
+</html>

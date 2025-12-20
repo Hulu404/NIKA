@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return 'Hello Flask'
+    return render_template('index.html')
 
 @app.route('/user/<int:user_id>/')
 def user_profile(user_id):
