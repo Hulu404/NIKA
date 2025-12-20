@@ -1,10 +1,30 @@
-from flask import Flask, request, render_template
+import os
+from flask import Flask, request, render_template, jsonify
+import json
+
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route("/send", methods=['POST'])
+def send():
+    data = request.get_json()
+    message = data.get('message')
+
+    if os.listdir("json_files"):
+        with open(r"json_files\test_user.json", "w", encoding="utf-8") as file:
+            json.dump(message, file, ensure_ascii=False, indent=4)
+    else:
+        with open(r"json_files\test_user.json", "w", encoding="utf-8") as file:
+            json.dump(message, file, ensure_ascii=False, indent=4)
+
+    print(f"Пришло сообщение: {message}")
+
+    return jsonify({"message": message})
+
 
 @app.route('/user/<int:user_id>/')
 def user_profile(user_id):
