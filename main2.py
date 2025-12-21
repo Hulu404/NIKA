@@ -30,7 +30,7 @@ def disconnect():
 def send2user(user_id, text):
     sid = users.get(user_id)
     if sid:
-        socketio.emit("message", text, to=sid)
+        socketio.emit("message", response_gigachat(), to=sid)
 
 @app.route('/')
 def index():
@@ -52,6 +52,10 @@ def send():
 
     return jsonify({"message": message})
 
+
+@app.route("/about")
+def about():
+    return render_template('index.html')
 
 @app.route('/user/<int:user_id>/')
 def user_profile(user_id):
