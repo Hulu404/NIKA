@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Регистрация</h2>
+
+    <form method="POST" action="{{ url_for('register') }}">
+        <label for="last_name">Фамилия *</label>
+        <input type="text" name="last_name" id="last_name" required>
+
+        <label for="first_name">Имя *</label>
+        <input type="text" name="first_name" id="first_name" required>
+
+        <label for="middle_name">Отчество (опционально)</label>
+        <input type="text" name="middle_name" id="middle_name">
+
+        <label for="phone">Телефон *</label>
+        <input type="tel" name="phone" id="phone" placeholder="+7XXXXXXXXXX" required>
+
+        <label for="gender">Пол *</label>
+        <select name="gender" id="gender" required>
+            <option value="" disabled selected>Выберите пол</option>
+            <option value="male">Мужской</option>
+            <option value="female">Женский</option>
+            <option value="other">Другой</option>
+        </select>
+
+        <label for="telegram">Telegram username *</label>
+        <input type="text" name="telegram" id="telegram" placeholder="@username" required>
+
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+
+</body>
+</html>

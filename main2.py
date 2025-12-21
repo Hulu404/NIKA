@@ -14,12 +14,7 @@ users = {} # Сохранение пользователей
 def connect():
     print('Client connected', request.sid)
 
-@socketio.on("register")
-def register(data):
-    global users
-    user_id = data["user_id"]
-    users[user_id] = request.sid
-    emit("message", f"Вы зарегистрированы как {user_id}")
+
 
 @socketio.on("disconnect")
 def disconnect():
@@ -80,13 +75,22 @@ def login():
 
     return render_template('login.html', message=message)
 
-@app.route("/sign-up", methods=['post', 'get'])
-def sign_up():
-    message = ""
-    if request.method == 'POST':
-        pass
-    else:
-        pass
+@app.route("/register", methods=['post', 'get'])
+def register():
+    if request.method == "POST":
+        data = {
+            "last_name": request.form.get("last_name"),
+            "first_name": request.form.get("first_name"),
+            "middle_name": request.form.get("middle_name"),  # может быть None
+            "phone": request.form.get("phone"),
+            "gender": request.form.get("gender"),
+            "telegram": request.form.get("telegram"),
+        }
+        # Тут можно сохранить данные в БД или обработать
+        print("Данные регистрации:", data)
+        return "Регистрация прошла успешно!"
+
+    return render_template("registration.html", message="Вы зарегистрированы!")
 
 
 if __name__ == '__main__':
