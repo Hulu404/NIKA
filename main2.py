@@ -1,9 +1,36 @@
 import os
 from flask import Flask, request, render_template, jsonify
+from flask_socketio import SocketIO, emit
 import json
 
+from giga_start import response_gigachat
 
 app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origin="*")
+
+users = {} # Сохранение пользователей
+
+@socketio.on('connect')
+def connect():
+    print('Client connected', request.sid)
+
+@socketio.on("register")
+def register(data):
+    global users
+    user_id = data["user_id"]
+    users[user_id] = request.sid
+    emit("message", f"Вы зарегистрированы как {user_id}")
+
+@socketio.on("disconnect")
+def disconnect():
+    for user_id, sid in list(users.items()):
+        if sid == request.sid:
+            del users[user_id]
+            break
+def send2user(user_id, text):
+    sid = users.get(user_id)
+    if sid:
+        socketio.emit("message", text, to=sid)
 
 @app.route('/')
 def index():
