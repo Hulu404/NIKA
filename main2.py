@@ -22,30 +22,25 @@ def disconnect():
         if sid == request.sid:
             del users[user_id]
             break
-def send2user(user_id, text):
-    sid = users.get(user_id)
-    if sid:
-        socketio.emit("message", response_gigachat(), to=sid)
+
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route("/send", methods=['POST'])
-def send():
-    data = request.get_json()
-    message = data.get('message')
+@app.route("/chat")
+def chat():
+    return render_template('chat.html')
 
-    if os.listdir("json_files"):
-        with open(r"json_files\test_user.json", "w", encoding="utf-8") as file:
-            json.dump(message, file, ensure_ascii=False, indent=4)
-    else:
-        with open(r"json_files\test_user.json", "w", encoding="utf-8") as file:
-            json.dump(message, file, ensure_ascii=False, indent=4)
+@app.route("/send_message", methods=['POST'])
+def send_message():
+    data = request.json
+    user_text = data["message"]
 
-    print(f"Пришло сообщение: {message}")
-
-    return jsonify({"message": message})
+    # Ответ сайта (заглушка)
+    return jsonify({
+        "reply": f"Вы написали: {user_text}"
+    })
 
 
 @app.route("/about")
