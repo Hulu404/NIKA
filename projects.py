@@ -1,27 +1,29 @@
 import os
 from flask import Flask, request, render_template, jsonify
 from flask_socketio import SocketIO, emit
+from flask_sqlalchemy import SQLAlchemy
 import json
+import random
 
 from giga_start import response_gigachat
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:/test.db'
+db = SQLAlchemy(app)
 socketio = SocketIO(app, cors_allowed_origin="*")
 
-users = {} # Сохранение пользователей
+
 
 @socketio.on('connect')
 def connect():
     print('Client connected', request.sid)
 
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    text = db.Column(db.Text, nullable=False)
 
 
-@socketio.on("disconnect")
-def disconnect():
-    for user_id, sid in list(users.items()):
-        if sid == request.sid:
-            del users[user_id]
-            break
 
 
 @app.route('/')
@@ -82,7 +84,14 @@ def register():
             "telegram": request.form.get("telegram"),
         }
         # Тут можно сохранить данные в БД или обработать
-        print("Данные регистрации:", data)
+
+        # if os.listdir(r"d:\projects_X\NIKA\json_files"):
+        #     with open("test_user.json", 'w', encoding="utf-8") as file:
+        #         json.dump(data, file, ensure_ascii=False, indent=4)
+        # else:
+        #     with open("test_user.json", 'w', encoding="utf-8") as file:
+        #         json.dump(data, file, ensure_ascii=False, indent=4)
+
         return "Регистрация прошла успешно!"
 
     return render_template("registration.html", message="Вы зарегистрированы!")
