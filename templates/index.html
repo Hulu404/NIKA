@@ -1,9 +1,177 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Психолог-помощник</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-{% block title %}
-Главная страница
-{% endblock %}
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, Arial;
+      background: #f5f7fb;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
 
-{% block body %}
-<h1>Главная страница</h1>
-{% endblock %}
+    /* ===== Header ===== */
+    header {
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #e7e9ee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* ===== Chat Area ===== */
+    .chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bubble {
+      max-width: 70%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 15px;
+      line-height: 1.3;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn .25s forwards ease-out;
+    }
+
+    .user {
+      align-self: flex-end;
+      background: #4a90e2;
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .bot {
+      align-self: flex-start;
+      background: white;
+      border: 1px solid #e4e6eb;
+      border-bottom-left-radius: 4px;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===== Input Bar ===== */
+    .input-bar {
+      display: flex;
+      gap: 10px;
+      padding: 14px;
+      background: white;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    textarea {
+      flex: 1;
+      resize: none;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      padding: 10px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    button {
+      padding: 0 16px;
+      border-radius: 10px;
+      border: none;
+      background: #4a90e2;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:active { opacity: .9 }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="title">Психолог-помощник спортсмена</div>
+
+  <div class="icon">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="8" r="4" stroke="#555" stroke-width="2"/>
+      <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="#555" stroke-width="2"/>
+    </svg>
+  </div>
+</header>
+
+<div class="chat" id="chat"></div>
+
+<div class="input-bar">
+  <textarea id="msg" placeholder="Напишите сообщение..." rows="1"></textarea>
+  <button onclick="sendMessage()">Отправить</button>
+</div>
+
+<script>
+  const chat = document.getElementById('chat');
+  const input = document.getElementById('msg');
+
+  function addBubble(text, type = "user") {
+    const div = document.createElement('div');
+    div.className = `bubble ${type}`;
+    div.textContent = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = "";
+
+    addBubble(text, "user");
+
+    const res = await fetch("/api/message", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text })
+    });
+
+    const data = await res.json();
+
+    // ответ бота
+    addBubble(data.reply || "Ответ получен", "bot");
+  }
+
+  // отправка по Enter
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+</script>
+</body>
+</html>
