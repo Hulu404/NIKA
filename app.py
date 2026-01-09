@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template
-from src1.giga_start import *
+from src1.giga_start import response_gigachat   # <-- используем твой файл
 
 app = Flask(__name__)
 
@@ -14,7 +14,7 @@ def receive_message():
     data = request.get_json()
     user_text = data.get("message", "")
 
-    # Печатаем сообщение в консоль, потом уберём
+    # Печатаем сообщение в консоль
     print(f"[USER MESSAGE] {user_text}")
 
     try:
