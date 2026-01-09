@@ -188,7 +188,15 @@
       });
 
       const data = await res.json();
-      addBubble(data.reply || "Ответ получен", "bot");
+
+      // текст
+      addBubble(data.reply, "bot");
+
+      // голос
+      if (data.audio_url) {
+        const audio = new Audio(data.audio_url);
+        audio.play();
+      }
 
     } catch (e) {
       addBubble("Ошибка соединения. Попробуйте позже.", "bot");

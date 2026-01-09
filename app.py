@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from src1.giga_start import response_gigachat
 from src1.giga_speech import speech_syntesis   # <-- используем твой файл
 from pathlib import Path
@@ -60,7 +60,7 @@ def receive_message_with_audio():
             raise Exception("Не удалось синтезировать аудио")
         
         audio_filename = f"audio_{uuid.uuid4().hex[:8]}.mp3"
-        audio_path = AUDIO_CACHE_DIR / audio_filename
+        audio_path = f"static/audio_cache/{audio_filename}"
         
         with open(audio_path, 'wb') as f:
             f.write(audio_answer['audio_bytes'])
@@ -85,7 +85,12 @@ def receive_message_with_audio():
                 "audio_id": audio_filename
             }
         }
-        return jsonify({"reply": response_data})
+        return jsonify({
+            "reply": response_data,
+            "audio_url": f"/api/audio/{audio_filename}"
+        }), send_from_directory(AUDIO_CACHE_DIR,
+        audio_filename,
+        mimetype="audio/mpeg")
       
     except Exception as e:
         print(f"[ERROR WITH AUDIO] {e}")

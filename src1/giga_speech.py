@@ -31,7 +31,14 @@ def speech_syntesis(giga_text_answer: str, token=get_salute_token(salute_key)) -
         'emotion': 'neutral'
     }
 
-    response = requests.post(url, headers=headers, json=payload, verify=False, timeout=100)
+    response = requests.post(
+        url,
+        headers=headers,
+        data=giga_text_answer.encode('utf-8'),  # текст как байты
+        verify=False,
+        timeout=10
+    )
+
     if response.status_code != 200:
         print(f"[TTS ERROR] Status: {response.status_code}, Response: {response.text[:200]}")
         return None
