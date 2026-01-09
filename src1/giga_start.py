@@ -98,6 +98,7 @@ def get_salute_token(salute_key, scope='SALUTE_SPEECH_PERS'):
     response.raise_for_status()
     return response.json()['access_token']
 
+
 async def recognize_speech(audio_file_path: str, token=get_salute_token(salute_key)) -> str:
     """Функция для распознавания речи"""
     url = "https://smartspeech.sber.ru/rest/v1/speech:recognize"
