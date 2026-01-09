@@ -5,9 +5,12 @@ app = Flask(__name__)
 
 
 @app.route("/")
-def index():
-    return render_template("index.html")
+def home(): # Отрисовка главной страницы
+    return render_template("home.html")
 
+@app.route("/chat")
+def chat(): # Переход на наш чат
+    return render_template("index.html")
 
 @app.post("/api/message")
 def receive_message():
