@@ -85,13 +85,8 @@ def receive_message_with_audio():
                 "audio_id": audio_filename
             }
         }
-        return jsonify({
-            "reply": response_data,
-            "audio_url": f"/api/audio/{audio_filename}"
-        }), send_from_directory(AUDIO_CACHE_DIR,
-        audio_filename,
-        mimetype="audio/mpeg")
-      
+        return jsonify(response_data)
+    
     except Exception as e:
         print(f"[ERROR WITH AUDIO] {e}")
         reply = "Произошла ошибка при обращении к ИИ. Попробуй ещё раз 🙏"
