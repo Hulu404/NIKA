@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>GigaChat — голосовой чат</title>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 2rem; }
+        #chat { max-width: 800px; margin: auto; }
+        #messages { min-height: 300px; border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem; overflow-y: auto; }
+        .message { margin: 0.5rem 0; padding: 0.8rem; border-radius: 8px; }
+        .user { background: #e3f2fd; text-align: right; }
+        .bot  { background: #f5f5f5; }
+        #input-form { display: flex; gap: 0.5rem; }
+        #message { flex: 1; padding: 0.8rem; }
+        button { padding: 0.8rem 1.5rem; }
+        audio { margin-top: 0.5rem; width: 100%; }
+    </style>
+</head>
+<body>
+<div id="chat">
+    <h1>Чат с GigaChat (голос)</h1>
+    <div id="messages"></div>
+
+    <form id="input-form">
+        <input type="text" id="message" placeholder="Напиши сообщение..." autocomplete="off">
+        <button type="submit">Отправить</button>
+    </form>
+
+    <script>
+        const messagesDiv = document.getElementById('messages');
+        const form = document.getElementById('input-form');
+        const input = document.getElementById('message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = input.value.trim();
+            if (!text) return;
+
+            // Показываем сообщение пользователя
+            addMessage('user', text);
+            input.value = '';
+
+            try {
+                const res = await fetch('/api/v1/message-with-audio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    addMessage('bot', data.text, data.audio.url);
+                } else {
+                    addMessage('bot', data.error || 'Ошибка сервера');
+                }
+            } catch (err) {
+                addMessage('bot', 'Не удалось связаться с сервером 😢');
+            }
+        });
+
+        function addMessage(sender, text, audioUrl = null) {
+            const msg = document.createElement('div');
+            msg.className = `message ${sender}`;
+            msg.innerHTML = `<strong>${sender === 'user' ? 'Ты' : 'Giga'}</strong>: ${text.replace(/\n/g, '<br>')}`;
+
+            if (audioUrl) {
+                const audio = document.createElement('audio');
+                audio.controls = true;
+                audio.src = audioUrl;
+                msg.appendChild(audio);
+            }
+
+            messagesDiv.appendChild(msg);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+    </script>
+</div>
+</body>
+</html>
