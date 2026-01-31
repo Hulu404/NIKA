@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>GigaChat — голосовой чат</title>
+    <title>Ника</title>
     <style>
         body { font-family: system-ui, sans-serif; margin: 2rem; }
         #chat { max-width: 800px; margin: auto; }
@@ -18,7 +18,7 @@
 </head>
 <body>
 <div id="chat">
-    <h1>Чат с GigaChat (голос)</h1>
+    <h1>Ника - твой друг</h1>
     <div id="messages"></div>
 
     <form id="input-form">
@@ -62,7 +62,7 @@
         function addMessage(sender, text, audioUrl = null) {
             const msg = document.createElement('div');
             msg.className = `message ${sender}`;
-            msg.innerHTML = `<strong>${sender === 'user' ? 'Ты' : 'Giga'}</strong>: ${text.replace(/\n/g, '<br>')}`;
+            msg.innerHTML = `<strong>${sender === 'user' ? 'Ты' : 'Nika'}</strong>: ${text.replace(/\n/g, '<br>')}`;
 
             if (audioUrl) {
                 const audio = document.createElement('audio');
