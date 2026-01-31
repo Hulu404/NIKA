@@ -21,14 +21,13 @@ def create_app(config_name=None):
 
     Path(app.config["AUDIO_CACHE_DIR"]).mkdir(parents=True, exist_ok=True)
 
-    # Импортируем и регистрируем здесь — после создания app
-    from .views.main import main_bp
-    from .api.v1.chat import chat_bp
-    from .api.audio import audio_bp          # ← здесь безопасно
 
-    app.register_blueprint(main_bp)
-    app.register_blueprint(chat_bp, url_prefix="/api/v1")
-    app.register_blueprint(audio_bp, url_prefix="/api")
+    # Регистрация blueprint'ов
+    from .api.v1.chat import chat_v1
+    from .api.audio import audio_bp
+
+    app.register_blueprint(chat_v1)  # /api/v1/message, /api/v1/message-with-audio
+    app.register_blueprint(audio_bp, url_prefix='/api')  # /api/audio/<filename>
 
     @app.errorhandler(404)
     def not_found(e):
