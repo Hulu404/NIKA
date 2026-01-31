@@ -1,6 +1,71 @@
 # Flask Chat App с GigaChat
 
-Простой чат с голосовым ответом на базе GigaChat (Sber).
+
+flask_chat_app/
+
+├── ⚙️ .env (локальные переменные — не коммитить!)
+
+├── 📄 .env.example
+
+├── 🚫 .gitignore
+
+├── 📖 README.md
+
+├── 📦 requirements.txt
+
+├── 🛠️ requirements-dev.txt
+
+├── 📁 config/
+
+│   ├── init.py
+
+│   ├── base.py
+
+│   ├── development.py
+
+│   ├── production.py
+
+│   └── testing.py
+
+├── 📁 app/
+
+│   ├── init.py             ← create_app()
+
+│   ├── extensions.py
+
+│   ├── 📁 models/
+
+│   ├── 📁 services/
+
+│   │   ├── 📁 gigachat/        ← text.py, speech.py
+
+│   │   └── 📁 audio/
+
+│   ├── 📁 api/
+
+│   │   ├── v1/chat.py
+
+│   │   └── audio.py
+
+│   ├── 📁 views/
+
+│   │   └── main.py
+
+│   ├── 📁 static/
+
+│   │   └── audio_cache/        (в .gitignore)
+
+│   └── 📁 templates/
+
+│       └── chat/index.html
+
+├── 📁 migrations/              (если будет БД)
+
+├── 📁 tests/
+
+└── 🚀 run.py                   ← запуск приложения
+
+
 
 ## Структура
 
