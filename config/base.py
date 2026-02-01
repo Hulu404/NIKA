@@ -14,3 +14,11 @@ class BaseConfig:
 
     # Другие общие
     JSON_AS_ASCII = False
+
+    SQLALCHEMY_DATABASE_URI = (
+            os.environ.get("DATABASE_URL")
+            or "postgresql+psycopg2://postgres:postgres@localhost:5432/chat_app"
+        # или для SQLite: "sqlite:///" + str(basedir / "instance" / "app.db")
+    )
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ECHO = True  # True в dev для отладки
