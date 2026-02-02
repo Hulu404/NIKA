@@ -12,7 +12,7 @@ def create_app(config_name=None):
 
     app = Flask(__name__,
                 instance_relative_config=False,
-                static_folder="static",
+                static_folder="../static",
                 template_folder="templates")
 
     # 1. Загружаем конфигурацию (это должно быть в самом начале)
