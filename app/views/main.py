@@ -15,3 +15,7 @@ def chat():
 @main_bp.route('/login')
 def login():
     return render_template('login.html')
+
+@main_bp.route('/registration')
+def registration():
+    return render_template('registration.html')

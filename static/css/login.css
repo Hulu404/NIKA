@@ -104,3 +104,8 @@ body {
   opacity: 1;
   
 }
+
+.login_form {
+  display: flex;
+  flex-direction: column;
+}
