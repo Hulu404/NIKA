@@ -14,6 +14,50 @@
         #message { flex: 1; padding: 0.8rem; }
         button { padding: 0.8rem 1.5rem; }
         audio { margin-top: 0.5rem; width: 100%; }
+
+             /* Стили для кнопки голосового режима */
+        #voice-toggle {
+            background: #F5F5DC;  /*цвет по умолчанию */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            min-width: 160px;
+        }
+
+        #voice-toggle:hover {
+            background: #45a049;  /* Темнее при наведении */
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        #voice-toggle:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        #voice-toggle.active {
+            background: #4CAF50; /* Зеленый при активном режиме */
+            animation: pulse 1.5s infinite;
+        }
+
+        #voice-toggle.disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        @keyframes pulse {
+            0% {box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.7);}
+            70% {box-shadow: 0 0 0 10px rgba(33, 150, 243, 0);}
+            100% {box-shadow: 0 0 0 0 rgba(33, 150, 243, 0);}
+        }
     </style>
 </head>
 <body>
@@ -24,13 +68,32 @@
     <form id="input-form">
         <input type="text" id="message" placeholder="Напиши сообщение..." autocomplete="off">
         <button type="submit">Отправить</button>
+        <button type="button" id="voice-toggle">🎤</button>
     </form>
 
     <script>
         const messagesDiv = document.getElementById('messages');
         const form = document.getElementById('input-form');
         const input = document.getElementById('message');
+        const voiceToggle = document.getElementById('voice-toggle');
 
+        // Переменная для хранения состояния голосового режима
+        let voiceModeEnabled = false;
+
+        // Обработчик переключателя голосового режима
+        voiceToggle.addEventListener('click', () => {
+            if (voiceToggle.disabled) return;
+
+            voiceModeEnabled = !voiceModeEnabled;
+
+            if (voiceModeEnabled) {
+                voiceToggle.classList.add('active');
+            } else {
+                voiceToggle.classList.remove('active');
+            }
+        });
+
+        // Обработчик отправки формы
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const text = input.value.trim();
@@ -41,7 +104,12 @@
             input.value = '';
 
             try {
-                const res = await fetch('/api/v1/message-with-audio', {
+                // Выбираем эндпоинт в зависимости от режима
+                const endpoint = voiceModeEnabled
+                    ? '/api/v1/message-with-audio'  // Эндпоинт с озвучкой
+                    : '/api/v1/message-text-only';   // Эндпоинт только с текстом
+
+                const res = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: text })
@@ -50,11 +118,18 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    addMessage('bot', data.text, data.audio.url);
+                    // Для голосового режима показываем текст и аудио
+                    if (voiceModeEnabled && data.audio) {
+                        addMessage('bot', data.text, data.audio.url);
+                    } else {
+                        // Для текстового режима показываем только текст
+                        addMessage('bot', data.text);
+                    }
                 } else {
                     addMessage('bot', data.error || 'Ошибка сервера');
                 }
             } catch (err) {
+                console.error('Ошибка:', err);
                 addMessage('bot', 'Не удалось связаться с сервером 😢');
             }
         });

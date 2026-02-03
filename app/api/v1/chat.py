@@ -12,7 +12,7 @@ from app.services.gigachat.speech import speech_syntesis
 
 chat_v1 = Blueprint('chat_v1', __name__, url_prefix='/api/v1')
 
-@chat_v1.route('/message', methods=['POST'])
+@chat_v1.route('/message-text-only', methods=['POST'])
 def text_only_message():
     """Простой текстовый ответ без аудио"""
     data = request.get_json(silent=True) or {}
@@ -26,7 +26,10 @@ def text_only_message():
     try:
         reply = response_gigachat(user_text)
         print(f"[TEXT] → {reply[:100]}{'...' if len(reply) > 100 else ''}")
-        return jsonify({"reply": reply, "success": True})
+        return jsonify({
+            "success": True,
+            "text": reply
+        })
     except Exception as e:
         print(f"[TEXT ERROR] {type(e).__name__}: {str(e)}")
         return jsonify({
