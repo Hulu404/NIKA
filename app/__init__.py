@@ -3,6 +3,7 @@ from config import get_config
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from flask_jwt_extended import JWTManager
 
 # Импортируем расширения
 from .extensions import db
@@ -28,6 +29,22 @@ def create_app(config_name=None):
     # Проверяем, что URI загрузился
     if not app.config.get("SQLALCHEMY_DATABASE_URI"):
         raise RuntimeError("SQLALCHEMY_DATABASE_URI не задан в конфигурации!")
+
+    app.config.from_object(get_config(config_name))
+
+    # Инициализация JWT после загрузки конфига
+    jwt = JWTManager(app)
+
+    # Защита от отозванных токенов (опционально, но рекомендуется)
+    @jwt.token_in_blocklist_loader
+    def check_if_token_revoked(jwt_header, jwt_payload):
+        jti = jwt_payload["jti"]
+        token_type = jwt_payload["type"]
+        if token_type == "refresh":
+            from app.models.refresh_token import RefreshToken
+            token = RefreshToken.query.filter_by(jti=jti).first()
+            return token is None or token.revoked
+        return False
 
     # инициализируем расширения
     db.init_app(app)
