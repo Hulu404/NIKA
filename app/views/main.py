@@ -11,3 +11,7 @@ def home():
 @main_bp.route('/chat')
 def chat():
     return render_template('chat/index.html')
+
+@main_bp.route('/login')
+def login():
+    return render_template('login.html')
