@@ -1,12 +1,6 @@
 import requests
-import uuid
-import logging
-import ssl
-import aiohttp
-import json
-import asyncio
-from src1.config import *
-from src1.giga_start import get_salute_token
+from app.services.gigachat.giga_credentials import *
+from legacy_code.src1.giga_start import get_salute_token
 
 
 # ключ авторизации из личного кабинета

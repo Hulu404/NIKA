@@ -3,7 +3,7 @@ import uuid
 import logging
 import ssl
 import aiohttp
-from src1.config import *
+from app.services.gigachat.giga_credentials import *
 
 
 # ключ авторизации из личного кабинета

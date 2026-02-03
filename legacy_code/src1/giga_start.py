@@ -3,7 +3,7 @@ import uuid
 import logging
 import ssl
 import aiohttp
-from src1.config import *
+from app.services.gigachat.giga_credentials import *
 
 
 # ключ авторизации из личного кабинета
@@ -80,23 +80,7 @@ def response_gigachat(promt, token=get_gigachat_token(giga_key)):
     return answer['choices'][0]['message']['content']
 
 
-# Пайплайн запроса в Салют
-def get_salute_token(salute_key, scope='SALUTE_SPEECH_PERS'):
-    """Функция для получения токена Salute"""
-    url = "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
-    payload = {
-        'scope': scope
-    }
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json',
-        'RqUID': '3a6aa937-de2f-4913-87b5-83461799ce67',
-        'Authorization': f'Basic {salute_key}'
-    }
-    logging.captureWarnings(True)
-    response = requests.post(url, headers=headers, data=payload, verify=False)
-    response.raise_for_status()
-    return response.json()['access_token']
+
 
 
 async def recognize_speech(audio_file_path: str, token=get_salute_token(salute_key)) -> str:

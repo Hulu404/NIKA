@@ -1,9 +1,10 @@
 # app/api/v1/chat.py
-from flask import Blueprint, request, jsonify, current_app
 from datetime import datetime
 import uuid
 import base64
 from pathlib import Path
+from flask import Blueprint, request, jsonify, current_app, send_file
+
 
 # Импорты из services (после переноса логики)
 from app.services.gigachat.giga_start import response_gigachat
@@ -34,6 +35,35 @@ def text_only_message():
         }), 503
 
 
+# Маршрут для отдачи аудиофайлов
+@chat_v1.route('/audio/<filename>')
+def serve_audio(filename):
+    """Отдача аудиофайлов из кэш-директории"""
+    try:
+        audio_dir = current_app.config['AUDIO_CACHE_DIR']
+
+        # Проверяем существование файла
+        file_path = audio_dir / filename
+        if not file_path.exists():
+            print(f"[AUDIO NOT FOUND] {file_path}")
+            return jsonify({"error": "Audio file not found"}), 404
+
+        # Определяем MIME-тип по расширению
+        if filename.endswith('.mp3'):
+            mimetype = 'audio/mpeg'
+        elif filename.endswith('.wav'):
+            mimetype = 'audio/wav'
+        else:
+            mimetype = 'application/octet-stream'
+
+        print(f"[AUDIO SERVED] {filename}")
+        return send_file(file_path, mimetype=mimetype)
+
+    except Exception as e:
+        print(f"[AUDIO SERVE ERROR] {e}")
+        return jsonify({"error": str(e)}), 500
+
+
 @chat_v1.route('/message-with-audio', methods=['POST'])
 def message_with_voice():
     """Текст + синтез речи (основной эндпоинт для голосового чата)"""
@@ -60,6 +90,9 @@ def message_with_voice():
         filename = f"audio_{audio_id}.{audio_format}"
         audio_path: Path = current_app.config['AUDIO_CACHE_DIR'] / filename
 
+        # Создаем директорию, если её нет
+        audio_path.parent.mkdir(parents=True, exist_ok=True)
+
         audio_path.write_bytes(audio_bytes)
         print(f"[AUDIO SAVED] {filename} ({len(audio_bytes):,} байт)")
 
@@ -69,8 +102,8 @@ def message_with_voice():
             "success": True,
             "text": text_reply,
             "audio": {
-                "base64": audio_base64,                     # для быстрого воспроизведения
-                "url": f"/api/audio/{filename}",            # для <audio src>
+                "base64": audio_base64,  # для быстрого воспроизведения
+                "url": f"/api/v1/audio/{filename}",  # Изменено на /api/v1/audio/
                 "format": audio_format,
                 "size_bytes": len(audio_bytes)
             },
@@ -89,7 +122,6 @@ def message_with_voice():
             "error": str(e)[:120],
             "fallback_text": fallback_text
         }), 500
-
 
 @chat_v1.route('/health', methods=['GET'])
 def health_check():

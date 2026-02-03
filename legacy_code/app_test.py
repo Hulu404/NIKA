@@ -1,13 +1,12 @@
-from flask import Flask, request, jsonify, render_template, send_from_directory
-from src1.giga_start import response_gigachat
-from src1.giga_speech import speech_syntesis  # <-- используем твой файл
+from flask import Flask, request, jsonify, render_template
+from legacy_code.src1.giga_start import response_gigachat
+from legacy_code.src1.giga_speech import speech_syntesis  # <-- используем твой файл
 from pathlib import Path
-import base64
 import uuid
 
 app = Flask(__name__)
 
-AUDIO_CACHE_DIR = Path("static/audio_cache")  # сохраним аудио чтобы чекнуть
+AUDIO_CACHE_DIR = Path("../static/audio_cache")  # сохраним аудио чтобы чекнуть
 AUDIO_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -52,7 +51,7 @@ def message_with_audio():
     audio_bytes = speech_syntesis(reply)
 
     filename = f"{uuid.uuid4()}.mp3"
-    AUDIO_CACHE_DIR = Path("static/audio_cache")
+    AUDIO_CACHE_DIR = Path("../static/audio_cache")
 
 
     with open(path, "wb") as f:

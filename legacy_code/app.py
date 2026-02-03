@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template, send_from_directory
-from src1.giga_start import response_gigachat
-from src1.giga_speech import speech_syntesis
+from legacy_code.src1.giga_start import response_gigachat
+from legacy_code.src1.giga_speech import speech_syntesis
 from pathlib import Path
 import base64
 import uuid
@@ -10,7 +10,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Конфигурация
-AUDIO_CACHE_DIR = Path("static/audio_cache")
+AUDIO_CACHE_DIR = Path("../static/audio_cache")
 AUDIO_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 # Максимальный возраст кэша аудио (например, 24 часа) — потом можно чистить

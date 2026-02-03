@@ -10,7 +10,7 @@ app = create_app(config_name)
 if __name__ == "__main__":
     # Для локальной разработки удобно видеть, на каком порту и в каком режиме
     debug = app.config.get("DEBUG", False)
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5001))
 
     print(f"Запуск приложения в режиме: {config_name.upper()}")
     print(f"DEBUG = {debug} | PORT = {port}")

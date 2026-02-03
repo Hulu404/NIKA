@@ -71,5 +71,6 @@ def create_app(config_name=None):
 
     print(f"Приложение запущено в режиме {config_name.upper()}")
     print(f"База данных: {app.config['SQLALCHEMY_DATABASE_URI']}")
+    print(f"Папка аудио: {app.config["AUDIO_CACHE_DIR"]}")
 
     return app
