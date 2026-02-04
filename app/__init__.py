@@ -55,7 +55,7 @@ def create_app(config_name=None):
 
     if audio_cache_dir is None:
         # fallback-значение, если в конфиге забыли указать
-        audio_cache_dir = Path("app/static/audio_cache")
+        audio_cache_dir = Path("../static/audio_cache")
         print("ВНИМАНИЕ: AUDIO_CACHE_DIR не задан в конфиге → используется значение по умолчанию")
 
 
@@ -88,6 +88,6 @@ def create_app(config_name=None):
 
     print(f"Приложение запущено в режиме {config_name.upper()}")
     print(f"База данных: {app.config['SQLALCHEMY_DATABASE_URI']}")
-    print(f"Папка аудио: {app.config["AUDIO_CACHE_DIR"]}")
+    print(f"Папка аудио: {app.config['AUDIO_CACHE_DIR']}")
 
     return app

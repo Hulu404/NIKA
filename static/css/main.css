@@ -4,100 +4,128 @@
 body {
   font-size: 14px;
 }
-.v372_112 {
+.v321_109 {
   width: 100%;
   height: 899px;
   background: rgba(255,255,255,1);
   opacity: 1;
-  position: relative;
+  position: absolute;
   top: 0px;
   left: 0px;
   overflow: hidden;
 }
-.v372_113 {
+.v321_110 {
   width: 100%;
-  height: 891px;
-  background: url("../images/v372_113.png");
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
+  height: 900px;
+  background: rgba(23,23,23,0);
+  margin: 64px;
   opacity: 1;
   position: absolute;
-  top: 4px;
-  left: 6px;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
+  top: 1px;
+  left: 0px;
   overflow: hidden;
 }
-.v372_114 {
-  width: 32px;
-  color: rgba(255,255,255,1);
-  position: absolute;
-  top: 707px;
-  left: 705px;
-  font-family: Manrope;
-  font-weight: Regular;
-  font-size: 13px;
-  opacity: 1;
-  text-align: left;
-}
-.v372_115 {
-  width: 520px;
-  height: 581px;
-  background: url("../images/v372_115.png");
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
+.v321_111 {
+  width: 100%;
+  height: 875px;
+  background: rgba(255,253,231,1);
   opacity: 1;
   position: absolute;
-  top: 158px;
-  left: 168px;
+  top: 13px;
+  left: 13px;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
   overflow: hidden;
 }
-.v372_116 {
+.v321_112 {
   width: 473px;
-  color: rgba(255,255,255,1);
+  color: rgb(83, 43, 1);
   position: absolute;
-  top: 327px;
-  left: 637px;
+  top: 414px;
+  left: 483px;
   font-family: Manrope;
   font-weight: Bold;
-  font-size: 200px;
+  font-size: 160px;
   opacity: 1;
-  text-align: left;
+  text-align: center;
+  
+  /* Глитч эффект с анимацией */
+  text-shadow: 
+    1px 0 0 rgba(255,0,0,0.1),
+    -1px 0 0 rgba(0,255,255,0.1),
+    0 1px 0 rgba(60,31,0,0.8),
+    0 -1px 0 rgba(60,31,0,0.6);
+  
+  /* Зернистость через filter */
+  filter: 
+    blur(0.4px)
+    contrast(1.3)
+    drop-shadow(0.5px 0.5px 0.5px rgba(0,0,0,0.2));
+  
+  /* Анимация легкого мерцания */
+  animation: grain 8s steps(10) infinite;
 }
-.v372_117 {
+
+@keyframes grain {
+  0%, 100% { 
+    filter: 
+      blur(0.4px)
+      contrast(1.3)
+      drop-shadow(0.5px 0.5px 0.5px rgba(0,0,0,0.2));
+  }
+  50% { 
+    filter: 
+      blur(0.6px)
+      contrast(1.4)
+      drop-shadow(0.7px 0.7px 0.7px rgba(0,0,0,0.3));
+  }
+}
+.v321_113 {
   width: 337px;
   height: 69px;
   background: rgba(217,217,217,0.20000000298023224);
   opacity: 1;
   position: absolute;
-  top: 619px;
-  left: 552px;
-  border-top-left-radius: 25px;
-  border-top-right-radius: 25px;
-  border-bottom-left-radius: 25px;
-  border-bottom-right-radius: 25px;
+  top: 650px;
+  left: 551px;
+  border-top-left-radius: 34px;
+  border-top-right-radius: 34px;
+  border-bottom-left-radius: 34px;
+  border-bottom-right-radius: 34px;
   overflow: hidden;
 }
-.v372_118 {
+.v321_114 {
   width: 72px;
-  color: rgba(255,255,255,1);
+  color: rgba(131,69,30,1);
   position: absolute;
-  top: 640px;
-  left: 686px;
+  top: 671px;
+  left: 685px;
   font-family: Manrope;
   font-weight: SemiBold;
   font-size: 20px;
   opacity: 1;
-  text-align: left;
+  text-align: center;
 }
-.v372_119 {
+.v321_115 {
+  width: 700px;
+  height: 500px;
+  background: url("../images/v321_115.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 361px;
+  overflow: hidden;
+  align-items: center;
+}
+.v321_116 {
   width: 583px;
   height: 583px;
-  background: url("../images/v372_119.png");
+  background: url("../images/v321_116.png");
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
@@ -106,4 +134,16 @@ body {
   top: 1011px;
   left: 82px;
   overflow: hidden;
+}
+.v321_121 {
+  width: 32px;
+  color: rgba(61,31,0,1);
+  position: absolute;
+  top: 740px;
+  left: 704px;
+  font-family: Manrope;
+  font-weight: Regular;
+  font-size: 13px;
+  opacity: 1;
+  text-align: center;
 }
