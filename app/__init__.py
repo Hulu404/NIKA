@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_login import LoginManager
 from config import get_config
 from pathlib import Path
 import os
@@ -32,6 +33,10 @@ def create_app(config_name=None):
 
     app.config.from_object(get_config(config_name))
 
+    # Инициализация LoginManager ДО JWTManager
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+
     # Инициализация JWT после загрузки конфига
     jwt = JWTManager(app)
 
@@ -48,6 +53,16 @@ def create_app(config_name=None):
 
     # инициализируем расширения
     db.init_app(app)
+
+    # Функция загрузки пользователя для Flask-Login
+    @login_manager.user_loader
+    def load_user(user_id):
+        '''
+        Вызываетсия с каждым запросом к серверу, загружает пользователя из идентификатора пользователя в куки сессии.
+        Flask-Login делает загруженного пользователя доступным с помощью прокси current_user. Для использования current_user его нужно импортировать из пакета flask_login. Он ведет себя как глобальная переменная и доступен как в функциях представления, так и в шаблонах. В любой момент времени current_user ссылается либо на вошедшего в систему, либо на анонимного пользователя. Различать их можно с помощью атрибута is_authenticated прокси current_user. Для анонимных пользователей is_authenticated вернет False. В противном случае — True
+        '''
+        from app.models.users import User  # Импортируем здесь, чтобы избежать циклических импортов
+        return db.session.get(User, int(user_id))
 
     # 2. Теперь конфиг доступен → можно безопасно обращаться
     audio_cache_dir = app.config.get("AUDIO_CACHE_DIR")
