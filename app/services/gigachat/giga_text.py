@@ -1,4 +1,8 @@
 import requests
+import uuid
+import logging
+import ssl
+import aiohttp
 from app.services.gigachat.giga_credentials import GIGA_KEY
 from app.services.gigachat.giga_token import get_giga_token
 
