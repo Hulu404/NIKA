@@ -1,7 +1,8 @@
 import requests
 import urllib.parse
-from app.services.gigachat.salute_token import get_salute_token
-from app.services.gigachat.giga_credentials import SALUTE_KEY
+
+from app.services.salute.salute_credentials import SALUTE_KEY
+from app.services.salute.salute_token import get_salute_token
 
 
 def speech_syntesis(giga_text_answer: str) -> dict:

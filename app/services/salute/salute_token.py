@@ -1,22 +1,23 @@
 import time
+import uuid
 import requests
 import logging
 
 # Глобальные переменные для хранения токена и времени его получения
 _SALUTE_TOKEN_CACHE = None
-_TOKEN_EXPIRY_TIME = 0
-_TOKEN_LIFETIME = 1800  # 30 минут в секундах
+_SALUTE_TOKEN_EXPIRY_TIME = 0
+_SALUTE_TOKEN_LIFETIME = 1800  # 30 минут в секундах
 
 
 def get_salute_token(salute_key, scope='SALUTE_SPEECH_PERS'):
     """Функция для получения токена Salute с кэшированием на 30 минут"""
-    global _SALUTE_TOKEN_CACHE, _TOKEN_EXPIRY_TIME
+    global _SALUTE_TOKEN_CACHE, _SALUTE_TOKEN_EXPIRY_TIME
 
     current_time = time.time()
 
     # Если токен есть в кэше и еще не истек, возвращаем его
-    if _SALUTE_TOKEN_CACHE and current_time < _TOKEN_EXPIRY_TIME:
-        logging.debug(f"Возвращаем кэшированный токен. Осталось времени: {int(_TOKEN_EXPIRY_TIME - current_time)} сек")
+    if _SALUTE_TOKEN_CACHE and current_time < _SALUTE_TOKEN_EXPIRY_TIME:
+        logging.debug(f"Возвращаем кэшированный токен. Осталось времени: {int(_SALUTE_TOKEN_EXPIRY_TIME - current_time)} сек")
         return _SALUTE_TOKEN_CACHE
 
     # Иначе запрашиваем новый токен
@@ -29,7 +30,7 @@ def get_salute_token(salute_key, scope='SALUTE_SPEECH_PERS'):
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Accept': 'application/json',
-        'RqUID': '1a214503-74af-4f41-974e-af9c3c727a67',
+        'RqUID': str(uuid.uuid4()),
         'Authorization': f'Basic {salute_key}'
     }
 
@@ -52,9 +53,9 @@ def get_salute_token(salute_key, scope='SALUTE_SPEECH_PERS'):
 
         # Сохраняем токен и время истечения
         _SALUTE_TOKEN_CACHE = new_token
-        _TOKEN_EXPIRY_TIME = current_time + _TOKEN_LIFETIME
+        _SALUTE_TOKEN_EXPIRY_TIME = current_time + _SALUTE_TOKEN_LIFETIME
 
-        logging.debug(f"Новый токен получен. Истекает через {_TOKEN_LIFETIME} сек")
+        logging.debug(f"Новый токен получен. Истекает через {_SALUTE_TOKEN_LIFETIME} сек")
         return new_token
 
     except requests.exceptions.RequestException as e:
@@ -69,20 +70,20 @@ def get_salute_token(salute_key, scope='SALUTE_SPEECH_PERS'):
 # Дополнительная функция для принудительного обновления токена
 def refresh_salute_token(salute_key, scope='SALUTE_SPEECH_PERS'):
     """Принудительное обновление токена, игнорируя кэш"""
-    global _SALUTE_TOKEN_CACHE, _TOKEN_EXPIRY_TIME
+    global _SALUTE_TOKEN_CACHE, _SALUTE_TOKEN_EXPIRY_TIME
 
     # Сбрасываем кэш
     _SALUTE_TOKEN_CACHE = None
-    _TOKEN_EXPIRY_TIME = 0
+    _SALUTE_TOKEN_EXPIRY_TIME = 0
 
     # Получаем новый токен
     return get_salute_token(salute_key, scope)
 
 
 # Функция для проверки состояния токена
-def get_token_status():
+def get_salute_token_status():
     """Возвращает информацию о текущем состоянии токена"""
-    global _SALUTE_TOKEN_CACHE, _TOKEN_EXPIRY_TIME
+    global _SALUTE_TOKEN_CACHE, _SALUTE_TOKEN_EXPIRY_TIME
 
     current_time = time.time()
 
@@ -92,7 +93,7 @@ def get_token_status():
             'has_token': False
         }
 
-    time_left = _TOKEN_EXPIRY_TIME - current_time
+    time_left = _SALUTE_TOKEN_EXPIRY_TIME - current_time
 
     return {
         'status': 'Токен активен' if time_left > 0 else 'Токен истек',

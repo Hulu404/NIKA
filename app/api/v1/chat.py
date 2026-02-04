@@ -7,8 +7,8 @@ from flask import Blueprint, request, jsonify, current_app, send_file
 
 
 # Импорты из services (после переноса логики)
-from app.services.gigachat.giga_start import response_gigachat
-from app.services.gigachat.speech import speech_syntesis
+from app.services.gigachat.giga_text import response_gigachat
+from app.services.salute.salute_speech import speech_syntesis
 
 chat_v1 = Blueprint('chat_v1', __name__, url_prefix='/api/v1')
 
