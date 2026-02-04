@@ -1,104 +1,323 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Ника</title>
-    <style>
-        body { font-family: system-ui, sans-serif; margin: 2rem; }
-        #chat { max-width: 800px; margin: auto; }
-        #messages { min-height: 300px; border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem; overflow-y: auto; }
-        .message { margin: 0.5rem 0; padding: 0.8rem; border-radius: 8px; }
-        .user { background: #e3f2fd; text-align: right; }
-        .bot  { background: #f5f5f5; }
-        #input-form { display: flex; gap: 0.5rem; }
-        #message { flex: 1; padding: 0.8rem; }
-        button { padding: 0.8rem 1.5rem; }
-        audio { margin-top: 0.5rem; width: 100%; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIKA Pro - Чат</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../static/css/chat.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<div id="chat">
-    <h1>Ника - твой друг</h1>
-    <div id="messages"></div>
+    <div class="chat-container">
+        <!-- Боковая панель -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <span>N</span>
+                    </div>
+                    <span class="logo-text">NIKA</span>
+                </div>
+                <button class="close-sidebar">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
 
-    <form id="input-form">
-        <input type="text" id="message" placeholder="Напиши сообщение..." autocomplete="off">
-        <button type="submit">Отправить</button>
-    </form>
+            <button class="new-chat-btn">
+                <i class="fas fa-plus"></i>
+                <span>Новый чат</span>
+            </button>
 
-    <script>
-        const messagesDiv = document.getElementById('messages');
-        const form = document.getElementById('input-form');
-        const input = document.getElementById('message');
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Поиск...">
+            </div>
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const text = input.value.trim();
-            if (!text) return;
+            <div class="recent-chats">
+                <h3><i class="far fa-clock"></i> Недавние</h3>
+                <div class="chat-list">
+                    <div class="chat-item">
+                        <div class="chat-info">
+                            <p class="chat-title">План тренировок на неделю</p>
+                            <p class="chat-time">2ч назад</p>
+                        </div>
+                    </div>
+                    <div class="chat-item">
+                        <div class="chat-info">
+                            <p class="chat-title">Советы по питанию</p>
+                            <p class="chat-time">5ч назад</p>
+                        </div>
+                    </div>
+                    <div class="chat-item">
+                        <div class="chat-info">
+                            <p class="chat-title">Упражнения для спины</p>
+                            <p class="chat-time">Вчера</p>
+                        </div>
+                    </div>
+                    <div class="chat-item">
+                        <div class="chat-info">
+                            <p class="chat-title">Восстановление после бега</p>
+                            <p class="chat-time">2 дня назад</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            // Показываем сообщение пользователя
-            addMessage('user', text);
-            input.value = '';
+            <div class="menu-items">
+                <h3>Меню</h3>
+                <div class="menu-list">
+                    <div class="menu-item">
+                        <span>Трекер прогресса</span>
+                        <span class="badge">Новое</span>
+                    </div>
+                    <div class="menu-item">
+                        <span>Упражнения</span>
+                    </div>
+                    <div class="menu-item">
+                        <span>Дневник питания</span>
+                    </div>
+                    <div class="menu-item">
+                        <span>FAQs</span>
+                    </div>
+                </div>
+            </div>
 
-            try {
-                const res = await fetch('/api/v1/message-with-audio', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text })
-                });
+            <div class="sidebar-footer">
+                <div class="footer-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Настройки</span>
+                </div>
+                <div class="footer-item logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Выйти</span>
+                </div>
+            </div>
+        </aside>
 
-                const data = await res.json();
+        <!-- Основное содержимое -->
+        <main class="main-content">
+            <!-- Шапка -->
+            <header class="chat-header">
+                <button class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
 
-                if (data.success) {
-                    addMessage('bot', data.text, data.audio.url);
-                } else {
-                    addMessage('bot', data.error || 'Ошибка сервера');
-                }
-            } catch (err) {
-                addMessage('bot', 'Не удалось связаться с сервером 😢');
-            }
-        });
+                <div class="chat-info">
+                    <div class="avatar-container">
+                        <div class="avatar">
+                            <i class="fas fa-sparkles"></i>
+                        </div>
+                        <div class="status"></div>
+                    </div>
+                    <div class="chat-titles">
+                        <h1>NIKA Pro</h1>
+                        <p>Наш самый умный помощник</p>
+                    </div>
+                </div>
 
-        function addMessage(sender, text, audioUrl = null) {
-            const msg = document.createElement('div');
-            msg.className = `message ${sender}`;
-            msg.innerHTML = `<strong>${sender === 'user' ? 'Ты' : 'Nika'}</strong>: ${text.replace(/\n/g, '<br>')}`;
+                <div class="header-actions">
+                    <button class="model-btn">GPT-4</button>
+                    <button class="more-btn">
+                        <i class="fas fa-ellipsis-vertical"></i>
+                    </button>
+                </div>
+            </header>
 
-            if (audioUrl) {
-                const audio = document.createElement('audio');
-                audio.controls = true;
-                audio.src = audioUrl;
-                msg.appendChild(audio);
-            }
+            <!-- Контейнер сообщений -->
+            <div class="messages-container">
+                <!-- Сообщения будут здесь -->
+                <div class="messages-list" id="messagesList">
+                    <!-- Сообщение от бота -->
+                    <div class="message bot-message">
+                        <div class="message-avatar">
+                            <div class="avatar-img"></div>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-bubble">
+                                <p>Привет! Я НИКА, твой помощник по спорту. Я помогу тебе: понять свои спортивные возможности, построить правильный план тренировок, восстанавливаться после нагрузок и многое другое!</p>
+                                <p class="message-response">Ответь: Готово \ Расскажи подробнее</p>
+                            </div>
+                            <div class="message-time">17:38</div>
+                        </div>
+                    </div>
 
-            messagesDiv.appendChild(msg);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-    </script>
-</div>
+                    <!-- Сообщение от пользователя -->
+                    <div class="message user-message">
+                        <div class="message-content">
+                            <div class="message-bubble">
+                                <p>Готово</p>
+                            </div>
+                            <div class="message-time">17:39</div>
+                        </div>
+                        <div class="message-avatar">
+                            <div class="avatar-img user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Сообщение от бота -->
+                    <div class="message bot-message">
+                        <div class="message-avatar">
+                            <div class="avatar-img"></div>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-bubble">
+                                <p>Отлично! Для начала мне нужно узнать о тебе. Какой вид спорта тебя интересует?</p>
+                            </div>
+                            <div class="message-time">17:40</div>
+                        </div>
+                    </div>
+
+                    <!-- Сообщение от пользователя -->
+                    <div class="message user-message">
+                        <div class="message-content">
+                            <div class="message-bubble">
+                                <p>Бег</p>
+                            </div>
+                            <div class="message-time">17:41</div>
+                        </div>
+                        <div class="message-avatar">
+                            <div class="avatar-img user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Сообщение от бота -->
+                    <div class="message bot-message">
+                        <div class="message-avatar">
+                            <div class="avatar-img"></div>
+                        </div>
+                        <div class="message-content">
+                            <div class="message-bubble">
+                                <p>Супер! Бег— отличный выбор. А ты уже бегаешь или только начинаешь?</p>
+                            </div>
+                            <div class="message-time">17:42</div>
+                        </div>
+                    </div>
+
+                    <!-- Сообщение от пользователя -->
+                    <div class="message user-message">
+                        <div class="message-content">
+                            <div class="message-bubble">
+                                <p>Я начала бегать еще месяц назад, выходила на пробежку через день. Получалось по полчаса бега в легком темпе</p>
+                            </div>
+                            <div class="message-time">17:43</div>
+                        </div>
+                        <div class="message-avatar">
+                            <div class="avatar-img user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Индикатор набора сообщения -->
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="typing-avatar">
+                        <div class="avatar-img"></div>
+                    </div>
+                    <div class="typing-bubble">
+                        <div class="typing-dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Поле ввода -->
+            <div class="input-area">
+                <div class="input-container">
+                    <div class="input-tools">
+                        <button class="input-tool">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                    </div>
+
+                    <textarea 
+                        id="messageInput" 
+                        class="message-input" 
+                        placeholder="Напишите сообщение или нажмите / для команд..."
+                        rows="1"
+                    ></textarea>
+
+                    <div class="input-actions">
+                        <button class="input-action">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button class="send-btn" id="sendButton">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <p class="input-hint">NIKA может делать ошибки. Проверяйте важную информацию.</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Мобильная навигация -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- Быстрые подсказки -->
+    <div class="suggested-prompts" id="emptyState">
+        <div class="prompts-container">
+            <div class="prompts-header">
+                <div class="prompts-avatar">
+                    <i class="fas fa-sparkles"></i>
+                </div>
+                <h2>Чем могу помочь?</h2>
+                <p>Я ваш персональный спортивный помощник с искусственным интеллектом</p>
+            </div>
+
+            <div class="prompts-grid">
+                <div class="prompt-card" data-prompt="Составь мне план тренировок для начинающего бегуна">
+                    <div class="prompt-icon">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <div class="prompt-content">
+                        <h3>План тренировок</h3>
+                        <p>Составь мне план тренировок для начинающего бегуна</p>
+                    </div>
+                </div>
+
+                <div class="prompt-card" data-prompt="Как правильно отслеживать свой прогресс в беге?">
+                    <div class="prompt-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="prompt-content">
+                        <h3>Прогресс</h3>
+                        <p>Как правильно отслеживать свой прогресс в беге?</p>
+                    </div>
+                </div>
+
+                <div class="prompt-card" data-prompt="Какое питание подходит для спортсменов?">
+                    <div class="prompt-icon">
+                        <i class="fas fa-apple-alt"></i>
+                    </div>
+                    <div class="prompt-content">
+                        <h3>Питание</h3>
+                        <p>Какое питание подходит для спортсменов?</p>
+                    </div>
+                </div>
+
+                <div class="prompt-card" data-prompt="Расскажи про восстановление после интенсивных тренировок">
+                    <div class="prompt-icon">
+                        <i class="far fa-clock"></i>
+                    </div>
+                    <div class="prompt-content">
+                        <h3>Восстановление</h3>
+                        <p>Расскажи про восстановление после интенсивных тренировок</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../static/js/chat.js"></script>
 </body>
-</html> -->
-
-<!DOCTYPE html><html><head><link href="https://fonts.googleapis.com/css?family=Manrope&display=swap" rel="stylesheet" /><link href="./css/main.css" rel="stylesheet" /><title>Document</title></head><body><div class="v380_110"><div class="v380_111"></div><div class="v380_112"></div><div class="v380_113"></div><div class="v380_114"></div><span class="v380_115">Готово</span><div class="v380_116"></div><div class="v380_117"></div><span class="v380_118">Бег</span><span class="v380_119">Я начала бегать еще месяц назад, выходила на пробежку через
-день. Получалось по полчаса бега в легком темпе </span><span class="v390_150">Напиши сообщение...</span><span class="v380_120">Привет! Я НИКА, твой помощник по спорту. Я помогу тебе: понять свои спортивные возможности,         построить правильный план тренировок, восстанавливаться после нагрузок и многое другое! 
-
-Ответь: Готово\Расскажи подробнее</span><span class="v390_147">Чат с Никой</span><span class="v380_121">Отлично! Для начала мне нужно узнать о тебе. Какой вид спорта тебя интересует?</span><span class="v380_122">Супер! Бег— отличный выбор. А ты уже бегаешь или только начинаешь?</span><div class="name"></div><div class="v380_124"></div><span class="v380_125"> Новый чат</span><span class="v380_126">Трекер прогресса
-
-Упражнения
-
-Дневник питания
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-FAQs</span><div class="v380_127"></div><div class="v380_128"></div><div class="v380_129"></div><div class="v380_130"></div><div class="v380_131"></div><div class="name"></div><div class="name"></div><div class="v380_134"><div class="v380_135"></div><div class="v380_136"></div></div><div class="v390_145"></div></div></body></html>
+</html>
