@@ -9,14 +9,19 @@ from flask_jwt_extended import JWTManager
 # Импортируем расширения
 from .extensions import db
 
+login_manager = LoginManager()
+
+
+
 def create_app(config_name=None):
     load_dotenv()  # если используешь .env
-
+    global login_manager
     app = Flask(__name__,
                 instance_relative_config=False,
                 static_folder="../static",
                 template_folder="templates")
 
+    login_manager.init_app(app)
     # 1. Загружаем конфигурацию (это должно быть в самом начале)
     config_name = config_name or os.environ.get("FLASK_CONFIG", "development")
     app.config.from_object(get_config(config_name))
