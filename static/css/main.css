@@ -1,109 +1,444 @@
+/* Основные стили */
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
+
 body {
+  font-family: 'Manrope', sans-serif;
   font-size: 14px;
-}
-.v372_112 {
-  width: 100%;
-  height: 899px;
-  background: rgba(255,255,255,1);
-  opacity: 1;
+  background: rgba(255, 255, 255, 1);
+  overflow-x: hidden;
   position: relative;
-  top: 0px;
-  left: 0px;
-  overflow: hidden;
 }
-.v372_113 {
+
+/* Основной контейнер */
+.main-container {
   width: 100%;
-  height: 891px;
-  background: url("../images/v372_113.png");
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
-  opacity: 1;
-  position: absolute;
-  top: 4px;
-  left: 6px;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
   overflow: hidden;
 }
-.v372_114 {
-  width: 32px;
-  color: rgba(255,255,255,1);
-  position: absolute;
-  top: 707px;
-  left: 705px;
-  font-family: Manrope;
-  font-weight: Regular;
-  font-size: 13px;
-  opacity: 1;
-  text-align: left;
+
+/* Фоновый слой */
+.background-layer {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  opacity: 0.9;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -3;
 }
-.v372_115 {
+
+/* Декоративные элементы */
+.decoration-left {
   width: 520px;
   height: 581px;
   background: url("../images/v372_115.png");
   background-repeat: no-repeat;
   background-position: center center;
-  background-size: cover;
-  opacity: 1;
-  position: absolute;
-  top: 158px;
-  left: 168px;
-  overflow: hidden;
+  background-size: contain;
+  opacity: 0.3;
+  position: fixed;
+  top: 50%;
+  left: 10%;
+  transform: translateY(-50%);
+  z-index: -2;
 }
-.v372_116 {
-  width: 473px;
-  color: rgba(255,255,255,1);
-  position: absolute;
-  top: 327px;
-  left: 637px;
-  font-family: Manrope;
-  font-weight: Bold;
-  font-size: 200px;
-  opacity: 1;
-  text-align: left;
-}
-.v372_117 {
-  width: 337px;
-  height: 69px;
-  background: rgba(217,217,217,0.20000000298023224);
-  opacity: 1;
-  position: absolute;
-  top: 619px;
-  left: 552px;
-  border-top-left-radius: 25px;
-  border-top-right-radius: 25px;
-  border-bottom-left-radius: 25px;
-  border-bottom-right-radius: 25px;
-  overflow: hidden;
-}
-.v372_118 {
-  width: 72px;
-  color: rgba(255,255,255,1);
-  position: absolute;
-  top: 640px;
-  left: 686px;
-  font-family: Manrope;
-  font-weight: SemiBold;
-  font-size: 20px;
-  opacity: 1;
-  text-align: left;
-}
-.v372_119 {
+
+.decoration-right {
   width: 583px;
   height: 583px;
   background: url("../images/v372_119.png");
   background-repeat: no-repeat;
   background-position: center center;
-  background-size: cover;
-  opacity: 1;
+  background-size: contain;
+  opacity: 0.3;
+  position: fixed;
+  bottom: 10%;
+  right: 10%;
+  z-index: -2;
+}
+
+/* Заголовок */
+.header-section {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
+}
+
+.main-title {
+  width: 100%;
+  color: rgba(255, 255, 255, 1);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  font-size: clamp(60px, 10vw, 120px);
+  text-align: center;
+  margin-bottom: 10px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 400;
+  font-size: clamp(16px, 2vw, 20px);
+  text-align: center;
+  opacity: 0.9;
+}
+
+/* FAQ ссылка */
+.faq-link {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  color: rgba(255, 255, 255, 1);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  text-decoration: none;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.faq-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Контент */
+.content-section {
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-text {
+  margin-bottom: 50px;
+}
+
+.hero-text h2 {
+  color: rgba(255, 255, 255, 1);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  font-size: clamp(24px, 3vw, 32px);
+  margin-bottom: 15px;
+  line-height: 1.3;
+}
+
+.hero-text p {
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 400;
+  font-size: clamp(16px, 1.5vw, 18px);
+  line-height: 1.5;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Кнопки действий */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+/* Контейнер для кнопки */
+.button-container {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.button-container:hover {
+  transform: translateY(-5px);
+}
+
+.button-container.main-button {
+  width: 350px;
+}
+
+.button-container.secondary-button {
+  width: 250px;
+}
+
+/* Фон кнопки */
+.button-bg {
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 25px;
   position: absolute;
-  top: 1011px;
-  left: 82px;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.button-container:hover .button-bg {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Сама кнопка */
+.action-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  padding: 25px 30px;
+  position: relative;
+  cursor: pointer;
+  border-radius: 25px;
   overflow: hidden;
+}
+
+.guest-button {
+  min-height: 120px;
+}
+
+.login-button,
+.register-button {
+  min-height: 100px;
+}
+
+/* Элементы кнопки */
+.button-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.button-text {
+  color: rgba(255, 255, 255, 1);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  font-size: 22px;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.button-subtext {
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  display: block;
+}
+
+/* Специфичные стили для каждой кнопки */
+.guest-button .button-text {
+  font-size: 24px;
+}
+
+.guest-button .button-icon {
+  font-size: 32px;
+}
+
+.login-button .button-icon {
+  font-size: 24px;
+}
+
+.register-button .button-icon {
+  font-size: 24px;
+}
+
+/* Контейнер для вторичных кнопок */
+.secondary-buttons {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Преимущества */
+.benefits-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.benefit {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.benefit:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateX(5px);
+}
+
+.benefit-icon {
+  font-size: 20px;
+}
+
+.benefit-text {
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  text-align: left;
+  flex: 1;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .main-title {
+    font-size: clamp(50px, 15vw, 80px);
+  }
+
+  .subtitle {
+    font-size: 18px;
+  }
+
+  .button-container.main-button {
+    width: 300px;
+  }
+
+  .button-container.secondary-button {
+    width: 280px;
+  }
+
+  .secondary-buttons {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .decoration-left,
+  .decoration-right {
+    opacity: 0.2;
+    width: 300px;
+    height: 300px;
+  }
+
+  .decoration-left {
+    top: 20%;
+    left: 5%;
+  }
+
+  .decoration-right {
+    bottom: 20%;
+    right: 5%;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-container {
+    padding: 15px;
+  }
+
+  .faq-link {
+    top: 20px;
+    right: 20px;
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .main-title {
+    font-size: 60px;
+  }
+
+  .hero-text h2 {
+    font-size: 22px;
+  }
+
+  .hero-text p {
+    font-size: 16px;
+  }
+
+  .button-container.main-button,
+  .button-container.secondary-button {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .action-button {
+    padding: 20px;
+  }
+
+  .guest-button {
+    min-height: 110px;
+  }
+
+  .login-button,
+  .register-button {
+    min-height: 90px;
+  }
+
+  .benefit-text {
+    font-size: 14px;
+  }
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.main-title {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.hero-text {
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.action-buttons {
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.benefits-section {
+  animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+/* Эффект пульсации для основной кнопки */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.button-container.main-button {
+  animation: pulse 2s infinite;
 }
