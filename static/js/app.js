@@ -101,19 +101,21 @@ const StartButtonModule = {
         return true;
     },
 
-    // Обработчик клика по кнопке "Начать"
     handleStartClick: function(event) {
-        event.preventDefault();
-        event.stopPropagation();
-        
-        AppUtils.log('Кнопка "Начать" нажата');
-        StartButtonModule.showLoadingIndicator();
-        
-        // Переход в чат с небольшой задержкой для анимации
-        setTimeout(() => {
-            window.location.href = '/chat';
-        }, AppConfig.transitionSpeed);
-    },
+    event.preventDefault();
+    event.stopPropagation();
+
+    AppUtils.log('Кнопка "Начать" нажата');
+    StartButtonModule.showLoadingIndicator();
+
+    // Получаем URL из data-атрибута
+    const startButton = document.querySelector('.v372_118');
+    const redirectUrl = startButton.getAttribute('data-redirect-url');
+
+    setTimeout(() => {
+        window.location.href = redirectUrl;
+    }, AppConfig.transitionSpeed);
+},
 
     // Показ индикатора загрузки
     showLoadingIndicator: function() {

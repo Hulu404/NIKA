@@ -9,23 +9,29 @@
         <div class="registration_page">
             <div class="registration_window">
                 <span class="registration_header">Регистрация</span>
-                <form class="registration_form" id="registration_form">
+                <form class="registration_form" id="registration_form" method="POST">
                     <input class="registration_input" name="name" placeholder="Имя" type="text" required>
-                    <input class="registration_input" name="surename" placeholder="Фамилия" type="text" required>
+                    <input class="registration_input" name="surname" placeholder="Фамилия" type="text" required>
+                    <!-- Исправил name с surename на surname -->
                     <input class="registration_input" name="email" placeholder="Email" type="email" required>
                     <input class="registration_input" name="password" placeholder="Пароль" type="password" required>
+                    <input class="registration_input" name="confirm_password" placeholder="Подтвердите пароль" type="password" required>
                     <div class="registration_form_wrapper">
+                        <!-- Лучше использовать radio buttons -->
                         <label class="sex_check" id="female-label">
-                            <input class="checkbox" value="female" type="checkbox" id="female-checkbox">
+                            <input class="checkbox" name="sex" value="female" type="radio" id="female-radio">
+                            <!-- Изменил type="checkbox" на type="radio" -->
                             <span class="checkmark">Ж</span>
                         </label>
                         <label class="sex_check" id="male-label">
-                            <input class="checkbox" value="male" type="checkbox" id="male-checkbox">
+                            <input class="checkbox" name="sex" value="male" type="radio" id="male-radio">
+                            <!-- Изменил type="checkbox" на type="radio" -->
                             <span class="checkmark">М</span>
                         </label>
                         <input class="registration_input registration_input_sport" name="sport_type" placeholder="Вид спорта">
+                        <!-- Можно добавить required если обязательно -->
                     </div>
-                    <input type="submit" hidden>
+                    <button type="submit" class="registration_submit">Зарегистрироваться</button>
                 </form>
                 <a class="login_link" href="#">Войти</a>
                 <a class="registration_faq_link" href="#">FAQs</a>

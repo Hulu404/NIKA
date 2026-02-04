@@ -2,11 +2,14 @@ from pathlib import Path
 import os
 from datetime import timedelta
 
-basedir = Path(__file__).resolve().parent.parent.parent
+basedir = Path(__file__).resolve().parent.parent
 
 class DevelopmentConfig:
     DEBUG = True
     ENV = "development"
+
+    # СЕКРЕТНЫЙ КЛЮЧ - ОБЯЗАТЕЛЬНО ДОБАВЬТЕ ЭТО
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-this-in-production'
 
     AUDIO_CACHE_DIR = basedir / "app" / "static" / "audio_cache"
 
