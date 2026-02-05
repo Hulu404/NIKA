@@ -4,15 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81e58e44-dce9-4fa0-ba3b-8dcb17ac5a20" name="Changes" comment="Исправил регистрацию: немного изменил html и JS, исправил создание приложения. Исправил инициацию бд. Теперь:&#10;1. При начале программы автоматически создается бд&#10;2. Проверка пользователя: регистрированные пользователи сразу перенапрявляются в чат">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
+    <list default="true" id="81e58e44-dce9-4fa0-ba3b-8dcb17ac5a20" name="Changes" comment="Новый вариант начальной страницы – прозрачные кнопки.&#10;В файле home.html есть другие варианты">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/../app/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/templates/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/../app/templates/home.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/../app/templates/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/api/v1/chat.py" beforeDir="false" afterPath="$PROJECT_DIR$/../app/api/v1/chat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/models/guest_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/../app/models/guest_manager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/../app/models/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/services/gigachat/giga_text.py" beforeDir="false" afterPath="$PROJECT_DIR$/../app/services/gigachat/giga_text.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/templates/chat/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../app/templates/chat/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/views/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../app/views/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../config/development.py" beforeDir="false" afterPath="$PROJECT_DIR$/../config/development.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../instance/app.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../static/css/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/../static/css/main_old.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../static/js/login.js" beforeDir="false" afterPath="$PROJECT_DIR$/../static/js/login.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,17 +58,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.app.executor&quot;: &quot;Run&quot;,
-    &quot;Python.run (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.run.executor&quot;: &quot;Run&quot;,
-    &quot;Python.speech.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;ali__develop&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.app.executor": "Run",
+    "Python.run (1).executor": "Run",
+    "Python.run.executor": "Run",
+    "Python.speech.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "ali__develop",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/app/services/salute" />
@@ -250,7 +252,15 @@
       <option name="project" value="LOCAL" />
       <updated>1770217194490</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Новый вариант начальной страницы – прозрачные кнопки.&#10;В файле home.html есть другие варианты">
+      <option name="closed" value="true" />
+      <created>1770299101363</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1770299101363</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -305,6 +315,7 @@
     <MESSAGE value="Добавил Flask-login" />
     <MESSAGE value="Исправил модель пользовательской дб для нашей регистрации" />
     <MESSAGE value="Исправил регистрацию: немного изменил html и JS, исправил создание приложения. Исправил инициацию бд. Теперь:&#10;1. При начале программы автоматически создается бд&#10;2. Проверка пользователя: регистрированные пользователи сразу перенапрявляются в чат" />
-    <option name="LAST_COMMIT_MESSAGE" value="Исправил регистрацию: немного изменил html и JS, исправил создание приложения. Исправил инициацию бд. Теперь:&#10;1. При начале программы автоматически создается бд&#10;2. Проверка пользователя: регистрированные пользователи сразу перенапрявляются в чат" />
+    <MESSAGE value="Новый вариант начальной страницы – прозрачные кнопки.&#10;В файле home.html есть другие варианты" />
+    <option name="LAST_COMMIT_MESSAGE" value="Новый вариант начальной страницы – прозрачные кнопки.&#10;В файле home.html есть другие варианты" />
   </component>
 </project>

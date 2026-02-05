@@ -2,25 +2,189 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Ника</title>
+    <title>Ника - Чат</title>
     <style>
-        body { font-family: system-ui, sans-serif; margin: 2rem; }
-        #chat { max-width: 800px; margin: auto; }
-        #messages { min-height: 300px; border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem; overflow-y: auto; }
-        .message { margin: 0.5rem 0; padding: 0.8rem; border-radius: 8px; }
-        .user { background: #e3f2fd; text-align: right; }
-        .bot  { background: #f5f5f5; }
-        #input-form { display: flex; gap: 0.5rem; }
-        #message { flex: 1; padding: 0.8rem; }
-        button { padding: 0.8rem 1.5rem; }
-        audio { margin-top: 0.5rem; width: 100%; }
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        #chat {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
 
-             /* Стили для кнопки голосового режима */
-        #voice-toggle {
-            background: #F5F5DC;  /*цвет по умолчанию */
+        /* Виджет лимитов */
+        #limits-widget {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .limits-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .user-type {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .requests-counter {
+            flex: 1;
+            min-width: 150px;
+        }
+        .requests-counter span {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: white;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .upgrade-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .upgrade-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Контейнер сообщений */
+        #messages {
+            min-height: 400px;
+            max-height: 500px;
+            border: 1px solid #e0e0e0;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            overflow-y: auto;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+
+        /* Стили сообщений */
+        .message {
+            margin: 0.8rem 0;
+            padding: 0.8rem;
+            border-radius: 12px;
+            animation: fadeIn 0.3s ease;
+            max-width: 80%;
+        }
+        .message.user {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-left: auto;
+            margin-right: 0;
+        }
+        .message.bot {
+            background: #f0f0f0;
+            color: #333;
+            margin-right: auto;
+            margin-left: 0;
+        }
+        .message.error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+            max-width: 90%;
+            margin-right: auto;
+            margin-left: 0;
+        }
+        .message strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .message-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: right;
+            margin-top: 5px;
+        }
+        .message.bot .message-time {
+            color: #666;
+            text-align: left;
+        }
+
+        /* Форма ввода */
+        #input-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        #message {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        #message:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        #message:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+        button[type="submit"] {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        button[type="submit"]:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Голосовой режим */
+        #voice-toggle {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 500;
@@ -28,128 +192,594 @@
             align-items: center;
             justify-content: center;
             gap: 5px;
-            min-width: 160px;
+            padding: 0.8rem 1.2rem;
+            min-width: 60px;
         }
-
         #voice-toggle:hover {
-            background: #45a049;  /* Темнее при наведении */
-            transform: translateY(-1px);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            background: #764ba2;
+            transform: translateY(-2px);
         }
-
-        #voice-toggle:active {
-            transform: translateY(0);
-            box-shadow: none;
-        }
-
         #voice-toggle.active {
-            background: #4CAF50; /* Зеленый при активном режиме */
+            background: #4CAF50;
             animation: pulse 1.5s infinite;
         }
-
         #voice-toggle.disabled {
             background: #cccccc;
             cursor: not-allowed;
             opacity: 0.6;
         }
 
+        /* Модальное окно лимитов */
+        .limit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+        .limit-modal .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        .limit-modal h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        .limit-modal p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            font-size: 16px;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .modal-actions button {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        /* Индикатор набора текста */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: #f0f0f0;
+            border-radius: 18px;
+            width: fit-content;
+            margin: 10px 0;
+        }
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        .typing-dot:nth-child(3) { animation-delay: 0s; }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
         @keyframes pulse {
-            0% {box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.7);}
-            70% {box-shadow: 0 0 0 10px rgba(33, 150, 243, 0);}
-            100% {box-shadow: 0 0 0 0 rgba(33, 150, 243, 0);}
+            0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+        }
+
+        /* Лоадер при загрузке лимитов */
+        .loader {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: white;
+        }
+        .loader-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
 <div id="chat">
-    <h1>Ника - твой друг</h1>
-    <div id="messages"></div>
+    <h1 style="text-align: center; color: #333; margin-bottom: 20px;">Ника - твой AI друг</h1>
 
+    <!-- Виджет лимитов -->
+    <div id="limits-widget">
+        <div class="limits-info">
+            <div class="loader" id="limits-loader">
+                <div class="loader-spinner"></div>
+                <span>Загрузка лимитов...</span>
+            </div>
+            <div id="limits-content" style="display: none; width: 100%;">
+                <span class="user-type" id="user-type">👤 Гость</span>
+                <div class="requests-counter">
+                    <span>Запросов: <strong id="requests-count">0/5</strong></span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+                <button class="upgrade-btn" onclick="window.location.href='/registration'">
+                    🔓 Зарегистрироваться
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Контейнер сообщений -->
+    <div id="messages">
+        <div class="message bot">
+            <strong>Nika</strong>
+            Привет! Я Nika, твой AI помощник. Спрашивай меня о чем угодно! 😊
+        </div>
+    </div>
+
+    <!-- Форма ввода -->
     <form id="input-form">
-        <input type="text" id="message" placeholder="Напиши сообщение..." autocomplete="off">
-        <button type="submit">Отправить</button>
-        <button type="button" id="voice-toggle">🎤</button>
+        <input type="text" id="message" placeholder="Проверяю доступные лимиты..." autocomplete="off" disabled>
+        <button type="submit" id="send-btn" disabled>Отправить</button>
+        <button type="button" id="voice-toggle" disabled>🎤 Голосовой</button>
     </form>
+</div>
 
-    <script>
-        const messagesDiv = document.getElementById('messages');
-        const form = document.getElementById('input-form');
-        const input = document.getElementById('message');
-        const voiceToggle = document.getElementById('voice-toggle');
+<script>
+    // DOM элементы
+    const messagesDiv = document.getElementById('messages');
+    const form = document.getElementById('input-form');
+    const input = document.getElementById('message');
+    const sendBtn = document.getElementById('send-btn');
+    const voiceToggle = document.getElementById('voice-toggle');
+    const limitsWidget = document.getElementById('limits-widget');
+    const limitsLoader = document.getElementById('limits-loader');
+    const limitsContent = document.getElementById('limits-content');
+    const requestsCount = document.getElementById('requests-count');
+    const progressFill = document.getElementById('progress-fill');
+    const userType = document.getElementById('user-type');
 
-        // Переменная для хранения состояния голосового режима
-        let voiceModeEnabled = false;
+    // Переменные состояния
+    let voiceModeEnabled = false;
+    let isGuest = true;
+    let remainingRequests = 0;
+    let totalLimit = 5;
+    let typingIndicator = null;
 
-        // Обработчик переключателя голосового режима
-        voiceToggle.addEventListener('click', () => {
-            if (voiceToggle.disabled) return;
+    // Инициализация при загрузке
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Загружаем лимиты при старте
+        await checkLimits();
 
-            voiceModeEnabled = !voiceModeEnabled;
+        // Проверяем лимиты каждые 30 секунд
+        setInterval(checkLimits, 30000);
 
-            if (voiceModeEnabled) {
-                voiceToggle.classList.add('active');
-            } else {
-                voiceToggle.classList.remove('active');
+        // Фокус на поле ввода если оно не заблокировано
+        if (!input.disabled) {
+            input.focus();
+        }
+    });
+
+    // Проверка текущих лимитов
+    async function checkLimits() {
+        try {
+            console.log('Проверяю лимиты...');
+            const response = await fetch('/api/v1/limits');
+
+            if (!response.ok) {
+                console.error('Ошибка при проверке лимитов:', response.status);
+                // Показываем виджет с ошибкой
+                showLimitsError('Ошибка загрузки лимитов');
+                return;
             }
-        });
 
-        // Обработчик отправки формы
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const text = input.value.trim();
-            if (!text) return;
+            const data = await response.json();
+            console.log('Получены лимиты:', data);
 
-            // Показываем сообщение пользователя
-            addMessage('user', text);
-            input.value = '';
+            if (data.success) {
+                updateLimitsDisplay(data);
+            } else {
+                showLimitsError(data.message || 'Ошибка загрузки лимитов');
+            }
+        } catch (error) {
+            console.error('Ошибка при проверке лимитов:', error);
+            showLimitsError('Ошибка соединения');
+        }
+    }
+
+    // Обновление отображения лимитов
+    function updateLimitsDisplay(limitsData) {
+        if (!limitsData) {
+            showLimitsError('Нет данных о лимитах');
+            return;
+        }
+
+        // Скрываем лоадер, показываем контент
+        limitsLoader.style.display = 'none';
+        limitsContent.style.display = 'flex';
+
+        isGuest = limitsData.is_guest;
+        remainingRequests = limitsData.remaining || 0;
+        totalLimit = limitsData.limit || (isGuest ? 5 : 20);
+
+        // Обновляем счетчик
+        requestsCount.textContent = `${remainingRequests}/${totalLimit}`;
+
+        // Обновляем прогресс-бар (показываем использованные запросы)
+        const usedRequests = totalLimit - remainingRequests;
+        const progressPercent = (usedRequests / totalLimit) * 100;
+        progressFill.style.width = `${progressPercent}%`;
+
+        // Обновляем цвет прогресс-бара в зависимости от оставшихся запросов
+        if (remainingRequests <= 0) {
+            progressFill.style.background = '#ff6b6b'; // Красный при 0
+        } else if (remainingRequests <= totalLimit * 0.3) {
+            progressFill.style.background = '#ffa500'; // Оранжевый при <30%
+        } else {
+            progressFill.style.background = 'white'; // Белый при нормальном состоянии
+        }
+
+        // Обновляем тип пользователя
+        userType.textContent = isGuest ? '👤 Гость' : '👤 Пользователь';
+
+        // Обновляем кнопку апгрейда (показываем только для гостей)
+        const upgradeBtn = limitsContent.querySelector('.upgrade-btn');
+        if (isGuest && remainingRequests <= 0) {
+            upgradeBtn.style.display = 'block';
+        } else {
+            upgradeBtn.style.display = 'none';
+        }
+
+        // Обновляем состояние поля ввода
+        updateInputState();
+
+        // Обновляем состояние кнопок
+        updateButtonsState();
+    }
+
+    // Показать ошибку в виджете лимитов
+    function showLimitsError(message) {
+        limitsLoader.style.display = 'none';
+        limitsContent.style.display = 'flex';
+
+        userType.textContent = '⚠️ Ошибка';
+        requestsCount.textContent = '0/5';
+        progressFill.style.width = '100%';
+        progressFill.style.background = '#ff6b6b';
+
+        const upgradeBtn = limitsContent.querySelector('.upgrade-btn');
+        upgradeBtn.style.display = 'none';
+
+        // Показываем сообщение об ошибке в виджете
+        const errorSpan = document.createElement('span');
+        errorSpan.textContent = message;
+        errorSpan.style.color = '#ff6b6b';
+        errorSpan.style.fontSize = '12px';
+        errorSpan.style.marginTop = '5px';
+
+        // Очищаем и добавляем сообщение об ошибке
+        const requestsCounter = limitsContent.querySelector('.requests-counter');
+        requestsCounter.innerHTML = '';
+        requestsCounter.appendChild(errorSpan);
+    }
+
+    // Обновление состояния поля ввода
+    function updateInputState() {
+        if (remainingRequests <= 0) {
+            if (isGuest) {
+                input.placeholder = 'Лимит исчерпан. Зарегистрируйтесь для продолжения';
+                // Показываем модальное окно при первом обращении
+                if (!window.limitModalShown) {
+                    setTimeout(() => showLimitModal(), 500);
+                    window.limitModalShown = true;
+                }
+            } else {
+                input.placeholder = 'Дневной лимит исчерпан. Попробуйте завтра';
+            }
+            input.disabled = true;
+        } else {
+            input.placeholder = isGuest
+                ? `Задайте вопрос (осталось ${remainingRequests} бесплатных запросов)`
+                : 'Напишите сообщение...';
+            input.disabled = false;
+        }
+    }
+
+    // Обновление состояния кнопок
+    function updateButtonsState() {
+        if (remainingRequests <= 0) {
+            sendBtn.disabled = true;
+            voiceToggle.disabled = true;
+            voiceToggle.classList.add('disabled');
+        } else {
+            sendBtn.disabled = false;
+            voiceToggle.disabled = false;
+            voiceToggle.classList.remove('disabled');
+        }
+    }
+
+    // Обработчик голосового режима
+    voiceToggle.addEventListener('click', () => {
+        if (remainingRequests <= 0 || voiceToggle.disabled) return;
+
+        voiceModeEnabled = !voiceModeEnabled;
+
+        if (voiceModeEnabled) {
+            voiceToggle.classList.add('active');
+            voiceToggle.innerHTML = '🎤 Голосовой <span style="font-size: 12px;">(вкл)</span>';
+        } else {
+            voiceToggle.classList.remove('active');
+            voiceToggle.innerHTML = '🎤 Голосовой';
+        }
+    });
+
+    // Обработчик отправки формы
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = input.value.trim();
+
+        // Проверяем лимиты перед отправкой
+        if (!text || remainingRequests <= 0) {
+            if (remainingRequests <= 0) {
+                showLimitModal();
+            }
+            return;
+        }
+
+        // Показываем сообщение пользователя
+        addMessage('user', text);
+        input.value = '';
+
+        // Показываем индикатор набора
+        showTypingIndicator();
+
+        try {
+            // Выбираем эндпоинт
+            const endpoint = voiceModeEnabled
+                ? '/api/v1/message-with-audio'
+                : '/api/v1/message-text-only';
+
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ message: text })
+            });
+
+            // Скрываем индикатор
+            hideTypingIndicator();
+
+            // Парсим ответ
+            const responseText = await res.text();
+            let data = {};
 
             try {
-                // Выбираем эндпоинт в зависимости от режима
-                const endpoint = voiceModeEnabled
-                    ? '/api/v1/message-with-audio'  // Эндпоинт с озвучкой
-                    : '/api/v1/message-text-only';   // Эндпоинт только с текстом
+                data = JSON.parse(responseText);
+            } catch (e) {
+                console.error('Ошибка парсинга JSON:', e);
+                addMessage('error', 'Ошибка сервера. Попробуйте еще раз.');
+                return;
+            }
 
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text })
+            // Проверяем статус ответа
+            if (res.status === 429) {
+                // Лимит исчерпан
+                showLimitError(data.message || 'Достигнут лимит запросов');
+
+                // Обновляем лимиты на фронтенде
+                remainingRequests = 0;
+                updateLimitsDisplay({
+                    is_guest: data.is_guest || isGuest,
+                    remaining: 0,
+                    limit: data.limit || totalLimit
                 });
 
-                const data = await res.json();
+                return;
+            }
 
-                if (data.success) {
-                    // Для голосового режима показываем текст и аудио
-                    if (voiceModeEnabled && data.audio) {
-                        addMessage('bot', data.text, data.audio.url);
-                    } else {
-                        // Для текстового режима показываем только текст
-                        addMessage('bot', data.text);
-                    }
+            if (!res.ok) {
+                // Другие ошибки сервера
+                throw new Error(data.message || `Ошибка сервера (${res.status})`);
+            }
+
+            if (data.success) {
+                // Успешный ответ
+                if (voiceModeEnabled && data.audio) {
+                    addMessage('bot', data.text, data.audio.url);
                 } else {
-                    addMessage('bot', data.error || 'Ошибка сервера');
+                    addMessage('bot', data.text);
                 }
-            } catch (err) {
-                console.error('Ошибка:', err);
-                addMessage('bot', 'Не удалось связаться с сервером 😢');
+
+                // Обновляем лимиты из ответа
+                if (data.limits) {
+                    updateLimitsDisplay({
+                        is_guest: data.limits.is_guest,
+                        remaining: data.limits.remaining,
+                        limit: data.limits.is_guest ? 5 : 20
+                    });
+                } else {
+                    // Если в ответе нет данных о лимитах, уменьшаем счетчик
+                    remainingRequests = Math.max(0, remainingRequests - 1);
+                    updateLimitsDisplay({
+                        is_guest: isGuest,
+                        remaining: remainingRequests,
+                        limit: totalLimit
+                    });
+                }
+            } else {
+                // Ошибка от сервера
+                throw new Error(data.message || 'Неизвестная ошибка');
+            }
+        } catch (err) {
+            console.error('Ошибка:', err);
+            hideTypingIndicator();
+            addMessage('error', err.message || 'Не удалось связаться с сервером 😢');
+        }
+    });
+
+    // Добавление сообщения в чат
+    function addMessage(sender, text, audioUrl = null) {
+        const msg = document.createElement('div');
+        msg.className = `message ${sender}`;
+
+        const time = new Date().toLocaleTimeString('ru-RU', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        let content = `<strong>${sender === 'user' ? 'Вы' : 'Nika'}</strong>`;
+        content += `<div style="margin-top: 5px;">${text.replace(/\n/g, '<br>')}</div>`;
+        content += `<div class="message-time">${time}</div>`;
+
+        msg.innerHTML = content;
+
+        if (audioUrl) {
+            const audio = document.createElement('audio');
+            audio.controls = true;
+            audio.src = audioUrl;
+            audio.style.marginTop = '10px';
+            msg.appendChild(audio);
+        }
+
+        messagesDiv.appendChild(msg);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    // Показать индикатор набора текста
+    function showTypingIndicator() {
+        if (typingIndicator) return;
+
+        typingIndicator = document.createElement('div');
+        typingIndicator.className = 'typing-indicator';
+        typingIndicator.innerHTML = `
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        `;
+
+        messagesDiv.appendChild(typingIndicator);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    // Скрыть индикатор набора текста
+    function hideTypingIndicator() {
+        if (typingIndicator) {
+            typingIndicator.remove();
+            typingIndicator = null;
+        }
+    }
+
+    // Показать ошибку лимита (в чате)
+    function showLimitError(message) {
+        addMessage('error', message);
+    }
+
+    // Показать модальное окно при исчерпании лимитов
+    function showLimitModal() {
+        // Создаем модальное окно
+        const modal = document.createElement('div');
+        modal.className = 'limit-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3>🚫 Лимит запросов</h3>
+                <p>${isGuest
+                    ? 'Вы использовали все бесплатные запросы. Зарегистрируйтесь, чтобы получить больше запросов!'
+                    : 'Вы использовали все дневные запросы. Попробуйте завтра или обновите ваш аккаунт.'}</p>
+                <div class="modal-actions">
+                    ${isGuest ? '<button class="btn-primary" id="register-modal-btn">Зарегистрироваться</button>' : ''}
+                    <button class="btn-secondary" id="close-modal-btn">Закрыть</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Обработчики кнопок
+        if (isGuest) {
+            modal.querySelector('#register-modal-btn').addEventListener('click', () => {
+                window.location.href = '/registration';
+            });
+        }
+
+        modal.querySelector('#close-modal-btn').addEventListener('click', () => {
+            modal.remove();
+        });
+
+        // Закрытие по клику на фон
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
             }
         });
 
-        function addMessage(sender, text, audioUrl = null) {
-            const msg = document.createElement('div');
-            msg.className = `message ${sender}`;
-            msg.innerHTML = `<strong>${sender === 'user' ? 'Ты' : 'Nika'}</strong>: ${text.replace(/\n/g, '<br>')}`;
-
-            if (audioUrl) {
-                const audio = document.createElement('audio');
-                audio.controls = true;
-                audio.src = audioUrl;
-                msg.appendChild(audio);
+        // Автоматическое закрытие через 10 секунд
+        setTimeout(() => {
+            if (modal.parentNode) {
+                modal.remove();
             }
+        }, 10000);
+    }
 
-            messagesDiv.appendChild(msg);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    // Обработка клавиатуры
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey && !sendBtn.disabled) {
+            e.preventDefault();
+            form.dispatchEvent(new Event('submit'));
         }
-    </script>
-</div>
+    });
+
+    // Обновить кнопки при изменении состояния
+    input.addEventListener('input', () => {
+        sendBtn.disabled = !input.value.trim() || remainingRequests <= 0;
+    });
+</script>
 </body>
 </html>

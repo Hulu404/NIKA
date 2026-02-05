@@ -3,7 +3,9 @@ from datetime import datetime
 import uuid
 import base64
 from pathlib import Path
-from flask import Blueprint, request, jsonify, current_app, send_file
+from flask import Blueprint, request, jsonify, current_app, send_file, session
+from flask_login import current_user
+from app.models.guest_manager import GuestManager
 
 
 # Импорты из services (после переноса логики)
@@ -12,31 +14,118 @@ from app.services.salute.salute_speech import speech_syntesis
 
 chat_v1 = Blueprint('chat_v1', __name__, url_prefix='/api/v1')
 
+
+@chat_v1.route('/limits', methods=['GET'])
+def get_limits():
+    """Получить текущие лимиты пользователя"""
+    is_guest = not current_user.is_authenticated
+    remaining_requests = 0
+    reset_info = None
+
+    if not is_guest:
+        # Для зарегистрированного пользователя
+        remaining_requests = current_user.get_remaining_requests()
+        reset_info = current_user.get_reset_info()
+        limit = current_user.daily_requests_limit
+    else:
+        # Для гостя
+        remaining_requests = GuestManager.get_remaining_requests()
+        reset_info = GuestManager.get_reset_info()
+        limit = GuestManager.GUEST_LIMIT
+
+    return jsonify({
+        "success": True,
+        "is_guest": is_guest,
+        "remaining": remaining_requests,
+        "limit": limit,
+        "reset_info": reset_info
+    })
+
+
 @chat_v1.route('/message-text-only', methods=['POST'])
 def text_only_message():
-    """Простой текстовый ответ без аудио"""
+    """Простой текстовый ответ без аудио с проверкой лимитов"""
     data = request.get_json(silent=True) or {}
     user_text = data.get('message', '').strip()
 
     if not user_text:
-        return jsonify({"error": "Сообщение пустое"}), 400
+        return jsonify({
+            "success": False,
+            "error": "Сообщение пустое"
+        }), 400
 
     print(f"[TEXT] ← {user_text[:100]}{'...' if len(user_text) > 100 else ''}")
 
+    # 1. ПРОВЕРКА ЛИМИТОВ
+    is_guest = not current_user.is_authenticated
+    remaining_requests = 0
+    reset_info = None
+
+    if not is_guest:
+        # Проверка для зарегистрированного пользователя
+        if not current_user.can_make_request():
+            reset_info = current_user.get_reset_info()
+            return jsonify({
+                "success": False,
+                "message": f"Достигнут дневной лимит запросов ({current_user.daily_requests_limit})",
+                "limit": current_user.daily_requests_limit,
+                "used": current_user.requests_today,
+                "remaining": 0,
+                "reset_info": reset_info,
+                "is_guest": False,
+                "error_type": "limit_exceeded"
+            }), 429
+    else:
+        # Проверка для гостя
+        if not GuestManager.can_make_request():
+            reset_info = GuestManager.get_reset_info()
+            return jsonify({
+                "success": False,
+                "message": "Использованы все бесплатные запросы. Зарегистрируйтесь для большего количества запросов.",
+                "limit": GuestManager.GUEST_LIMIT,
+                "used": session.get('guest_requests', 0),
+                "remaining": 0,
+                "reset_info": reset_info,
+                "is_guest": True,
+                "upgrade_url": "/registration",
+                "error_type": "guest_limit_exceeded"
+            }), 429
+
     try:
+        # 2. ОБРАБОТКА ЗАПРОСА К ИИ
         reply = response_gigachat(user_text)
         print(f"[TEXT] → {reply[:100]}{'...' if len(reply) > 100 else ''}")
+
+        # 3. УВЕЛИЧЕНИЕ СЧЕТЧИКА ЗАПРОСОВ
+        if not is_guest:
+            # Для зарегистрированного пользователя
+            current_user.increment_requests()
+            remaining_requests = current_user.get_remaining_requests()
+        else:
+            # Для гостя
+            GuestManager.increment_requests()
+            remaining_requests = GuestManager.get_remaining_requests()
+            # Получаем информацию о сбросе для гостя
+            reset_info = GuestManager.get_reset_info()
+
         return jsonify({
             "success": True,
-            "text": reply
+            "text": reply,
+            "limits": {
+                "remaining": remaining_requests,
+                "is_guest": is_guest,
+                "reset_info": reset_info
+            }
         })
+
     except Exception as e:
         print(f"[TEXT ERROR] {type(e).__name__}: {str(e)}")
+
+        # НЕ увеличиваем счетчик при ошибке ИИ
         return jsonify({
             "success": False,
-            "error": "Ошибка обработки запроса к ИИ"
+            "message": "Ошибка обработки запроса к ИИ"
         }), 503
-
 
 # Маршрут для отдачи аудиофайлов
 @chat_v1.route('/audio/<filename>')

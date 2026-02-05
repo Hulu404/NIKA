@@ -24,7 +24,6 @@ def start_guest():
         # Если пользователь уже авторизован, перенаправляем в чат
         print('пользователь авторизован')
         return redirect(url_for('main.chat'))
-    print('пользователь – гость')
     guest_id = GuestManager.get_guest_id()
     return redirect(url_for('main.chat', guest=True))
 

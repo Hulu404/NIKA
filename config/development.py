@@ -2,7 +2,7 @@ from pathlib import Path
 import os
 from datetime import timedelta
 
-basedir = Path(__file__).resolve().parent.parent.parent
+basedir = Path(__file__).resolve().parent.parent
 
 class DevelopmentConfig:
     DEBUG = True

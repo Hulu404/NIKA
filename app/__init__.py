@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from pathlib import Path
 from flask import Flask
 from flask_login import LoginManager
@@ -21,6 +22,14 @@ def create_app(config_name=None):
     app.config.from_object(get_config(config_name))
 
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'your-secret-key-here'
+
+    # Настройки сессий
+    PERMANENT_SESSION_LIFETIME = timedelta(days=31)  # Время жизни сессия
+    SESSION_PERMANENT = True  # Делаем все сессии постоянными по умолчанию
+    SESSION_COOKIE_NAME = 'nika_session'
+    SESSION_COOKIE_SECURE = False  # True для HTTPS в продакшене
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
 
     # Проверяем, что URI загрузился
     if not app.config.get("SQLALCHEMY_DATABASE_URI"):

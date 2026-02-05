@@ -29,6 +29,9 @@ class GuestManager:
         session['guest_next_reset'] = (datetime.now() + timedelta(hours=GuestManager.RESET_HOURS)).isoformat()
         session['guest_limit'] = GuestManager.GUEST_LIMIT
 
+        # Делаем сессию постоянной (будет храниться 31 день)
+        session.permanent = True
+
         print(f"🎫 Создан новый гость: {guest_id}")
         return guest_id
 
@@ -137,3 +140,4 @@ class GuestManager:
             'ip': request.remote_addr,
             'user_agent': request.user_agent.string if request.user_agent else None
         }
+
