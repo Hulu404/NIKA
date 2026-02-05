@@ -76,3 +76,15 @@ class User(db.Model, UserMixin):
             'remaining_seconds': max(0, int(remaining.total_seconds())),
             'formatted': f"{int(remaining.total_seconds() / 3600)}ч {int((remaining.total_seconds() % 3600) / 60)}м"
         }
+
+    def to_dict(self):
+        ''' Поддержка JSON '''
+        return {
+            'id': self.id,
+            'name': self.name,
+            'surname': self.surname,
+            'email': self.email,
+            'sex': self.sex,
+            'sport_type': self.sport_type,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }

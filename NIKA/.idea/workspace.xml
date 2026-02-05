@@ -4,17 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81e58e44-dce9-4fa0-ba3b-8dcb17ac5a20" name="Changes" comment="Новый вариант начальной страницы – прозрачные кнопки.&#10;В файле home.html есть другие варианты">
+    <list default="true" id="81e58e44-dce9-4fa0-ba3b-8dcb17ac5a20" name="Changes" comment="Начал делать лимиты. Пока готово для гостевого режима">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/../app/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/api/v1/chat.py" beforeDir="false" afterPath="$PROJECT_DIR$/../app/api/v1/chat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/models/guest_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/../app/models/guest_manager.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/../app/models/user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/services/gigachat/giga_text.py" beforeDir="false" afterPath="$PROJECT_DIR$/../app/services/gigachat/giga_text.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/templates/chat/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../app/templates/chat/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/templates/registration.html" beforeDir="false" afterPath="$PROJECT_DIR$/../app/templates/registration.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/views/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../app/views/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../config/development.py" beforeDir="false" afterPath="$PROJECT_DIR$/../config/development.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../instance/app.db" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -260,7 +256,15 @@
       <option name="project" value="LOCAL" />
       <updated>1770299101363</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Начал делать лимиты. Пока готово для гостевого режима">
+      <option name="closed" value="true" />
+      <created>1770305844420</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1770305844421</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -316,6 +320,7 @@
     <MESSAGE value="Исправил модель пользовательской дб для нашей регистрации" />
     <MESSAGE value="Исправил регистрацию: немного изменил html и JS, исправил создание приложения. Исправил инициацию бд. Теперь:&#10;1. При начале программы автоматически создается бд&#10;2. Проверка пользователя: регистрированные пользователи сразу перенапрявляются в чат" />
     <MESSAGE value="Новый вариант начальной страницы – прозрачные кнопки.&#10;В файле home.html есть другие варианты" />
-    <option name="LAST_COMMIT_MESSAGE" value="Новый вариант начальной страницы – прозрачные кнопки.&#10;В файле home.html есть другие варианты" />
+    <MESSAGE value="Начал делать лимиты. Пока готово для гостевого режима" />
+    <option name="LAST_COMMIT_MESSAGE" value="Начал делать лимиты. Пока готово для гостевого режима" />
   </component>
 </project>

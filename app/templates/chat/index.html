@@ -209,6 +209,32 @@
             opacity: 0.6;
         }
 
+        /* Стиль для гостей */
+        #voice-toggle.guest-disabled {
+            position: relative;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        #voice-toggle.guest-disabled::after {
+            content: "только для зарегистрированных";
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        #voice-toggle.guest-disabled:hover::after {
+            opacity: 1;
+        }
+
         /* Модальное окно лимитов */
         .limit-modal {
             position: fixed;
@@ -388,7 +414,7 @@
     // Переменные состояния
     let voiceModeEnabled = false;
     let isGuest = true;
-    let remainingRequests = 0;
+    let remainingRequests = 5;
     let totalLimit = 5;
     let typingIndicator = null;
 
@@ -399,6 +425,23 @@
 
         // Проверяем лимиты каждые 30 секунд
         setInterval(checkLimits, 30000);
+
+        // Если пользователь гость, показываем всплывающее сообщение о возможностях регистрации
+        setTimeout(() => {
+            if (isGuest && remainingRequests > 0) {
+                const tip = document.createElement('div');
+                tip.className = 'message bot';
+                tip.innerHTML = `
+                    <strong>Nika</strong>
+                    <div style="margin-top: 5px;">
+                        💡 <strong>Совет:</strong> Зарегистрируйтесь, чтобы получить больше запросов и доступ к голосовым ответам!
+                        <br><small>Нажмите на кнопку "Зарегистрироваться" выше</small>
+                    </div>
+                `;
+                messagesDiv.appendChild(tip);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+        }, 3000);
 
         // Фокус на поле ввода если оно не заблокировано
         if (!input.disabled) {
@@ -446,7 +489,7 @@
 
         isGuest = limitsData.is_guest;
         remainingRequests = limitsData.remaining || 0;
-        totalLimit = limitsData.limit || (isGuest ? 5 : 20);
+        totalLimit = limitsData.limit || (isGuest ? 5 : 10);
 
         // Обновляем счетчик
         requestsCount.textContent = `${remainingRequests}/${totalLimit}`;
@@ -468,19 +511,56 @@
         // Обновляем тип пользователя
         userType.textContent = isGuest ? '👤 Гость' : '👤 Пользователь';
 
-        // Обновляем кнопку апгрейда (показываем только для гостей)
+        // Обновляем кнопку апгрейда
         const upgradeBtn = limitsContent.querySelector('.upgrade-btn');
-        if (isGuest && remainingRequests <= 0) {
+        if (isGuest) {
             upgradeBtn.style.display = 'block';
         } else {
             upgradeBtn.style.display = 'none';
         }
 
+        // Обновляем состояние кнопки голосового режима
+        updateVoiceToggleState();
+
         // Обновляем состояние поля ввода
         updateInputState();
 
-        // Обновляем состояние кнопок
-        updateButtonsState();
+        // Обновляем состояние кнопки отправки
+        updateSendButtonState();
+    }
+
+    // Функция обновления состояния кнопки голосового режима
+    function updateVoiceToggleState() {
+        if (isGuest) {
+            // Для гостей добавляем специальный класс и tooltip
+            voiceToggle.classList.add('guest-disabled');
+            voiceToggle.title = 'Голосовой режим доступен только для зарегистрированных пользователей';
+            voiceToggle.disabled = true;
+            voiceToggle.style.cursor = 'not-allowed';
+        } else {
+            // Для зарегистрированных пользователей
+            voiceToggle.classList.remove('guest-disabled');
+            voiceToggle.title = '';
+            voiceToggle.disabled = remainingRequests <= 0;
+            voiceToggle.style.cursor = remainingRequests <= 0 ? 'not-allowed' : 'pointer';
+
+            if (remainingRequests <= 0) {
+                voiceToggle.classList.remove('active');
+                voiceModeEnabled = false;
+                voiceToggle.innerHTML = '🎤 Голосовой';
+            }
+        }
+    }
+
+    // Функция обновления состояния кнопки отправки
+    function updateSendButtonState() {
+        if (remainingRequests <= 0) {
+            sendBtn.disabled = true;
+            sendBtn.title = isGuest ? 'Зарегистрируйтесь для продолжения' : 'Дневной лимит исчерпан';
+        } else {
+            sendBtn.disabled = false;
+            sendBtn.title = 'Отправить сообщение';
+        }
     }
 
     // Показать ошибку в виджете лимитов
@@ -531,23 +611,21 @@
         }
     }
 
-    // Обновление состояния кнопок
-    function updateButtonsState() {
-        if (remainingRequests <= 0) {
-            sendBtn.disabled = true;
-            voiceToggle.disabled = true;
-            voiceToggle.classList.add('disabled');
-        } else {
-            sendBtn.disabled = false;
-            voiceToggle.disabled = false;
-            voiceToggle.classList.remove('disabled');
-        }
-    }
-
-    // Обработчик голосового режима
+    // Обновленный обработчик голосового режима
     voiceToggle.addEventListener('click', () => {
-        if (remainingRequests <= 0 || voiceToggle.disabled) return;
+        // Если пользователь гость - показываем сообщение о необходимости регистрации
+        if (isGuest) {
+            showRegistrationModal();
+            return;
+        }
 
+        // Если лимиты исчерпаны - показываем сообщение
+        if (remainingRequests <= 0) {
+            showLimitModal();
+            return;
+        }
+
+        // Только для авторизованных пользователей с доступными лимитами
         voiceModeEnabled = !voiceModeEnabled;
 
         if (voiceModeEnabled) {
@@ -564,12 +642,20 @@
         e.preventDefault();
         const text = input.value.trim();
 
-        // Проверяем лимиты перед отправкой
+        // Проверяем лимиты
         if (!text || remainingRequests <= 0) {
             if (remainingRequests <= 0) {
                 showLimitModal();
             }
             return;
+        }
+
+        // Если голосовой режим включен, но пользователь гость - выключаем его
+        if (voiceModeEnabled && isGuest) {
+            voiceModeEnabled = false;
+            voiceToggle.classList.remove('active');
+            voiceToggle.innerHTML = '🎤 Голосовой';
+            showRegistrationModal();
         }
 
         // Показываем сообщение пользователя
@@ -643,7 +729,7 @@
                     updateLimitsDisplay({
                         is_guest: data.limits.is_guest,
                         remaining: data.limits.remaining,
-                        limit: data.limits.is_guest ? 5 : 20
+                        limit: data.limits.is_guest ? 5 : 10
                     });
                 } else {
                     // Если в ответе нет данных о лимитах, уменьшаем счетчик
@@ -664,6 +750,54 @@
             addMessage('error', err.message || 'Не удалось связаться с сервером 😢');
         }
     });
+
+    // Функция показа модального окна регистрации для гостей
+    function showRegistrationModal() {
+        const modal = document.createElement('div');
+        modal.className = 'limit-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3>🎤 Голосовой режим</h3>
+                <p>Голосовой режим доступен только для зарегистрированных пользователей.</p>
+                <p>Зарегистрируйтесь, чтобы получить:</p>
+                <ul style="text-align: left; margin: 15px 0; padding-left: 20px;">
+                    <li>Голосовые ответы от Nika</li>
+                    <li>Больше запросов (10+ вместо 5)</li>
+                    <li>Историю чатов</li>
+                    <li>Дополнительные функции</li>
+                </ul>
+                <div class="modal-actions">
+                    <button class="btn-primary" id="register-now-btn">Зарегистрироваться сейчас</button>
+                    <button class="btn-secondary" id="close-modal-btn">Продолжить как гость</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Обработчики кнопок
+        modal.querySelector('#register-now-btn').addEventListener('click', () => {
+            window.location.href = '/registration';
+        });
+
+        modal.querySelector('#close-modal-btn').addEventListener('click', () => {
+            modal.remove();
+        });
+
+        // Закрытие по клику на фон
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+
+        // Автоматическое закрытие через 15 секунд
+        setTimeout(() => {
+            if (modal.parentNode) {
+                modal.remove();
+            }
+        }, 15000);
+    }
 
     // Добавление сообщения в чат
     function addMessage(sender, text, audioUrl = null) {

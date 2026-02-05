@@ -158,18 +158,42 @@ def serve_audio(filename):
 
 @chat_v1.route('/message-with-audio', methods=['POST'])
 def message_with_voice():
-    """Текст + синтез речи (основной эндпоинт для голосового чата)"""
+    """Голосовой ответ (только для авторизованных пользователей)"""
+    # 1. ПРОВЕРКА АВТОРИЗАЦИИ
+    if not current_user.is_authenticated:
+        return jsonify({
+            "success": False,
+            "message": "Голосовой режим доступен только для зарегистрированных пользователей",
+            "error_type": "authentication_required"
+        }), 403
+
     data = request.get_json(silent=True) or {}
     user_text = data.get('message', '').strip()
 
     if not user_text:
-        return jsonify({"error": "Сообщение пустое"}), 400
+        return jsonify({"success": False, "error": "Сообщение пустое"}), 400
 
     print(f"[AUDIO] ← {user_text[:100]}{'...' if len(user_text) > 100 else ''}")
 
+    # 2. ПРОВЕРКА ЛИМИТОВ ДЛЯ ЗАРЕГИСТРИРОВАННОГО ПОЛЬЗОВАТЕЛЯ
+    if not current_user.can_make_request():
+        reset_info = current_user.get_reset_info() if hasattr(current_user, 'get_reset_info') else None
+        return jsonify({
+            "success": False,
+            "message": f"Достигнут дневной лимит запросов ({current_user.daily_requests_limit})",
+            "limit": current_user.daily_requests_limit,
+            "used": current_user.requests_today,
+            "remaining": 0,
+            "reset_info": reset_info,
+            "is_guest": False,
+            "error_type": "limit_exceeded"
+        }), 429
+
     try:
+        # 3. ОБРАБОТКА ЗАПРОСА К ИИ
         text_reply = response_gigachat(user_text)
 
+        # 4. СИНТЕЗ РЕЧИ
         audio_result = speech_syntesis(text_reply)
         if not audio_result or 'audio_bytes' not in audio_result:
             raise ValueError("Синтез речи не вернул аудио")
@@ -188,6 +212,12 @@ def message_with_voice():
         audio_path.write_bytes(audio_bytes)
         print(f"[AUDIO SAVED] {filename} ({len(audio_bytes):,} байт)")
 
+        # 5. УВЕЛИЧЕНИЕ СЧЕТЧИКА ЗАПРОСОВ
+        current_user.increment_requests()
+        remaining_requests = current_user.get_remaining_requests()
+        reset_info = current_user.get_reset_info() if hasattr(current_user, 'get_reset_info') else None
+
+        # 6. ВОЗВРАТ ОТВЕТА
         audio_base64 = base64.b64encode(audio_bytes).decode('utf-8')
 
         return jsonify({
@@ -195,9 +225,14 @@ def message_with_voice():
             "text": text_reply,
             "audio": {
                 "base64": audio_base64,  # для быстрого воспроизведения
-                "url": f"/api/v1/audio/{filename}",  # Изменено на /api/v1/audio/
+                "url": f"/api/v1/audio/{filename}",
                 "format": audio_format,
                 "size_bytes": len(audio_bytes)
+            },
+            "limits": {
+                "remaining": remaining_requests,
+                "is_guest": False,
+                "reset_info": reset_info
             },
             "meta": {
                 "message_id": audio_id,
@@ -211,8 +246,9 @@ def message_with_voice():
         fallback_text = text_reply if 'text_reply' in locals() else "Ошибка"
         return jsonify({
             "success": False,
-            "error": str(e)[:120],
-            "fallback_text": fallback_text
+            "message": "Ошибка при обработке голосового запроса",
+            "fallback_text": fallback_text,
+            "error": str(e)[:120]
         }), 500
 
 @chat_v1.route('/health', methods=['GET'])

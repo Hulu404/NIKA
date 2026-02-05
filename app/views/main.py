@@ -84,26 +84,55 @@ def registration():
         return redirect(url_for('main.chat'))
 
     if request.method == 'POST':
-        # Получаем данные из формы
-        name = request.form.get('name')
-        surname = request.form.get('surname')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
-        sex = request.form.get('sex')
-        sport_type = request.form.get('sport_type')
+        # Проверяем формат запроса (form или json)
+        is_json = request.is_json or request.headers.get('Content-Type') == 'application/json'
+
+        if is_json:
+            # Данные приходят в JSON формате (от новой формы)
+            data = request.get_json()
+            name = data.get('name')
+            surname = data.get('surname')
+            email = data.get('email')
+            password = data.get('password')
+            gender = data.get('gender')
+            sport_type = data.get('sport_type')
+        else:
+            # Данные приходят из формы (старый формат)
+            name = request.form.get('name')
+            surname = request.form.get('surname')
+            email = request.form.get('email')
+            password = request.form.get('password')
+            confirm_password = request.form.get('confirm_password')
+            gender = request.form.get('gender')
+            sport_type = request.form.get('sport_type')
 
         # Валидация
         errors = []
 
-        if not all([name, surname, email, password, sex]):
-            errors.append('Все обязательные поля должны быть заполнены')
+        # Проверяем обязательные поля
+        if not name:
+            errors.append('Имя обязательно для заполнения')
+        if not surname:
+            errors.append('Фамилия обязательна для заполнения')
+        if not email:
+            errors.append('Email обязателен для заполнения')
+        if not password:
+            errors.append('Пароль обязателен для заполнения')
+        if not gender:
+            errors.append('Пол обязателен для выбора')
 
-        if password != confirm_password:
-            errors.append('Пароли не совпадают')
+        # Проверяем email
+        if email and not validate_email_format(email):
+            errors.append('Некорректный формат email')
 
-        # if len(password) < 6:
-        #     errors.append('Пароль должен быть не менее 6 символов')
+        # Проверяем пароль (только для формы, не для JSON)
+        if not is_json and password and confirm_password:
+            if password != confirm_password:
+                errors.append('Пароли не совпадают')
+
+        # Проверяем длину пароля
+        if password and len(password) < 6:
+            errors.append('Пароль должен быть не менее 6 символов')
 
         # Проверяем, существует ли пользователь с таким email
         existing_user = User.query.filter_by(email=email).first()
@@ -111,13 +140,20 @@ def registration():
             errors.append('Пользователь с таким email уже существует')
 
         if errors:
-            if request.is_json or request.headers.get('Content-Type') == 'application/json':
-                return jsonify({'success': False, 'errors': errors}), 400
+            if is_json:
+                return jsonify({
+                    'success': False,
+                    'message': errors[0],
+                    'errors': errors
+                }), 400
             for error in errors:
                 flash(error, 'error')
             return render_template('registration.html')
 
         try:
+            # Преобразуем gender в sex для модели
+            sex = 'female' if gender == 'female' else 'male'
+
             # Создаем нового пользователя
             user = User(
                 name=name,
@@ -132,9 +168,9 @@ def registration():
             db.session.commit()
 
             # Автоматически логиним пользователя после регистрации
-            login_user(user)
+            login_user(user, remember=True)
 
-            if request.is_json or request.headers.get('Content-Type') == 'application/json':
+            if is_json:
                 return jsonify({
                     'success': True,
                     'message': 'Регистрация успешна',
@@ -147,8 +183,22 @@ def registration():
         except Exception as e:
             db.session.rollback()
             error_msg = f'Ошибка при регистрации: {str(e)}'
-            if request.is_json or request.headers.get('Content-Type') == 'application/json':
-                return jsonify({'success': False, 'errors': [error_msg]}), 500
+
+            if is_json:
+                return jsonify({
+                    'success': False,
+                    'message': error_msg,
+                    'errors': [error_msg]
+                }), 500
+
             flash(error_msg, 'error')
+            return render_template('registration.html')
 
     return render_template('registration.html')
+
+
+def validate_email_format(email):
+    """Проверка формата email"""
+    import re
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
