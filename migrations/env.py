@@ -15,6 +15,9 @@ from app.extensions import db
 
 config = context.config
 
+flask_app = create_app()
+target_metadata = flask_app.extensions['sqlalchemy'].db.metadata
+
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 

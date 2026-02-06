@@ -6,7 +6,7 @@ from flask_login import LoginManager
 from flask_jwt_extended import JWTManager
 from config import get_config
 # Импортируем расширения
-from .extensions import db
+from app.extensions import db
 
 
 def create_app(config_name=None):

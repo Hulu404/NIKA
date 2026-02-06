@@ -5,7 +5,12 @@ import base64
 from pathlib import Path
 from flask import Blueprint, request, jsonify, current_app, send_file, session
 from flask_login import current_user
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models.guest_manager import GuestManager
+from app.models.message import Message
+from app.extensions import db
+from flask import request
+from sqlalchemy import desc
 
 
 # Импорты из services (после переноса логики)
@@ -157,8 +162,11 @@ def serve_audio(filename):
 
 
 @chat_v1.route('/message-with-audio', methods=['POST'])
+@jwt_required()
 def message_with_voice():
     """Голосовой ответ (только для авторизованных пользователей)"""
+    user_id = get_jwt_identity() # ID текущего пользователя из токена
+
     # 1. ПРОВЕРКА АВТОРИЗАЦИИ
     if not current_user.is_authenticated:
         return jsonify({
@@ -220,6 +228,22 @@ def message_with_voice():
         # 6. ВОЗВРАТ ОТВЕТА
         audio_base64 = base64.b64encode(audio_bytes).decode('utf-8')
 
+        # Сохраняем сообщение пользователя
+        user_msg = Message(
+            user_id=user_id,
+            role="user",
+            content=user_text
+        )
+        db.session.add(user_msg)
+
+        bot_msg = Message(
+            user_id=user_id,
+            role="assistant",
+            content=text_reply
+        )
+        db.session.add(bot_msg)
+        db.session.commit()
+
         return jsonify({
             "success": True,
             "text": text_reply,
@@ -255,3 +279,33 @@ def message_with_voice():
 def health_check():
     """Простой эндпоинт для проверки живости API"""
     return jsonify({"status": "ok", "mode": current_app.config.get('ENV', 'unknown')})
+
+
+@chat_v1.get("/history")
+@jwt_required()
+def get_chat_history():
+    user_id = get_jwt_identity()
+
+    # Параметры пагинации
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 20, type=int)
+
+    # Запрос: только сообщения текущего пользователя, сортировка по времени (новые сверху)
+    pagination = Message.query.filter_by(user_id=user_id) \
+        .order_by(desc(Message.created_at)) \
+        .paginate(page=page, per_page=per_page, error_out=False)
+
+    messages = [msg.to_dict() for msg in pagination.items]
+
+    return jsonify({
+        "success": True,
+        "messages": messages,
+        "pagination": {
+            "total": pagination.total,
+            "pages": pagination.pages,
+            "current_page": pagination.page,
+            "per_page": pagination.per_page,
+            "has_next": pagination.has_next,
+            "has_prev": pagination.has_prev
+        }
+    })
