@@ -2,11 +2,13 @@ from flask import Flask
 from config import get_config
 from pathlib import Path
 import os
+from flask_cors import CORS
 from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager
 
 # Импортируем расширения
 from .extensions import db
+
 
 def create_app(config_name=None):
     load_dotenv()  # если используешь .env
@@ -15,6 +17,8 @@ def create_app(config_name=None):
                 instance_relative_config=False,
                 static_folder="../static",
                 template_folder="templates")
+
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     # 1. Загружаем конфигурацию (это должно быть в самом начале)
     config_name = config_name or os.environ.get("FLASK_CONFIG", "development")
