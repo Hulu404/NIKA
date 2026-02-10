@@ -1,5 +1,6 @@
 import { Plus, Clock, Search, Settings, LogOut, ChevronLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { NavLink} from 'react-router';
 
 interface ChatSidebarProps {
   isOpen: boolean;
@@ -18,8 +19,8 @@ const MENU_ITEMS = [
   { label: 'Трекер прогресса', badge: 'Новое' },
   { label: 'Упражнения', badge: null },
   { label: 'Дневник питания', badge: null },
-  { label: 'FAQs', badge: null },
 ];
+
 
 export function ChatSidebar({ isOpen, onToggle, onNewChat }: ChatSidebarProps) {
   return (
@@ -140,6 +141,22 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat }: ChatSidebarProps) {
                       )}
                     </motion.button>
                   ))}
+                  <nav>
+                    <NavLink to='/FAQ' className={({isActive}) => isActive ? 'active' : ''}>
+                      <motion.button
+                        key={'FAQs'}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: (RECENT_CHATS.length + 3) * 0.05 }}
+                        whileHover={{ x: 4 }}
+                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
+                      >
+                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
+                          {'FAQs'}
+                        </span>
+                      </motion.button>
+                    </NavLink>
+                  </nav>
                 </div>
               </div>
             </div>
