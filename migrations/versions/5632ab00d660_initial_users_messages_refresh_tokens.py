@@ -1,8 +1,8 @@
-"""add session_id
+"""initial: users messages refresh_tokens
 
-Revision ID: f4d4e54bf1ea
-Revises: be5c68e3e658
-Create Date: 2026-02-07 14:11:30.141461
+Revision ID: 5632ab00d660
+Revises: 
+Create Date: 2026-02-11 18:34:03.216730
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'f4d4e54bf1ea'
-down_revision: Union[str, Sequence[str], None] = 'be5c68e3e658'
+revision: str = '5632ab00d660'
+down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

@@ -1,8 +1,8 @@
 """add session_id to messages
 
-Revision ID: 1532d3d17368
-Revises: f4d4e54bf1ea
-Create Date: 2026-02-07 14:12:09.758748
+Revision ID: 044680e2b0cc
+Revises: 5632ab00d660
+Create Date: 2026-02-11 18:35:13.707445
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '1532d3d17368'
-down_revision: Union[str, Sequence[str], None] = 'f4d4e54bf1ea'
+revision: str = '044680e2b0cc'
+down_revision: Union[str, Sequence[str], None] = '5632ab00d660'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
