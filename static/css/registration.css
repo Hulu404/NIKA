@@ -1,0 +1,163 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 14px;
+}
+
+.registration_page {
+  width: 100%;
+  height: 100%;
+  background: url("../images/background_main.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  overflow: hidden;
+}
+
+.registration_window {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255,255,255,0.00);
+  backdrop-filter: blur(1.5px);
+  opacity: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.registration_faq_link {
+  margin-top: 10px;
+  color: rgba(255,255,255,1);
+  font-family: Manrope;
+  font-weight: Regular;
+  font-size: 13px;
+  opacity: 1;
+  text-align: left;
+}
+
+.login_link {
+  margin-top: 53px;
+  color: rgba(255,255,255,1);
+  font-family: Manrope;
+  font-weight: Regular;
+  font-size: 30px;
+  opacity: 1;
+  text-align: left;
+}
+
+.registration_header {
+  margin-top: 123px;
+  color: rgba(255,255,255,1);
+  font-family: Manrope;
+  font-weight: Bold;
+  font-size: 50px;
+  opacity: 1;
+  text-align: left;
+}
+
+.registration_input {
+  margin-top: 22px;
+  width: 337px;
+  height: 69px;
+  background: rgba(217,217,217,0.20000000298023224);
+  backdrop-filter: blur(2.5px);
+  color: #ffffff;
+  padding: 29px;
+  opacity: 1;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+  overflow: hidden;
+  font-family: Manrope;
+  font-weight: SemiBold;
+  font-size: 20px;
+
+}
+
+.registration_input:focus::placeholder {
+  color: transparent;
+}
+
+::placeholder {
+  color: #ffffff; 
+  opacity: 1;
+  
+}
+
+.registration_form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.registration_form_wrapper {
+    margin-top: 22px;
+    display: flex;
+    height: 69px;
+}
+
+.registration_input_sport {
+    margin-top: 0;
+    margin-left: 15px;
+}
+
+.sex_check {
+    width: 58px;
+    background: rgba(217,217,217,0.20000000298023224);
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+    color: #ffffff;
+    font-size: 20px;
+    font-family: Manrope;
+    font-weight: SemiBold;
+    appearance: none;
+    margin-left: 15px;
+}
+
+.sex_check input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  display: block;
+  padding-top: 20px;
+  padding-left: 21px;
+  padding-bottom: 21px;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+}
+
+.sex_check-checked {
+    width: 58px;
+    background: rgba(217,217,217,0.27);
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+    color: #ffffff;
+    font-size: 20px;
+    font-family: Manrope;
+    font-weight: SemiBold;
+    appearance: none;
+    margin-left: 15px;
+}
+
+.checkbox {
+  display: none;
+}

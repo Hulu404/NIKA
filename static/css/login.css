@@ -1,0 +1,111 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 14px;
+}
+
+.login_page {
+  width: 100%;
+  height: 100%;
+  background: url("../images/background_main.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  overflow: hidden;
+}
+
+.login_window {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255,255,255,0.00);
+  backdrop-filter: blur(1.5px);
+  opacity: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login_faq_link {
+  margin-top: 200px;
+  width: 32px;
+  color: rgba(255,255,255,1);
+  font-family: Manrope;
+  font-weight: Regular;
+  font-size: 13px;
+  opacity: 1;
+  text-align: left;
+}
+
+.login_header {
+  margin-top: 257px;
+  width: 153px;
+  color: rgba(255,255,255,1);
+  font-family: Manrope;
+  font-weight: Bold;
+  font-size: 50px;
+  opacity: 1;
+  text-align: left;
+}
+
+.login_email_input {
+  margin-top: 22px;
+  width: 337px;
+  height: 69px;
+  background: rgba(217,217,217,0.20000000298023224);
+  color: #ffffff;
+  padding: 29px;
+  opacity: 1;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+  overflow: hidden;
+  font-family: Manrope;
+  font-weight: SemiBold;
+  font-size: 20px;
+
+}
+
+.login_email_input:focus::placeholder {
+  color: transparent;
+}
+
+.login_password_input {
+  margin-top: 22px;
+  width: 337px;
+  height: 69px;
+  background: rgba(217,217,217,0.2);
+  color: #ffffff;
+  padding: 29px;
+  opacity: 1;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+  overflow: hidden;
+  font-family: Manrope;
+  font-weight: SemiBold;
+  font-size: 20px;
+}
+
+.login_password_input:focus::placeholder {
+  color: transparent;
+}
+
+::placeholder {
+  color: #ffffff; 
+  opacity: 1;
+  
+}
+
+.login_form {
+  display: flex;
+  flex-direction: column;
+}
