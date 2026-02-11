@@ -9,7 +9,6 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models.guest_manager import GuestManager
 from app.models.message import Message
 from app.extensions import db
-from flask import request
 from sqlalchemy import desc
 
 
@@ -309,4 +308,43 @@ def get_chat_history():
             "has_next": pagination.has_next,
             "has_prev": pagination.has_prev
         }
+    })
+
+@chat_v1.get("/sessions")
+@jwt_required()
+def get_session():
+    user_id = get_jwt_identity()
+
+    session = (
+        db.session.query(
+            Message.session_id,
+            db.fucn.max(Message.created_at).label("last_message_at"),
+            db.func.count(Message.id).label("message_count")
+        )
+        .filter_by(user_id=user_id)
+        .group_by(Message.session_id)
+        .order_by(db.desc("last_message_at"))
+        .all()
+    )
+
+    result = []
+    for s in session:
+        last_msg = (
+            Message.query.filter_by(user_id, session_id=s.session_id)
+            .order_by(db.desc(Message.created_at))
+            .first()
+        )
+
+        preview = last_msg.content[:120] + "..." if last_msg else None
+
+        result.append({
+            "session_id": s.session_id,
+            "last_message_at": s.last_message_at.isoformat() if s.last_message_at else None,
+            "preview": preview,
+            "message_count": s.message_count
+        })
+
+    return jsonify({
+        "success": True,
+        "session": result
     })
