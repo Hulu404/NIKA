@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Black">
-    <option name="sdkName" value="Python 3.13 (NIKA)" />
+    <option name="sdkName" value="Python 3.12 (NIKA)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 virtualenv at D:\projects_X\Data_analysis_03_ITS.ID_1549196-1\env" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (NIKA)" project-jdk-type="Python SDK" />
+======
 </project>
