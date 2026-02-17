@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 
-basedir = Path(__file__).resolve().parent.parent.parent
+basedir = Path(__file__).resolve().parent.parent
 
 
 class BaseConfig:
