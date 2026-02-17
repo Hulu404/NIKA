@@ -1,14 +1,10 @@
 # app/models/__init__.py
-
-from app.models.chat import Message
-# from . import User
-# from .session import Session
+from .chat import Message
 from .refresh_token import RefreshToken
-# добавь другие модели, если есть
+from .user import User  # Добавлено
 
 __all__ = [
     'Message',
-    # 'User',
-    # 'Session',
     'RefreshToken',
+    'User',
 ]

@@ -5,6 +5,7 @@ import os
 from flask_cors import CORS
 from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager
+from models.user import User
 
 # Импортируем расширения
 from .extensions import db
@@ -38,6 +39,11 @@ def create_app(config_name=None):
 
     # Инициализация JWT после загрузки конфига
     jwt = JWTManager(app)
+
+    @jwt.user_lookup_loader
+    def user_lookup_callback(_jwt_header, jwt_data):
+        identity = jwt_data["sub"]
+        return User.query.get(identity)
 
     # Защита от отозванных токенов (опционально, но рекомендуется)
     @jwt.token_in_blocklist_loader
@@ -75,10 +81,12 @@ def create_app(config_name=None):
     from .views.main import main_bp
     from .api.v1.chat import chat_v1
     from .api.audio import audio_bp
+    from .api.auth import auth_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(chat_v1, url_prefix="/api/v1")
     app.register_blueprint(audio_bp, url_prefix="/api")
+    app.register_blueprint(auth_bp)
 
     # Для удобства в shell
     @app.shell_context_processor
