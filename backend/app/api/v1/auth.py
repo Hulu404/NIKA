@@ -6,8 +6,9 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity,
     get_jwt,
-    jwt_refresh_token_required
 )
+from flask_jwt_extended import jwt_required
+
 from datetime import datetime, timedelta
 from app.extensions import db
 from app.models.user import User
@@ -108,7 +109,7 @@ def login():
 
 
 @auth_bp.post("/refresh")
-@jwt_refresh_token_required
+@jwt_required(refresh=True)
 def refresh():
     """Обновление access-токена по refresh-токену"""
     user_id = get_jwt_identity()
@@ -125,7 +126,7 @@ def refresh():
 
 
 @auth_bp.post("/logout")
-@jwt_refresh_token_required
+@jwt_required(refresh=True)
 def logout():
     """Выход — отзыв refresh-токена"""
     jti = get_jwt()["jti"]
@@ -139,7 +140,7 @@ def logout():
 
 
 @auth_bp.get("/profile")
-@jwt_required()
+@jwt_required(refresh=True)
 def profile():
     """Пример защищённого маршрута — профиль текущего пользователя"""
     user_id = get_jwt_identity()

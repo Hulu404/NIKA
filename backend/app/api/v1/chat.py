@@ -14,7 +14,7 @@ from sqlalchemy import desc
 
 # Импорты из services (после переноса логики)
 from app.services.gigachat.giga_text import response_gigachat
-from backend.app.services.salute.salute_speech import speech_syntesis
+from app.services.salute.salute_speech import speech_syntesis
 
 chat_v1 = Blueprint('chat_v1', __name__, url_prefix='/api/v1')
 
