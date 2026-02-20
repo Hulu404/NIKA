@@ -16,6 +16,9 @@ import LoginPage from './pages/Login/LoginPage';
 
 // Стили
 import './index.css'; // или './global.css'
+import Profile from './pages/Profile/Profile';
+import EmotionTracker from './pages/EmotionTracker/emotion-tracker';
+import FoodTracker from './pages/Diet/food-tracker';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -28,6 +31,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/connection-error" element={<ConnectionError />} />
         <Route path="/registration" element={<RegistrationPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path='/profile' element={<Profile />} />
+        <Route path='/emotion-tracker' element={<EmotionTracker />} />
+        <Route path='/food-tracker' element={<FoodTracker />} />
       </Routes>
     </BrowserRouter>
 

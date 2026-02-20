@@ -15,11 +15,6 @@ const RECENT_CHATS = [
   { id: '4', title: 'Восстановление после бега', time: '2 дня назад' },
 ];
 
-const MENU_ITEMS = [
-  { label: 'Трекер прогресса', badge: 'Новое' },
-  { label: 'Упражнения', badge: null },
-  { label: 'Дневник питания', badge: null },
-];
 
 
 export function ChatSidebar({ isOpen, onToggle, onNewChat }: ChatSidebarProps) {
@@ -122,26 +117,48 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat }: ChatSidebarProps) {
                   <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Меню</h3>
                 </div>
                 <div className="space-y-1">
-                  {MENU_ITEMS.map((item, index) => (
-                    <motion.button
-                      key={item.label}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: (RECENT_CHATS.length + index) * 0.05 }}
-                      whileHover={{ x: 4 }}
-                      className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
-                    >
-                      <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
-                        {item.label}
-                      </span>
-                      {item.badge && (
-                        <span className="text-xs bg-[#f6b044]/20 text-[#f6b044] px-2 py-0.5 rounded-full font-semibold">
-                          {item.badge}
+                    <NavLink to='/emotion-tracker' className={({isActive}) => isActive ? 'active' : ''}>
+                      <motion.button
+                        key={'Дневник эмоций'}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: (RECENT_CHATS.length + 2) * 0.05 }}
+                        whileHover={{ x: 4 }}
+                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
+                      >
+                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
+                          {'Дневник эмоций'}
                         </span>
-                      )}
-                    </motion.button>
-                  ))}
-                  <nav>
+                      </motion.button>
+                    </NavLink>
+                    <NavLink to='/food-tracker' className={({isActive}) => isActive ? 'active' : ''}>
+                      <motion.button
+                        key={'Дневник питания'}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: (RECENT_CHATS.length + 2) * 0.05 }}
+                        whileHover={{ x: 4 }}
+                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
+                      >
+                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
+                          {'Трекер питания'}
+                        </span>
+                      </motion.button>
+                    </NavLink>
+                    <NavLink to='/profile' className={({isActive}) => isActive ? 'active' : ''}>
+                      <motion.button
+                        key={'Профиль'}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: (RECENT_CHATS.length + 2) * 0.05 }}
+                        whileHover={{ x: 4 }}
+                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
+                      >
+                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
+                          {'Профиль'}
+                        </span>
+                      </motion.button>
+                    </NavLink>
                     <NavLink to='/FAQ' className={({isActive}) => isActive ? 'active' : ''}>
                       <motion.button
                         key={'FAQs'}
@@ -156,7 +173,6 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat }: ChatSidebarProps) {
                         </span>
                       </motion.button>
                     </NavLink>
-                  </nav>
                 </div>
               </div>
             </div>
