@@ -49,55 +49,54 @@ export default function ChatPage() {
     }
   };
 
-  const sendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || loading) return;
+const sendMessage = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!input.trim() || loading) return;
 
-    const userMessage = { role: 'user', content: input };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput('');
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      const res = await fetch('/api/v1/chat/send', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-        },
-        body: JSON.stringify({ message: input, session_id: sessionId }),
-      });
+  try {
+    const res = await fetch('/api/v1/chat/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+      },
+      body: JSON.stringify({
+        message: input,
+        with_audio: true,  // или false для текста
+      }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.error || 'Ошибка отправки');
-      }
-
-      // Сохраняем session_id, если бэкенд вернул новый
-      if (data.session_id) {
-        setSessionId(data.session_id);
-        localStorage.setItem('chat_session_id', data.session_id);
-      }
-
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: data.reply },
-      ]);
-
-      // Воспроизведение аудио (если бэкенд возвращает base64)
-      if (data.audio_base64) {
-        const audio = new Audio(`data:audio/mp3;base64,${data.audio_base64}`);
-        audio.play().catch((e) => console.error('Ошибка воспроизведения:', e));
-      }
-
-      scrollToBottom();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+    if (!data.success) {
+      throw new Error(data.error);
     }
-  };
+
+    setMessages((prev) => [
+      ...prev,
+      { role: 'user', content: input },
+      { role: 'assistant', content: data.reply },
+    ]);
+
+    if (data.audio_base64) {
+      const audio = new Audio(`data:audio/mp3;base64,${data.audio_base64}`);
+      audio.play();
+    }
+
+    // Обновляем лимиты (если фронт их отображает)
+    console.log(data.limit_info);
+
+    scrollToBottom();
+  } catch (e) {
+    console.error(e);
+    // Покажи тост или ошибку
+  } finally {
+    setLoading(false);
+    setInput('');
+  }
+};
 
   const scrollToBottom = () => {
     setTimeout(() => {
