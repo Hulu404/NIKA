@@ -16,6 +16,7 @@ export default function ChatPage() {
       return;
     }
 
+    // Загрузка истории чата (если уже есть)
     loadHistory();
   }, [navigate]);
 

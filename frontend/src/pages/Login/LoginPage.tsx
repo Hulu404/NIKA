@@ -18,51 +18,69 @@ export default function RegistrationPage() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError('');
 
-    try {
-      // Подготовка данных для бэкенда
-      const payload = {
-        username: `${formData.firstName} ${formData.lastName}`.trim(),
-        email: formData.email.trim(),
-        password: formData.password.trim(),
-        // Если бэкенд ожидает gender и sport_type — передаём их
-        gender: formData.gender,
-        sport_type: formData.sport
-      };
+  // Проверка на фронте (чтобы пользователь сразу увидел ошибку)
+  if (formData.firstName.trim().length < 3) {
+    setError('Имя должно быть минимум 3 символа');
+    return;
+  }
+  if (formData.lastName.trim().length < 3) {
+    setError('Фамилия должна быть минимум 3 символа');
+    return;
+  }
+  if (!formData.email.trim()) {
+    setError('Email обязателен');
+    return;
+  }
+  if (formData.password.length < 6) {
+    setError('Пароль должен быть минимум 6 символов');
+    return;
+  }
 
-      const res = await fetch('/api/v1/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
+  setLoading(true);
 
-      const data = await res.json();
+  try {
+    const payload = {
+      name: formData.firstName.trim(),
+      last_name: formData.lastName.trim(),
+      email: formData.email.trim(),
+      password: formData.password,
+      gender: formData.gender || null,
+      sport: formData.sport || null
+    };
 
-      if (!res.ok) {
-        throw new Error(data.error || 'Ошибка регистрации');
-      }
+    const res = await fetch('/api/v1/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
 
-      // Если бэкенд возвращает токены — сразу логиним пользователя
-      if (data.access_token && data.refresh_token) {
-        localStorage.setItem('access_token', data.access_token);
-        localStorage.setItem('refresh_token', data.refresh_token);
-      }
+    const data = await res.json();
 
-      // Успех → переход на чат
-      navigate('/chat');
-
-    } catch (err: any) {
-      setError(err.message || 'Не удалось зарегистрироваться. Попробуйте позже.');
-    } finally {
-      setLoading(false);
+    if (!res.ok) {
+      throw new Error(data.error || 'Ошибка регистрации');
     }
-  };
+
+    // Сохраняем токены (если бэкенд их вернул)
+    if (data.access_token && data.refresh_token) {
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
+    }
+
+    // Переход в чат
+    navigate('/chat');
+
+  } catch (err: any) {
+    setError(err.message || 'Не удалось зарегистрироваться');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="relative min-h-screen w-full bg-[#fffee7] overflow-hidden">
