@@ -3,7 +3,7 @@ from datetime import datetime
 import uuid
 import base64
 from pathlib import Path
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, current_app, send_file
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_login import current_user
 from app.models.guest_manager import GuestManager
@@ -11,104 +11,89 @@ from app.models.message import Message
 from app.extensions import db
 from sqlalchemy import desc, func
 
-# Импорты из services
+# Импорты из сервисов (твои реальные функции)
 from app.services.gigachat.giga_text import response_gigachat
 from app.services.salute.salute_speech import speech_syntesis
 
 chat_v1 = Blueprint('chat_v1', __name__, url_prefix='/api/v1/chat')
 
 
-@chat_v1.route('/limits', methods=['GET'])
+# ────────────────────────────────────────────────
+# Получение лимитов (для фронта — чтобы показывать счётчик)
+# ────────────────────────────────────────────────
+@chat_v1.get('/limits')
 def get_limits():
-    """Получить текущие лимиты пользователя"""
     is_guest = not current_user.is_authenticated
-    remaining_requests = 0
-    reset_info = None
 
     if not is_guest:
-        # Для зарегистрированного пользователя
-        remaining_requests = current_user.get_remaining_requests()
+        remaining = current_user.get_remaining_requests()
         reset_info = current_user.get_reset_info()
         limit = current_user.daily_requests_limit
     else:
-        # Для гостя
-        remaining_requests = GuestManager.get_remaining_requests()
+        remaining = GuestManager.get_remaining_requests()
         reset_info = GuestManager.get_reset_info()
         limit = GuestManager.GUEST_LIMIT
 
     return jsonify({
         "success": True,
         "is_guest": is_guest,
-        "remaining": remaining_requests,
+        "remaining": remaining,
         "limit": limit,
         "reset_info": reset_info
     })
 
 
-@chat_v1.route('/send', methods=['POST'])
-@jwt_required(optional=True)  # Опциональная авторизация для гостей
+# ────────────────────────────────────────────────
+# ЕДИНЫЙ ЭНДПОИНТ ОТПРАВКИ СООБЩЕНИЯ (рекомендую использовать только его)
+# ────────────────────────────────────────────────
+@chat_v1.post('/send')
+@jwt_required(optional=True)  # Гости тоже могут отправлять
 def send_message():
-    """Общий эндпоинт отправки сообщения (текст или голос) с проверкой лимитов"""
     data = request.get_json(silent=True) or {}
     user_text = data.get('message', '').strip()
-    with_audio = data.get('with_audio', False)  # Опция: текст или голос
+    with_audio = data.get('with_audio', False)  # true = с голосом, false = только текст
 
     if not user_text:
-        return jsonify({
-            "success": False,
-            "error": "Сообщение пустое"
-        }), 400
+        return jsonify({"success": False, "error": "Сообщение пустое"}), 400
 
     print(f"[SEND] ← {user_text[:100]}{'...' if len(user_text) > 100 else ''}")
 
-    # 1. ПРОВЕРКА АВТОРИЗАЦИИ И ЛИМИТОВ
+    # 1. Определяем пользователя и проверяем лимиты
     is_guest = not current_user.is_authenticated
-    remaining_requests = 0
-    reset_info = None
+    user_id = get_jwt_identity() if not is_guest else 0  # 0 или guest ID
 
     if not is_guest:
-        # Для зарегистрированного пользователя
         if not current_user.can_make_request():
-            reset_info = current_user.get_reset_info()
             return jsonify({
                 "success": False,
-                "error": f"Достигнут дневной лимит запросов ({current_user.daily_requests_limit})",
+                "error": f"Дневной лимит ({current_user.daily_requests_limit}) достигнут",
                 "limit_info": {
                     "limit": current_user.daily_requests_limit,
                     "used": current_user.requests_today,
                     "remaining": 0,
-                    "reset_info": reset_info
+                    "reset_info": current_user.get_reset_info()
                 },
                 "is_guest": False
             }), 429
-
-        # Получаем user_id из JWT
-        user_id = get_jwt_identity()
     else:
-        # Для гостя
         if not GuestManager.can_make_request():
-            reset_info = GuestManager.get_reset_info()
             return jsonify({
                 "success": False,
-                "error": "Использованы все бесплатные запросы. Зарегистрируйтесь для большего количества запросов.",
+                "error": "Гостевой лимит исчерпан. Зарегистрируйтесь.",
                 "limit_info": {
                     "limit": GuestManager.GUEST_LIMIT,
                     "used": session.get('guest_requests', 0),
                     "remaining": 0,
-                    "reset_info": reset_info
+                    "reset_info": GuestManager.get_reset_info()
                 },
-                "is_guest": True,
                 "upgrade_url": "/registration"
             }), 429
 
-        # Для гостя используем guest_user_id или 0
-        user_id = 0  # Или создайте гостевого пользователя в БД
-
     try:
-        # 2. ОБРАБОТКА ЗАПРОСА К ИИ
+        # 2. Получаем ответ от GigaChat
         reply = response_gigachat(user_text)
-        print(f"[SEND] → {reply[:100]}{'...' if len(reply) > 100 else ''}")
 
+        # 3. Если нужен голос — синтезируем
         audio_base64 = None
         audio_url = None
         audio_size = 0
@@ -116,84 +101,93 @@ def send_message():
         if with_audio:
             audio_result = speech_syntesis(reply)
             if not audio_result or 'audio_bytes' not in audio_result:
-                raise ValueError("Синтез речи не вернул аудио")
+                raise ValueError("Синтез речи не удался")
 
             audio_bytes = audio_result['audio_bytes']
             audio_format = audio_result.get('format', 'mp3')
 
-            # Сохранение файла
             audio_id = uuid.uuid4().hex[:10]
             filename = f"audio_{audio_id}.{audio_format}"
-            audio_path = current_app.config['AUDIO_CACHE_DIR'] / filename
+            audio_path = Path(current_app.config['AUDIO_CACHE_DIR']) / filename
             audio_path.parent.mkdir(parents=True, exist_ok=True)
             audio_path.write_bytes(audio_bytes)
 
             audio_base64 = base64.b64encode(audio_bytes).decode('utf-8')
-            audio_url = f"/api/v1/audio/{filename}"
+            audio_url = f"/api/v1/chat/audio/{filename}"
             audio_size = len(audio_bytes)
-            print(f"[AUDIO SAVED] {filename} ({audio_size:,} байт)")
 
-        # 3. СОХРАНЕНИЕ СООБЩЕНИЙ В БД
+            print(f"[AUDIO] Сохранён: {filename} ({audio_size:,} байт)")
+
+        # 4. Сохраняем сообщения в БД
+        session_id = data.get('session_id') or str(uuid.uuid4())
+
         user_msg = Message(
             user_id=user_id,
+            session_id=session_id,
             role="user",
             content=user_text
         )
         assistant_msg = Message(
             user_id=user_id,
+            session_id=session_id,
             role="assistant",
             content=reply
         )
-        db.session.add(user_msg)
-        db.session.add(assistant_msg)
+
+        db.session.add_all([user_msg, assistant_msg])
         db.session.commit()
 
-        # 4. УВЕЛИЧЕНИЕ СЧЕТЧИКА ЗАПРОСОВ
+        # 5. Увеличиваем счётчик запросов
         if not is_guest:
             current_user.increment_requests()
-            remaining_requests = current_user.get_remaining_requests()
-            reset_info = current_user.get_reset_info()
         else:
             GuestManager.increment_requests()
-            remaining_requests = GuestManager.get_remaining_requests()
-            reset_info = GuestManager.get_reset_info()
 
-        # 5. ВОЗВРАТ ОТВЕТА НА ФРОНТ
-        response_data = {
+        # 6. Формируем ответ для фронта
+        return jsonify({
             "success": True,
             "reply": reply,
             "audio_base64": audio_base64,
             "audio_url": audio_url,
             "audio_size": audio_size,
-            "timestamp": datetime.utcnow().isoformat(),
-            "limit_info": {
-                "remaining": remaining_requests,
-                "is_guest": is_guest,
-                "reset_info": reset_info
-            }
-        }
-
-        return jsonify(response_data)
+            "session_id": session_id,
+            "timestamp": datetime.utcnow().isoformat()
+        })
 
     except Exception as e:
         db.session.rollback()
-        print(f"[SEND ERROR] {type(e).__name__}: {str(e)}")
+        current_app.logger.error(f"[CHAT/SEND ERROR] {type(e).__name__}: {str(e)}")
         return jsonify({
             "success": False,
             "error": str(e)
         }), 500
 
 
-# Остальные эндпоинты (health, audio, history, sessions) остаются как были, но с исправлениями опечаток
+# ────────────────────────────────────────────────
+# Отдача аудиофайлов
+# ────────────────────────────────────────────────
+@chat_v1.route('/audio/<filename>')
+def serve_audio(filename):
+    try:
+        audio_dir = current_app.config['AUDIO_CACHE_DIR']
+        file_path = audio_dir / filename
 
-@chat_v1.route('/health', methods=['GET'])
-def health_check():
-    """Простой эндпоинт для проверки живости API"""
-    return jsonify({"success": True, "status": "ok"})
+        if not file_path.exists():
+            return jsonify({"success": False, "error": "Файл не найден"}), 404
 
-@chat_v1.get("/history")
+        return send_file(file_path, mimetype='audio/mpeg' if filename.endswith('.mp3') else 'audio/wav')
+
+    except Exception as e:
+        current_app.logger.error(f"[AUDIO SERVE ERROR] {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# ────────────────────────────────────────────────
+# История сообщений (только для авторизованных)
+# ────────────────────────────────────────────────
+@chat_v1.get('/history')
 @jwt_required()
-def get_chat_history():
+def get_history():
     user_id = get_jwt_identity()
 
     page = request.args.get("page", 1, type=int)
@@ -218,7 +212,11 @@ def get_chat_history():
         }
     })
 
-@chat_v1.get("/sessions")
+
+# ────────────────────────────────────────────────
+# Список сессий пользователя
+# ────────────────────────────────────────────────
+@chat_v1.get('/sessions')
 @jwt_required()
 def get_sessions():
     user_id = get_jwt_identity()
@@ -256,3 +254,11 @@ def get_sessions():
         "success": True,
         "sessions": result
     })
+
+
+# ────────────────────────────────────────────────
+# Простой health-check
+# ────────────────────────────────────────────────
+@chat_v1.get('/health')
+def health_check():
+    return jsonify({"success": True, "status": "ok"})
