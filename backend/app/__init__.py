@@ -2,7 +2,7 @@
 import os
 from datetime import timedelta
 from pathlib import Path
-from flask import Flask
+from flask import Flask, jsonify
 from flask_login import LoginManager
 from flask_jwt_extended import JWTManager
 from app.config import get_config
@@ -94,8 +94,8 @@ def create_app(config_name=None):
     from .api.v1.auth import auth_bp  # предполагаем, что у вас есть auth blueprint
 
     app.register_blueprint(main_bp)
-    app.register_blueprint(chat_v1, url_prefix="/api/v1")
-    app.register_blueprint(auth_bp, url_prefix="/api/v1")
+    app.register_blueprint(chat_v1)
+    app.register_blueprint(auth_bp)
 
     # 6. CLI-команда для создания тестового пользователя (лучше, чем глобальный код)
     @app.cli.command("create-test-user")
@@ -133,6 +133,10 @@ def create_app(config_name=None):
             'RefreshToken': RefreshToken if 'RefreshToken' in globals() else None,
             'app': app
         }
+    
+    @app.post("/test-post")
+    def test_post():
+        return jsonify({"success": True, "message": "POST работает"})
 
     print("=" * 60)
     print(f"🚀 Приложение запущено в режиме: {config_name.upper()}")
@@ -142,3 +146,4 @@ def create_app(config_name=None):
     print("=" * 60)
 
     return app
+

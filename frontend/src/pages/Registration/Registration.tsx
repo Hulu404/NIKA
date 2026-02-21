@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { NavLink } from 'react-router';
+import React, { useState } from 'react';
+import { useNavigate, NavLink } from 'react-router-dom';
 
 export default function RegistrationPage() {
   const [formData, setFormData] = useState({
@@ -10,31 +10,79 @@ export default function RegistrationPage() {
     gender: '',
     sport: ''
   });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-  };
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      // Подготовка данных для бэкенда
+      const payload = {
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        email: formData.email.trim(),
+        password: formData.password,
+        gender: formData.gender,
+        sport: formData.sport
+};
+
+const res = await fetch('/api/v1/auth/register', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',  // ← обязательно!
+    'Accept': 'application/json',
+  },
+  body: JSON.stringify(payload),  // ← JSON.stringify обязательно!
+});
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Ошибка регистрации');
+      }
+
+      // Если бэкенд после регистрации сразу возвращает токены — сохраняем их
+      if (data.access_token && data.refresh_token) {
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('refresh_token', data.refresh_token);
+      }
+
+      // Успешная регистрация → переход на чат
+      navigate('/chat');
+
+    } catch (err: any) {
+      setError(err.message || 'Не удалось зарегистрироваться. Попробуйте позже.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="relative min-h-screen w-full bg-[#fffee7] overflow-hidden">
-      {/* Main content */}
+      {/* Основной контент */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-12">
-        {/* Registration form container */}
+        {/* Контейнер формы */}
         <div className="w-full max-w-md">
-          {/* Header */}
+          {/* Заголовок */}
           <div className="text-center mb-12">
-            <h1 className="text-[#3d1f00] mb-2 text-4xl">Регистрация</h1>
-            <p className="text-[#83451e] text-sm">Создайте аккаунт для продолжения</p>
+            <h1 className="text-[#3d1f00] mb-2 text-4xl font-['Manrope']">Регистрация</h1>
+            <p className="text-[#83451e] text-sm font-['Manrope']">Создайте аккаунт для продолжения</p>
           </div>
 
-          {/* Form */}
+          {error && (
+            <p className="text-red-600 text-center mb-6 font-['Manrope']">{error}</p>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* First Name */}
+            {/* Имя */}
             <div className="space-y-2">
               <label htmlFor="firstName" className="block text-[#83451e] text-sm pl-5 font-['Manrope']">
                 Имя
@@ -50,7 +98,7 @@ export default function RegistrationPage() {
               />
             </div>
 
-            {/* Last Name */}
+            {/* Фамилия */}
             <div className="space-y-2">
               <label htmlFor="lastName" className="block text-[#83451e] text-sm pl-5 font-['Manrope']">
                 Фамилия
@@ -82,7 +130,7 @@ export default function RegistrationPage() {
               />
             </div>
 
-            {/* Password */}
+            {/* Пароль */}
             <div className="space-y-2">
               <label htmlFor="password" className="block text-[#83451e] text-sm pl-5 font-['Manrope']">
                 Пароль
@@ -99,7 +147,7 @@ export default function RegistrationPage() {
               />
             </div>
 
-            {/* Gender */}
+            {/* Пол */}
             <div className="space-y-3">
               <label className="block text-[#83451e] text-sm pl-5 font-['Manrope']">
                 Пол
@@ -130,7 +178,7 @@ export default function RegistrationPage() {
               </div>
             </div>
 
-            {/* Sport Type */}
+            {/* Вид спорта */}
             <div className="space-y-2">
               <label htmlFor="sport" className="block text-[#83451e] text-sm pl-5 font-['Manrope']">
                 Вид спорта
@@ -162,32 +210,32 @@ export default function RegistrationPage() {
               </select>
             </div>
 
-            {/* Submit Button */}
+            {/* Кнопка регистрации */}
             <button
               type="submit"
-              className="w-full bg-[#83451e] text-[#fffee7] py-4 rounded-[25px] font-['Manrope'] hover:bg-[#6b3818] transition-all shadow-md hover:shadow-lg mt-8"
+              disabled={loading}
+              className="w-full bg-[#83451e] text-[#fffee7] py-4 rounded-[25px] font-['Manrope'] hover:bg-[#6b3818] transition-all shadow-md hover:shadow-lg mt-8 disabled:opacity-50"
             >
-              Зарегистрироваться
+              {loading ? 'Регистрация...' : 'Зарегистрироваться'}
             </button>
           </form>
 
-          {/* Footer links */}
+          {/* Ссылки внизу */}
           <div className="mt-8 text-center space-y-3">
             <p className="text-[#83451e] font-['Manrope']">
               Уже есть аккаунт?{' '}
-              <NavLink to='/login'>
-              <a href="#" className="text-[#83451e] underline decoration-1 underline-offset-2 hover:text-[#3d1f00] transition-colors">
+              <NavLink
+                to="/login"
+                className="text-[#3d1f00] underline decoration-1 underline-offset-2 hover:text-[#83451e] transition-colors"
+              >
                 Войти
-              </a>
               </NavLink>
             </p>
-            <NavLink to='/FAQ'>
-            <a 
-              href="#" 
+            <NavLink
+              to="/FAQ"
               className="text-[#83451e] text-sm underline decoration-1 underline-offset-2 hover:text-[#3d1f00] transition-colors font-['Manrope']"
             >
               FAQs
-            </a>
             </NavLink>
           </div>
         </div>

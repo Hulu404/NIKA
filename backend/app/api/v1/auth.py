@@ -7,59 +7,102 @@ from flask_jwt_extended import (
     get_jwt_identity,
     get_jwt,
 )
-from flask_jwt_extended import jwt_required
-
 from datetime import datetime, timedelta
 from app.extensions import db
 from app.models.user import User
 from app.models.refresh_token import RefreshToken
+from flask import current_app  # для логирования
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
 
 
 @auth_bp.post("/register")
 def register():
-    """Регистрация нового пользователя"""
+    """Регистрация нового пользователя + сразу выдача токенов"""
     data = request.get_json() or {}
 
-    username = data.get("username", "").strip()
+    name = data.get("name", "").strip()
+    last_name = data.get("last_name", "").strip()
     email = data.get("email", "").strip()
     password = data.get("password", "")
 
-    if not all([username, email, password]):
-        return jsonify({"success": False, "error": "Все поля обязательны"}), 400
+    # Только email и password обязательны
+    if not all([email, password]):
+        return jsonify({"success": False, "error": "Обязательны: email, password"}), 400
 
-    if len(username) < 3:
-        return jsonify({"success": False, "error": "Имя пользователя слишком короткое (минимум 3 символа)"}), 400
+    # name и last_name — необязательные
+    if name and len(name) < 1:
+        return jsonify({"success": False, "error": "Имя слишком короткое"}), 400
+
+    if last_name and len(last_name) < 2:
+        return jsonify({"success": False, "error": "Фамилия слишком короткая"}), 400
+
+    # gender и sport — необязательные
+    gender = data.get("gender", None)
+    sport = data.get("sport", None)
+
+
+
+    # Проверка длины
+    if len(name) < 2:
+        return jsonify({"success": False, "error": "Имя слишком короткое (минимум 2 символа)"}), 400
+    if len(last_name) < 2:
+        return jsonify({"success": False, "error": "Фамилия слишком короткая (минимум 2 символа)"}), 400
     if "@" not in email:
         return jsonify({"success": False, "error": "Некорректный email"}), 400
     if len(password) < 6:
         return jsonify({"success": False, "error": "Пароль должен быть минимум 6 символов"}), 400
 
-    if User.query.filter_by(username=username).first():
-        return jsonify({"success": False, "error": "Имя пользователя уже занято"}), 409
-
+    # Проверка уникальности email
     if User.query.filter_by(email=email).first():
         return jsonify({"success": False, "error": "Email уже зарегистрирован"}), 409
 
-    user = User(username=username, email=email)
+    # Создаём пользователя
+    user = User(
+        name=name,
+        last_name=last_name,
+        email=email,
+        gender=gender,
+        sport_type=sport  # или sport — как у тебя в модели
+    )
     user.set_password(password)
 
     try:
         db.session.add(user)
         db.session.commit()
+
+        # Генерируем токены сразу после регистрации
+        access_token = create_access_token(identity=user.id, fresh=True)
+        refresh_token = create_refresh_token(identity=user.id)
+
+        # Сохраняем refresh-токен в БД
+        jti = get_jwt()["jti"] if get_jwt() else refresh_token.split(".")[-1]
+        token = RefreshToken(
+            jti=jti,
+            user_id=user.id,
+            token=refresh_token,
+            expires_at=datetime.utcnow() + timedelta(days=30)
+        )
+        db.session.add(token)
+        db.session.commit()
+
         return jsonify({
             "success": True,
             "message": "Регистрация успешна",
+            "access_token": access_token,
+            "refresh_token": refresh_token,
             "user": {
                 "id": user.id,
-                "username": user.username,
+                "name": user.name,
+                "last_name": user.last_name,
                 "email": user.email
             }
         }), 201
+
     except Exception as e:
         db.session.rollback()
-        return jsonify({"success": False, "error": "Ошибка при сохранении пользователя"}), 500
+        current_app.logger.error(f"Ошибка регистрации: {str(e)}")
+        return jsonify({"success": False, "error": "Ошибка сервера при регистрации"}), 500
 
 
 @auth_bp.post("/login")
@@ -76,17 +119,11 @@ def login():
     if not user or not user.check_password(password):
         return jsonify({"success": False, "error": "Неверный email или пароль"}), 401
 
-    # Access token — короткий
-    access_token = create_access_token(
-        identity=user.id,
-        fresh=True
-    )
-
-    # Refresh token — длинный
+    access_token = create_access_token(identity=user.id, fresh=True)
     refresh_token = create_refresh_token(identity=user.id)
 
-    # Сохраняем refresh в БД
-    jti = get_jwt()["jti"] if get_jwt() else refresh_token.split(".")[-1]  # fallback
+    # Сохраняем refresh-токен
+    jti = get_jwt()["jti"] if get_jwt() else refresh_token.split(".")[-1]
     token = RefreshToken(
         jti=jti,
         user_id=user.id,
@@ -102,7 +139,8 @@ def login():
         "refresh_token": refresh_token,
         "user": {
             "id": user.id,
-            "username": user.username,
+            "name": user.name,
+            "last_name": user.last_name,
             "email": user.email
         }
     })
@@ -114,7 +152,6 @@ def refresh():
     """Обновление access-токена по refresh-токену"""
     user_id = get_jwt_identity()
 
-    # Проверяем, что refresh не отозван
     jti = get_jwt()["jti"]
     token = RefreshToken.query.filter_by(jti=jti).first()
 
@@ -140,9 +177,9 @@ def logout():
 
 
 @auth_bp.get("/profile")
-@jwt_required(refresh=True)
+@jwt_required()
 def profile():
-    """Пример защищённого маршрута — профиль текущего пользователя"""
+    """Профиль пользователя (защищённый маршрут)"""
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
 
@@ -153,8 +190,9 @@ def profile():
         "success": True,
         "user": {
             "id": user.id,
-            "username": user.username,
+            "name": user.name,
+            "last_name": user.last_name,
             "email": user.email,
-            "created_at": user.created_at.isoformat()
+            "created_at": user.created_at.isoformat() if hasattr(user, 'created_at') else None
         }
     })

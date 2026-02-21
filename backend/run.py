@@ -2,6 +2,7 @@
 from app import create_app
 import os
 from flask import send_from_directory
+from app.extensions import db
 
 # По умолчанию development, но можно переопределить переменной окружения
 config_name = os.environ.get("FLASK_CONFIG", "development")

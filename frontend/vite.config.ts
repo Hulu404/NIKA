@@ -7,12 +7,12 @@ export default defineConfig({
     proxy: {
       // Все запросы к /api идут на Flask
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5001',
         changeOrigin: true,
       },
       // Все запросы к /static идут на Flask
       '/static': {
-        target: 'http://localhost:5000',
+        target: 'http://localhost:5001',
         changeOrigin: true,
       }
     },

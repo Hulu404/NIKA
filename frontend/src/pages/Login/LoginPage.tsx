@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
 
-export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function RegistrationPage() {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    gender: '',
+    sport: ''
+  });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const handleChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,115 +24,219 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/v1/auth/login', {
+      // Подготовка данных для бэкенда
+      const payload = {
+        username: `${formData.firstName} ${formData.lastName}`.trim(),
+        email: formData.email.trim(),
+        password: formData.password.trim(),
+        // Если бэкенд ожидает gender и sport_type — передаём их
+        gender: formData.gender,
+        sport_type: formData.sport
+      };
+
+      const res = await fetch('/api/v1/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Ошибка входа');
+      if (!res.ok) {
+        throw new Error(data.error || 'Ошибка регистрации');
       }
 
-      // Сохраняем токены в localStorage
-      localStorage.setItem('access_token', data.access_token);
-      localStorage.setItem('refresh_token', data.refresh_token);
+      // Если бэкенд возвращает токены — сразу логиним пользователя
+      if (data.access_token && data.refresh_token) {
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('refresh_token', data.refresh_token);
+      }
 
-      // Переходим в чат
+      // Успех → переход на чат
       navigate('/chat');
+
     } catch (err: any) {
-      setError(err.message || 'Произошла ошибка. Попробуйте позже.');
+      setError(err.message || 'Не удалось зарегистрироваться. Попробуйте позже.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#fffee7] flex items-center justify-center px-6 py-12">
-      {/* Основной контейнер */}
-      <div className="w-full max-w-[480px]">
-        {/* Заголовок */}
-        <div className="flex flex-col gap-3 mb-14">
-          <div className="h-[50px] flex items-center justify-center">
-            <h1 className="text-[#3d1f00] text-[40px] leading-[50px] text-center">Вход</h1>
-          </div>
-          <div className="h-[24px] flex items-center justify-center">
-            <p className="text-[#83451e] text-[16px] leading-[24px] text-center">
-              Войдите в свой аккаунт
-            </p>
-          </div>
-        </div>
-
-        {/* Форма */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          {/* Поле Email */}
-          <div className="flex flex-col gap-2.5">
-            <label htmlFor="email" className="text-[#83451e] text-[14px] leading-[20px] pl-5">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-[rgba(189,145,97,0.15)] border-none rounded-[25px] px-6 py-[18px] text-[#3d1f00] text-[16px] leading-normal placeholder:text-[rgba(131,69,30,0.5)] focus:outline-none focus:ring-2 focus:ring-[#83451e]/30 transition-all"
-              placeholder="example@email.com"
-              required
-              autoComplete="email"
-            />
+    <div className="relative min-h-screen w-full bg-[#fffee7] overflow-hidden">
+      {/* Основной контент */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-12">
+        {/* Контейнер формы */}
+        <div className="w-full max-w-md">
+          {/* Заголовок */}
+          <div className="text-center mb-12">
+            <h1 className="text-[#3d1f00] mb-2 text-4xl font-['Manrope']">Регистрация</h1>
+            <p className="text-[#83451e] text-sm font-['Manrope']">Создайте аккаунт для продолжения</p>
           </div>
 
-          {/* Поле Пароль */}
-          <div className="flex flex-col gap-2.5">
-            <label htmlFor="password" className="text-[#83451e] text-[14px] leading-[20px] pl-5">
-              Пароль
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-[rgba(189,145,97,0.15)] border-none rounded-[25px] px-6 py-[18px] text-[#3d1f00] text-[16px] leading-normal placeholder:text-[rgba(131,69,30,0.5)] focus:outline-none focus:ring-2 focus:ring-[#83451e]/30 transition-all"
-              placeholder="Введите ваш пароль"
-              required
-              autoComplete="current-password"
-            />
-          </div>
+          {error && (
+            <p className="text-red-600 text-center mb-6 font-['Manrope']">{error}</p>
+          )}
 
-          {/* Кнопка Войти */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-[#83451e] text-[#fffee7] text-[16px] leading-[24px] h-[60px] rounded-[25px] hover:bg-[#6b3818] transition-all shadow-[0px_4px_6px_0px_rgba(0,0,0,0.1),0px_2px_4px_0px_rgba(0,0,0,0.1)] hover:shadow-lg flex items-center justify-center disabled:opacity-50"
-          >
-            {loading ? 'Загрузка...' : 'Войти'}
-          </button>
-        </form>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Имя */}
+            <div className="space-y-2">
+              <label htmlFor="firstName" className="block text-[#83451e] text-sm pl-5 font-['Manrope']">
+                Имя
+              </label>
+              <input
+                id="firstName"
+                type="text"
+                value={formData.firstName}
+                onChange={(e) => handleChange('firstName', e.target.value)}
+                className="w-full bg-[rgba(189,145,97,0.15)] border-none rounded-[25px] px-6 py-4 text-[#3d1f00] placeholder:text-[#83451e]/50 focus:outline-none focus:ring-2 focus:ring-[#83451e]/30 transition-all font-['Manrope']"
+                placeholder="Введите ваше имя"
+                required
+              />
+            </div>
 
-        {/* Ссылки внизу */}
-        <div className="flex flex-col gap-4 mt-14 text-center">
-          {/* Регистрация */}
-          <p className="text-[#83451e] text-[16px] leading-[24px]">
-            Нет аккаунта?{' '}
-            <NavLink
-              to="/registration"
-              className="text-[#3d1f00] underline decoration-1 underline-offset-2 hover:text-[#83451e] transition-colors"
+            {/* Фамилия */}
+            <div className="space-y-2">
+              <label htmlFor="lastName" className="block text-[#83451e] text-sm pl-5 font-['Manrope']">
+                Фамилия
+              </label>
+              <input
+                id="lastName"
+                type="text"
+                value={formData.lastName}
+                onChange={(e) => handleChange('lastName', e.target.value)}
+                className="w-full bg-[rgba(189,145,97,0.15)] border-none rounded-[25px] px-6 py-4 text-[#3d1f00] placeholder:text-[#83451e]/50 focus:outline-none focus:ring-2 focus:ring-[#83451e]/30 transition-all font-['Manrope']"
+                placeholder="Введите вашу фамилию"
+                required
+              />
+            </div>
+
+            {/* Email */}
+            <div className="space-y-2">
+              <label htmlFor="email" className="block text-[#83451e] text-sm pl-5 font-['Manrope']">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleChange('email', e.target.value)}
+                className="w-full bg-[rgba(189,145,97,0.15)] border-none rounded-[25px] px-6 py-4 text-[#3d1f00] placeholder:text-[#83451e]/50 focus:outline-none focus:ring-2 focus:ring-[#83451e]/30 transition-all font-['Manrope']"
+                placeholder="example@email.com"
+                required
+              />
+            </div>
+
+            {/* Пароль */}
+            <div className="space-y-2">
+              <label htmlFor="password" className="block text-[#83451e] text-sm pl-5 font-['Manrope']">
+                Пароль
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={(e) => handleChange('password', e.target.value)}
+                className="w-full bg-[rgba(189,145,97,0.15)] border-none rounded-[25px] px-6 py-4 text-[#3d1f00] placeholder:text-[#83451e]/50 focus:outline-none focus:ring-2 focus:ring-[#83451e]/30 transition-all font-['Manrope']"
+                placeholder="Минимум 8 символов"
+                required
+                minLength={8}
+              />
+            </div>
+
+            {/* Пол */}
+            <div className="space-y-3">
+              <label className="block text-[#83451e] text-sm pl-5 font-['Manrope']">
+                Пол
+              </label>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleChange('gender', 'female')}
+                  className={`flex-1 py-4 rounded-[25px] font-['Manrope'] transition-all ${
+                    formData.gender === 'female'
+                      ? 'bg-[#83451e] text-[#fffee7] shadow-lg'
+                      : 'bg-[rgba(189,145,97,0.15)] text-[#83451e] hover:bg-[rgba(189,145,97,0.25)]'
+                  }`}
+                >
+                  Женский
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleChange('gender', 'male')}
+                  className={`flex-1 py-4 rounded-[25px] font-['Manrope'] transition-all ${
+                    formData.gender === 'male'
+                      ? 'bg-[#83451e] text-[#fffee7] shadow-lg'
+                      : 'bg-[rgba(189,145,97,0.15)] text-[#83451e] hover:bg-[rgba(189,145,97,0.25)]'
+                  }`}
+                >
+                  Мужской
+                </button>
+              </div>
+            </div>
+
+            {/* Вид спорта */}
+            <div className="space-y-2">
+              <label htmlFor="sport" className="block text-[#83451e] text-sm pl-5 font-['Manrope']">
+                Вид спорта
+              </label>
+              <select
+                id="sport"
+                value={formData.sport}
+                onChange={(e) => handleChange('sport', e.target.value)}
+                className="w-full bg-[rgba(189,145,97,0.15)] border-none rounded-[25px] px-6 py-4 text-[#3d1f00] focus:outline-none focus:ring-2 focus:ring-[#83451e]/30 transition-all font-['Manrope'] appearance-none cursor-pointer"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2383451e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'right 1.5rem center',
+                  backgroundSize: '1.25rem'
+                }}
+                required
+              >
+                <option value="">Выберите вид спорта</option>
+                <option value="football">Футбол</option>
+                <option value="basketball">Баскетбол</option>
+                <option value="volleyball">Волейбол</option>
+                <option value="tennis">Теннис</option>
+                <option value="swimming">Плавание</option>
+                <option value="running">Бег</option>
+                <option value="cycling">Велоспорт</option>
+                <option value="fitness">Фитнес</option>
+                <option value="yoga">Йога</option>
+                <option value="other">Другое</option>
+              </select>
+            </div>
+
+            {/* Кнопка */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#83451e] text-[#fffee7] py-4 rounded-[25px] font-['Manrope'] hover:bg-[#6b3818] transition-all shadow-md hover:shadow-lg mt-8 disabled:opacity-50"
             >
-              Зарегистрироваться
-            </NavLink>
-          </p>
+              {loading ? 'Регистрация...' : 'Зарегистрироваться'}
+            </button>
+          </form>
 
-          {/* FAQ */}
-          <NavLink
-            to="/FAQ"
-            className="text-[#83451e] text-[14px] leading-[20px] underline decoration-1 underline-offset-2 hover:text-[#3d1f00] transition-colors"
-          >
-            FAQs
-          </NavLink>
+          {/* Ссылки */}
+          <div className="mt-8 text-center space-y-3">
+            <p className="text-[#83451e] font-['Manrope']">
+              Уже есть аккаунт?{' '}
+              <NavLink
+                to="/login"
+                className="text-[#3d1f00] underline decoration-1 underline-offset-2 hover:text-[#83451e] transition-colors"
+              >
+                Войти
+              </NavLink>
+            </p>
+            <NavLink
+              to="/FAQ"
+              className="text-[#83451e] text-sm underline decoration-1 underline-offset-2 hover:text-[#3d1f00] transition-colors font-['Manrope']"
+            >
+              FAQs
+            </NavLink>
+          </div>
         </div>
       </div>
     </div>

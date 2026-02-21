@@ -5,9 +5,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [sessionId, setSessionId] = useState<string | null>(
-    localStorage.getItem('chat_session_id')
-  );
+  const [sessionId, setSessionId] = useState<string | null>(localStorage.getItem('chat_session_id'));
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -23,8 +21,7 @@ export default function ChatPage() {
 
   const loadHistory = async () => {
     try {
-      let url = '/api/v1/chat/history';
-      if (sessionId) url += `?session_id=${sessionId}`;
+      const url = sessionId ? `/api/v1/chat/history?session_id=${sessionId}` : '/api/v1/chat/history';
 
       const res = await fetch(url, {
         headers: {
@@ -34,8 +31,8 @@ export default function ChatPage() {
 
       if (!res.ok) {
         if (res.status === 401) {
-          // Можно добавить логику обновления токена
           localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
           navigate('/login');
         }
         throw new Error('Ошибка загрузки истории');
@@ -49,54 +46,58 @@ export default function ChatPage() {
     }
   };
 
-const sendMessage = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!input.trim() || loading) return;
+  const sendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || loading) return;
 
-  setLoading(true);
-
-  try {
-    const res = await fetch('/api/v1/chat/send', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-      },
-      body: JSON.stringify({
-        message: input,
-        with_audio: true,  // или false для текста
-      }),
-    });
-
-    const data = await res.json();
-
-    if (!data.success) {
-      throw new Error(data.error);
-    }
-
-    setMessages((prev) => [
-      ...prev,
-      { role: 'user', content: input },
-      { role: 'assistant', content: data.reply },
-    ]);
-
-    if (data.audio_base64) {
-      const audio = new Audio(`data:audio/mp3;base64,${data.audio_base64}`);
-      audio.play();
-    }
-
-    // Обновляем лимиты (если фронт их отображает)
-    console.log(data.limit_info);
-
-    scrollToBottom();
-  } catch (e) {
-    console.error(e);
-    // Покажи тост или ошибку
-  } finally {
-    setLoading(false);
+    const userMessage = { role: 'user', content: input };
+    setMessages((prev) => [...prev, userMessage]);
     setInput('');
-  }
-};
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/v1/chat/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+        body: JSON.stringify({
+          message: input,
+          with_audio: true, // или false, если хочешь только текст
+          session_id: sessionId,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        throw new Error(data.error || 'Ошибка отправки');
+      }
+
+      // Сохраняем session_id
+      setSessionId(data.session_id);
+      localStorage.setItem('chat_session_id', data.session_id);
+
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: data.reply },
+      ]);
+
+      // Воспроизведение аудио
+      if (data.audio_base64) {
+        const audio = new Audio(`data:audio/mp3;base64,${data.audio_base64}`);
+        audio.play().catch((e) => console.error('Ошибка аудио:', e));
+      }
+
+      scrollToBottom();
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const scrollToBottom = () => {
     setTimeout(() => {
@@ -106,23 +107,16 @@ const sendMessage = async (e: React.FormEvent) => {
 
   return (
     <div className="flex flex-col h-screen bg-[#fffee7]">
-      {/* Заголовок чата */}
       <div className="bg-[#83451e] text-[#fffee7] p-4 text-center text-xl font-bold">
         Чат с психологом
       </div>
 
-      {/* Сообщения */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
+        {messages.map((msg, i) => (
+          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div
               className={`max-w-[75%] p-3 rounded-2xl ${
-                msg.role === 'user'
-                  ? 'bg-[#83451e] text-[#fffee7]'
-                  : 'bg-white text-[#3d1f00] shadow'
+                msg.role === 'user' ? 'bg-[#83451e] text-[#fffee7]' : 'bg-white text-[#3d1f00] shadow'
               }`}
             >
               {msg.content}
@@ -132,7 +126,6 @@ const sendMessage = async (e: React.FormEvent) => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Поле ввода */}
       <form onSubmit={sendMessage} className="p-4 bg-white border-t flex gap-3">
         <input
           type="text"
@@ -145,9 +138,9 @@ const sendMessage = async (e: React.FormEvent) => {
         <button
           type="submit"
           disabled={loading}
-          className="px-6 py-3 bg-[#83451e] text-[#fffee7] rounded-full hover:bg-[#6b3818] disabled:opacity-50 transition-colors"
+          className="px-6 py-3 bg-[#83451e] text-[#fffee7] rounded-full hover:bg-[#6b3818] disabled:opacity-50"
         >
-          {loading ? '...' : '→'}
+          {loading ? '...' : 'Отправить'}
         </button>
       </form>
     </div>
