@@ -26,8 +26,8 @@ export default function RegistrationPage() {
     try {
       // Подготовка данных для бэкенда
       const payload = {
-        firstName: formData.firstName.trim(),
-        lastName: formData.lastName.trim(),
+        name: formData.firstName.trim(),
+        last_name: formData.lastName.trim(),
         email: formData.email.trim(),
         password: formData.password,
         gender: formData.gender,

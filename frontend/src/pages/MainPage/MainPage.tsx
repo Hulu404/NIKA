@@ -45,12 +45,9 @@ export default function MainPage() {
         {/* FAQ Link */}
         <div className="mt-8 sm:mt-10">
           <NavLink to='/FAQ'>
-          <a 
-            href="#" 
-            className="text-[#3d1f00] text-[13px] sm:text-[14px] leading-[20px] underline decoration-1 underline-offset-2 hover:text-[#83451e] transition-colors"
-          >
-            FAQs
-          </a>
+            <span  className="text-[#3d1f00] text-[13px] sm:text-[14px] leading-[20px] underline decoration-1 underline-offset-2 hover:text-[#83451e] transition-colors">
+             FAQs
+            </span>
           </NavLink>
         </div>
       </div>

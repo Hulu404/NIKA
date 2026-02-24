@@ -5,289 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81e58e44-dce9-4fa0-ba3b-8dcb17ac5a20" name="Changes" comment="Добавил Flask-login">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.DS_Store" beforeDir="false" afterPath="$PROJECT_DIR$/.DS_Store" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/NIKA.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/NIKA.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Agents/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/services/Agents/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Agents/giga_agents.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/services/Agents/giga_agents.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Agents/giga_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/services/Agents/giga_config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Agents/interactive_chat.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/services/Agents/interactive_chat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Agents/messages_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/services/Agents/messages_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Agents/prompts.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/services/Agents/prompts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NIKA/.idea/NIKA.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NIKA/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NIKA/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NIKA/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NIKA/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NIKA/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/gigachat/giga_credentials.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/salute/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/salute/salute_credentials.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/services/salute/salute_credentials.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/salute/salute_speech.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/services/salute/salute_speech.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/salute/salute_token.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/services/salute/salute_token.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/api/v1/chat.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/api/v1/chat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/services/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/services/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/services/audio/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/services/salute/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/services/audio/cache.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/config/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/config/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/Flask_JWT_Extended-4.7.1.dist-info/INSTALLER" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/Flask_JWT_Extended-4.7.1.dist-info/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/Flask_JWT_Extended-4.7.1.dist-info/METADATA" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/Flask_JWT_Extended-4.7.1.dist-info/RECORD" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/Flask_JWT_Extended-4.7.1.dist-info/REQUESTED" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/Flask_JWT_Extended-4.7.1.dist-info/WHEEL" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/Flask_JWT_Extended-4.7.1.dist-info/top_level.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/Flask_Login-0.6.3.dist-info/INSTALLER" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/Flask_Login-0.6.3.dist-info/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/Flask_Login-0.6.3.dist-info/METADATA" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/Flask_Login-0.6.3.dist-info/RECORD" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/Flask_Login-0.6.3.dist-info/REQUESTED" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/Flask_Login-0.6.3.dist-info/WHEEL" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/Flask_Login-0.6.3.dist-info/top_level.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/bin/flask.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/blinker-1.9.0.dist-info/INSTALLER" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/blinker-1.9.0.dist-info/LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/blinker-1.9.0.dist-info/METADATA" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/blinker-1.9.0.dist-info/RECORD" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/blinker-1.9.0.dist-info/WHEEL" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/blinker/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/blinker/_utilities.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/blinker/base.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/blinker/py.typed" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click-8.3.1.dist-info/INSTALLER" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click-8.3.1.dist-info/METADATA" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click-8.3.1.dist-info/RECORD" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click-8.3.1.dist-info/WHEEL" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click-8.3.1.dist-info/licenses/LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/_compat.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/_termui_impl.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/_textwrap.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/_utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/_winconsole.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/core.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/decorators.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/exceptions.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/formatting.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/globals.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/parser.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/py.typed" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/shell_completion.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/termui.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/testing.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/types.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/click/utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama-0.4.6.dist-info/INSTALLER" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama-0.4.6.dist-info/METADATA" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama-0.4.6.dist-info/RECORD" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama-0.4.6.dist-info/WHEEL" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama-0.4.6.dist-info/licenses/LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama/ansi.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama/ansitowin32.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama/initialise.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama/tests/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama/tests/ansi_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama/tests/ansitowin32_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama/tests/initialise_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama/tests/isatty_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama/tests/utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama/tests/winterm_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama/win32.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/colorama/winterm.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask-3.1.2.dist-info/INSTALLER" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask-3.1.2.dist-info/METADATA" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask-3.1.2.dist-info/RECORD" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask-3.1.2.dist-info/REQUESTED" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask-3.1.2.dist-info/WHEEL" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask-3.1.2.dist-info/entry_points.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask-3.1.2.dist-info/licenses/LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/__main__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/app.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/blueprints.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/cli.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/config.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/ctx.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/debughelpers.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/globals.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/helpers.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/json/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/json/provider.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/json/tag.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/logging.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/py.typed" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/sansio/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/sansio/app.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/sansio/blueprints.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/sansio/scaffold.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/sessions.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/signals.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/templating.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/testing.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/typing.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/views.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask/wrappers.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_jwt_extended/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_jwt_extended/config.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_jwt_extended/default_callbacks.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_jwt_extended/exceptions.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_jwt_extended/internal_utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_jwt_extended/jwt_manager.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_jwt_extended/py.typed" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_jwt_extended/tokens.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_jwt_extended/typing.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_jwt_extended/utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_jwt_extended/view_decorators.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_login/__about__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_login/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_login/config.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_login/login_manager.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_login/mixins.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_login/signals.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_login/test_client.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/flask_login/utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/itsdangerous-2.2.0.dist-info/INSTALLER" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/itsdangerous-2.2.0.dist-info/LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/itsdangerous-2.2.0.dist-info/METADATA" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/itsdangerous-2.2.0.dist-info/RECORD" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/itsdangerous-2.2.0.dist-info/WHEEL" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/itsdangerous/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/itsdangerous/_json.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/itsdangerous/encoding.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/itsdangerous/exc.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/itsdangerous/py.typed" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/itsdangerous/serializer.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/itsdangerous/signer.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/itsdangerous/timed.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/itsdangerous/url_safe.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2-3.1.6.dist-info/INSTALLER" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2-3.1.6.dist-info/METADATA" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2-3.1.6.dist-info/RECORD" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2-3.1.6.dist-info/WHEEL" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2-3.1.6.dist-info/entry_points.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2-3.1.6.dist-info/licenses/LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/_identifier.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/async_utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/bccache.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/compiler.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/constants.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/debug.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/defaults.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/environment.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/exceptions.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/ext.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/filters.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/idtracking.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/lexer.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/loaders.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/meta.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/nativetypes.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/nodes.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/optimizer.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/parser.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/py.typed" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/runtime.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/sandbox.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/tests.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jinja2/visitor.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jwt/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jwt/algorithms.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jwt/api_jwk.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jwt/api_jws.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jwt/api_jwt.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jwt/exceptions.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jwt/help.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jwt/jwk_set_cache.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jwt/jwks_client.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jwt/py.typed" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jwt/types.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jwt/utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/jwt/warnings.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/markupsafe-3.0.3.dist-info/INSTALLER" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/markupsafe-3.0.3.dist-info/METADATA" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/markupsafe-3.0.3.dist-info/RECORD" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/markupsafe-3.0.3.dist-info/WHEEL" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/markupsafe-3.0.3.dist-info/licenses/LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/markupsafe-3.0.3.dist-info/top_level.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/markupsafe/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/markupsafe/_native.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/markupsafe/_speedups.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/markupsafe/_speedups.cp313-win_amd64.pyd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/markupsafe/_speedups.pyi" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/markupsafe/py.typed" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/pyjwt-2.11.0.dist-info/INSTALLER" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/pyjwt-2.11.0.dist-info/METADATA" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/pyjwt-2.11.0.dist-info/RECORD" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/pyjwt-2.11.0.dist-info/WHEEL" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/pyjwt-2.11.0.dist-info/licenses/AUTHORS.rst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/pyjwt-2.11.0.dist-info/licenses/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/pyjwt-2.11.0.dist-info/top_level.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug-3.1.5.dist-info/INSTALLER" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug-3.1.5.dist-info/METADATA" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug-3.1.5.dist-info/RECORD" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug-3.1.5.dist-info/WHEEL" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug-3.1.5.dist-info/licenses/LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/_internal.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/_reloader.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/datastructures/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/datastructures/accept.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/datastructures/auth.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/datastructures/cache_control.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/datastructures/csp.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/datastructures/etag.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/datastructures/file_storage.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/datastructures/headers.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/datastructures/mixins.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/datastructures/range.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/datastructures/structures.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/debug/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/debug/console.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/debug/repr.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/debug/shared/ICON_LICENSE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/debug/shared/console.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/debug/shared/debugger.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/debug/shared/less.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/debug/shared/more.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/debug/shared/style.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/debug/tbtools.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/exceptions.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/formparser.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/http.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/local.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/middleware/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/middleware/dispatcher.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/middleware/http_proxy.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/middleware/lint.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/middleware/profiler.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/middleware/proxy_fix.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/middleware/shared_data.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/py.typed" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/routing/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/routing/converters.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/routing/exceptions.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/routing/map.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/routing/matcher.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/routing/rules.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/sansio/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/sansio/http.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/sansio/multipart.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/sansio/request.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/sansio/response.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/sansio/utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/security.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/serving.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/testapp.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/urls.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/user_agent.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/wrappers/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/wrappers/request.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/wrappers/response.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/projects_XNIKAenv/werkzeug/wsgi.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/api/v1/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/api/v1/auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/models/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/models/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app/services/gigachat/text.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/instance/app.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/MainPage/MainPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/MainPage/MainPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Registration/Registration.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Registration/Registration.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/vite.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -304,7 +34,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="ali_develop" />
+        <entry key="$PROJECT_DIR$" value="yellow_front" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -334,21 +64,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.app.executor": "Run",
-    "Python.run (1).executor": "Run",
-    "Python.run.executor": "Run",
-    "Python.speech.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "yellow__front",
-    "last_opened_file_path": "/Users/ila/Python/NIKA",
-    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.run (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.run.executor&quot;: &quot;Run&quot;,
+    &quot;Python.speech.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;yellow__front&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/ila/Python/NIKA&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;terminal&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/backend/app/services" />
       <recent name="$PROJECT_DIR$/app/services/salute" />
     </key>
   </component>
@@ -548,7 +277,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="ali_develop" />
+                        <option value="origin/yellow_front" />
                       </list>
                     </value>
                   </entry>

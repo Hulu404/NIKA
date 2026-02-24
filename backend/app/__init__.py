@@ -5,10 +5,10 @@ from pathlib import Path
 from flask import Flask, jsonify
 from flask_login import LoginManager
 from flask_jwt_extended import JWTManager
-from app.config import get_config
+from .config import get_config
 
 # Импортируем расширения и модели (только расширения на уровне модуля)
-from app.extensions import db
+from .extensions import db
 
 
 # Создаём экземпляры расширений на уровне модуля (не глобальные переменные)
@@ -74,13 +74,13 @@ def create_app(config_name=None):
     # User loader для flask-login
     @login_manager.user_loader
     def load_user(user_id):
-        from app.models.user import User  # импорт внутри функции — безопасно
+        from .models.user import User  # импорт внутри функции — безопасно
         return db.session.get(User, int(user_id))
 
     # Защита отозванных JWT (если используете refresh-токены в БД)
     @jwt.token_in_blocklist_loader
     def check_if_token_revoked(jwt_header, jwt_payload):
-        from app.models.refresh_token import RefreshToken
+        from .models.refresh_token import RefreshToken
         jti = jwt_payload["jti"]
         token_type = jwt_payload["type"]
         if token_type == "refresh":
@@ -97,11 +97,17 @@ def create_app(config_name=None):
     app.register_blueprint(chat_v1)
     app.register_blueprint(auth_bp)
 
+    # Создание таблиц базы данных (только для development режима – опционально)
+    if app.config.get('ENV') == 'development' or app.debug:
+        with app.app_context():
+            db.create_all()
+            print("✅ Таблицы созданы (режим разработки)")
+
     # 6. CLI-команда для создания тестового пользователя (лучше, чем глобальный код)
     @app.cli.command("create-test-user")
     def create_test_user():
-        from app.models.user import User
-        from app.extensions import db
+        from .models.user import User
+        from .extensions import db
 
         if User.query.count() == 0:
             print("👤 Создаю тестового пользователя...")
@@ -122,9 +128,9 @@ def create_app(config_name=None):
     # 7. Shell context (для flask shell)
     @app.shell_context_processor
     def make_shell_context():
-        from app.models.user import User
-        from app.models.chat import Message  # если есть
-        from app.models.refresh_token import RefreshToken  # если есть
+        from .models.user import User
+        from .models.chat import Message  # если есть
+        from .models.refresh_token import RefreshToken  # если есть
 
         return {
             'db': db,

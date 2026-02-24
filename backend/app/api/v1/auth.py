@@ -8,14 +8,14 @@ from flask_jwt_extended import (
     get_jwt,
 )
 from datetime import datetime, timedelta
-from app.extensions import db
-from app.models.user import User
-from app.models.refresh_token import RefreshToken
+from ...extensions import db
+from ...models.user import User
+from ...models.refresh_token import RefreshToken
 from flask import current_app  # для логирования
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
 
-
+@jwt_required()
 @auth_bp.post("/register")
 def register():
     """Регистрация нового пользователя + сразу выдача токенов"""
@@ -39,7 +39,7 @@ def register():
 
     # gender и sport — необязательные
     gender = data.get("gender", None)
-    sport = data.get("sport", None)
+    sport = data.get("sport_type", None)
 
 
 
@@ -63,7 +63,7 @@ def register():
         last_name=last_name,
         email=email,
         gender=gender,
-        sport_type=sport  # или sport — как у тебя в модели
+        sport_type=sport
     )
     user.set_password(password)
 
