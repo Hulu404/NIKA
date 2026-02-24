@@ -5,7 +5,7 @@ from flask_jwt_extended import (
     create_refresh_token,
     jwt_required,
     get_jwt_identity,
-    get_jwt,
+    get_jwt, decode_token,
 )
 from datetime import datetime, timedelta
 from ...extensions import db
@@ -72,11 +72,12 @@ def register():
         db.session.commit()
 
         # Генерируем токены сразу после регистрации
-        access_token = create_access_token(identity=user.id, fresh=True)
-        refresh_token = create_refresh_token(identity=user.id)
+        access_token = create_access_token(identity=str(user.id), fresh=True)
+        refresh_token = create_refresh_token(identity=str(user.id))
 
-        # Сохраняем refresh-токен в БД
-        jti = get_jwt()["jti"] if get_jwt() else refresh_token.split(".")[-1]
+        decoded = decode_token(refresh_token)
+        jti = decoded['jti']
+
         token = RefreshToken(
             jti=jti,
             user_id=user.id,
@@ -108,6 +109,10 @@ def register():
 @auth_bp.post("/login")
 def login():
     """Вход пользователя — получение access и refresh токенов"""
+    print("📥 Заголовки запроса:", dict(request.headers))
+    print("📥 Тело запроса (сырое):", request.get_data(as_text=True))
+    print("📥 request.get_json():", request.get_json())
+
     data = request.get_json() or {}
     email = data.get("email")
     password = data.get("password")
@@ -119,11 +124,13 @@ def login():
     if not user or not user.check_password(password):
         return jsonify({"success": False, "error": "Неверный email или пароль"}), 401
 
-    access_token = create_access_token(identity=user.id, fresh=True)
-    refresh_token = create_refresh_token(identity=user.id)
+    # Преобразуем user.id в строку
+    access_token = create_access_token(identity=str(user.id), fresh=True)
+    refresh_token = create_refresh_token(identity=str(user.id))
 
-    # Сохраняем refresh-токен
-    jti = get_jwt()["jti"] if get_jwt() else refresh_token.split(".")[-1]
+    decoded = decode_token(refresh_token)
+    jti = decoded['jti']
+
     token = RefreshToken(
         jti=jti,
         user_id=user.id,
