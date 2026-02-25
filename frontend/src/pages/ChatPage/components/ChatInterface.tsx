@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Menu, X, Sparkles, Mic, Paperclip, MoreVertical, Plus } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ChatMessage } from './ChatMessage';
 import { ChatSidebar } from './ChatSidebar';
 import { SuggestedPrompts } from './SuggestedPrompts';
 import imgImage2 from "../assets/avatar.png";
+import { useNavigate } from 'react-router-dom';
 
 export interface Message {
   id: string;
@@ -53,52 +54,118 @@ const MOCK_MESSAGES: Message[] = [
 ];
 
 export function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>(MOCK_MESSAGES);
-  const [inputValue, setInputValue] = useState('');
+  const [messages, setMessages] = useState<any[]>([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(localStorage.getItem('chat_session_id'));
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const navigate = useNavigate();
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+  
+      // Загрузка истории чата (если уже есть)
+      loadHistory();
+    }, [navigate]);
 
-  const handleSend = () => {
-    if (!inputValue.trim()) return;
+    const loadHistory = async () => {
+    try {
+      const url = sessionId ? `/api/v1/chat/history?session_id=${sessionId}` : '/api/v1/chat/history';
 
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      content: inputValue,
-      role: 'user',
-      timestamp: new Date()
-    };
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      });
 
-    setMessages([...messages, newMessage]);
-    setInputValue('');
-    
-    setIsTyping(true);
-    setTimeout(() => {
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        content: 'Отличный прогресс! Продолжайте в том же духе. Хотите я составлю для вас персональный план тренировок?',
-        role: 'assistant',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, aiResponse]);
-      setIsTyping(false);
-    }, 1500);
+      if (!res.ok) {
+        if (res.status === 401) {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          navigate('/login');
+        }
+        throw new Error('Ошибка загрузки истории');
+      }
+
+      const data = await res.json();
+      setMessages(data.messages || []);
+      scrollToBottom();
+    } catch (err) {
+      console.error(err);
+    }
   };
+
+  const sendMessage = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!input.trim() || loading) return;
+  
+      const userMessage = { role: 'user', content: input };
+      setMessages((prev) => [...prev, userMessage]);
+      setInput('');
+      setLoading(true);
+  
+      try {
+        const res = await fetch('/api/v1/chat/send', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
+          body: JSON.stringify({
+            message: input,
+            with_audio: true, // или false, если хочешь только текст
+            session_id: sessionId,
+          }),
+        });
+  
+        const data = await res.json();
+  
+        if (!data.success) {
+          throw new Error(data.error || 'Ошибка отправки');
+        }
+  
+        // Сохраняем session_id
+        setSessionId(data.session_id);
+        localStorage.setItem('chat_session_id', data.session_id);
+  
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', content: data.reply },
+        ]);
+  
+        // Воспроизведение аудио
+        if (data.audio_base64) {
+          const audio = new Audio(`data:audio/mp3;base64,${data.audio_base64}`);
+          audio.play().catch((e) => console.error('Ошибка аудио:', e));
+        }
+  
+        scrollToBottom();
+      } catch (err) {
+        console.error(err);
+        alert(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      sendMessage(e);
     }
   };
 
@@ -107,7 +174,7 @@ export function ChatInterface() {
   };
 
   const handlePromptSelect = (prompt: string) => {
-    setInputValue(prompt);
+    setInput(prompt);
     inputRef.current?.focus();
   };
 
@@ -282,8 +349,8 @@ export function ChatInterface() {
 
                 <textarea
                   ref={inputRef}
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   onFocus={() => setIsFocused(true)}
                   onBlur={() => setIsFocused(false)}
@@ -305,13 +372,13 @@ export function ChatInterface() {
                   </motion.button>
                   
                   <motion.button
-                    onClick={handleSend}
-                    disabled={!inputValue.trim()}
-                    whileHover={{ scale: inputValue.trim() ? 1.05 : 1 }}
-                    whileTap={{ scale: inputValue.trim() ? 0.95 : 1 }}
+                    onClick={sendMessage}
+                    disabled={!input.trim()}
+                    whileHover={{ scale: input.trim() ? 1.05 : 1 }}
+                    whileTap={{ scale: input.trim() ? 0.95 : 1 }}
                     className="p-2.5 rounded-xl bg-gradient-to-r from-[#f6b044] to-[#f39c12] hover:from-[#f39c12] hover:to-[#f6b044] disabled:from-gray-200 disabled:to-gray-200 disabled:cursor-not-allowed shadow-lg disabled:shadow-none transition-all"
                   >
-                    <Send className={`${inputValue.trim() ? 'text-white' : 'text-gray-400'} transition-colors`} size={18} strokeWidth={2.5} />
+                    <Send className={`${input.trim() ? 'text-white' : 'text-gray-400'} transition-colors`} size={18} strokeWidth={2.5} />
                   </motion.button>
                 </div>
               </div>

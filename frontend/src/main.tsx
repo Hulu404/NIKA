@@ -20,13 +20,14 @@ import Profile from './pages/Profile/Profile';
 import EmotionTracker from './pages/EmotionTracker/emotion-tracker';
 import FoodTracker from './pages/Diet/food-tracker';
 import ProtectedRoute from './components/ProtectedRoute';
+import OldChatPage from './pages/ChatPage/OldchatPage';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<MainPage />} />
-        <Route path="/chat" element={<ProtectedRoute> <ChatPage /> </ProtectedRoute>} />
+        <Route path="/chat" element={<ProtectedRoute> <OldChatPage /> </ProtectedRoute>} />
         <Route path="/policy" element={<Policy />} />
         <Route path="/FAQ" element={<FAQPage />} />
         <Route path="/connection-error" element={<ConnectionError />} />

@@ -145,7 +145,8 @@ export function ChatMessage({ message, avatarUrl, showAvatar = true, isFirstInGr
             transition={{ delay: 0.2 }}
             className="text-xs text-gray-400 mt-2 px-2"
           >
-            {formatTime(message.timestamp)}
+            {/*{formatTime(message.timestamp)} */}
+            {'9:11'}
           </motion.span>
         )}
       </div>
