@@ -14,44 +14,6 @@ export interface Message {
   timestamp: Date;
 }
 
-const MOCK_MESSAGES: Message[] = [
-  {
-    id: '1',
-    content: 'Привет! Я НИКА, твой помощник по спорту. Я помогу тебе: понять свои спортивные возможности, построить правильный план тренировок, восстанавливаться после нагрузок и многое другое!\n\nОтветь: Готово\\Расскажи подробнее',
-    role: 'assistant',
-    timestamp: new Date(Date.now() - 600000)
-  },
-  {
-    id: '2',
-    content: 'Готово',
-    role: 'user',
-    timestamp: new Date(Date.now() - 540000)
-  },
-  {
-    id: '3',
-    content: 'Отлично! Для начала мне нужно узнать о тебе. Какой вид спорта тебя интересует?',
-    role: 'assistant',
-    timestamp: new Date(Date.now() - 480000)
-  },
-  {
-    id: '4',
-    content: 'Бег',
-    role: 'user',
-    timestamp: new Date(Date.now() - 420000)
-  },
-  {
-    id: '5',
-    content: 'Супер! Бег— отличный выбор. А ты уже бегаешь или только начинаешь?',
-    role: 'assistant',
-    timestamp: new Date(Date.now() - 360000)
-  },
-  {
-    id: '6',
-    content: 'Я начала бегать еще месяц назад, выходила на пробежку через день. Получалось по полчаса бега в легком темпе',
-    role: 'user',
-    timestamp: new Date(Date.now() - 300000)
-  }
-];
 
 export function ChatInterface() {
   const [messages, setMessages] = useState<any[]>([]);

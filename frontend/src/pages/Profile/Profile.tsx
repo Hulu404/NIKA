@@ -2,10 +2,63 @@ import { Settings, LogOut, ChevronRight, User } from 'lucide-react';
 import { ImageWithFallback } from './components/figma/ImageWithFallback';
 import svgPathsBack from './imports/svg-n101rx8ak0';
 import svgPaths from './imports/svg-nfsr0erm4u';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 
 export default function Profile() {
+  const [name, setName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const navigate = useNavigate();
+
+  const onLogout = async () => {
+    try {
+      const response = await fetch('/api/v1/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('refresh_token')}`,
+        },
+      })
+      if (!response.ok) {
+          throw new Error('Ошибка выхода');
+        }
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      navigate('/');
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  useEffect(() => {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      getUserData()
+    }, [navigate]);
+
+  const getUserData = async () => {
+    try {
+      const response = await fetch('api/v1/auth/profile', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      })
+      const data = await response.json()
+      setName(data.user.name)
+      setLastName(data.user.last_name)
+      setEmail(data.user.email)
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   return (
     <div className="flex min-h-screen w-full bg-[#fffee7]">
       {/* Sidebar */}
@@ -36,7 +89,7 @@ export default function Profile() {
             <nav className="flex flex-col gap-1">
               {/* Личный кабинет  - ACTIVE */}
               <NavLink to='/profile'>
-              <a className="flex items-center gap-3 px-3 py-2 text-[#83451e] bg-[#f0e8d8] rounded-[10px] h-[37px]">
+              <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] bg-[#f0e8d8] rounded-[10px] h-[37px]">
                 <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                   <div className="absolute contents inset-[12.5%_20.83%]">
                     <div className="absolute inset-[62.5%_20.83%_12.5%_20.83%]">
@@ -56,12 +109,12 @@ export default function Profile() {
                   </div>
                 </div>
                 <span className="text-[14px] leading-[21px]">Личный кабинет</span>
-              </a>
+              </span>
               </NavLink>
 
               {/* Трекер питания */}
               <NavLink to='/food-tracker'>
-              <a className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+              <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
                 <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                   <div className="absolute contents inset-[10%]">
                     <div className="absolute inset-[10%]">
@@ -81,36 +134,11 @@ export default function Profile() {
                   </div>
                 </div>
                 <span className="text-[14px] leading-[21px]">Трекер питания</span>
-              </a>
-              </NavLink>
-
-              {/* Трекер прогресса */}
-              <NavLink to="">
-              <a href="#" className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
-                <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
-                  <div className="absolute contents inset-[10%]">
-                    <div className="absolute inset-[10%]">
-                      <div className="absolute inset-[-5.21%]">
-                        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 17.6667 17.6667">
-                          <path d={svgPaths.p8bb5780} stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
-                        </svg>
-                      </div>
-                    </div>
-                    <div className="absolute bottom-[35%] left-1/2 right-[35%] top-[30%]">
-                      <div className="absolute inset-[-11.9%_-27.78%]">
-                        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 4.66667 8.66667">
-                          <path d={svgPaths.p2b744180} stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <span className="text-[14px] leading-[21px]">Трекер прогресса</span>
-              </a>
+              </span>
               </NavLink>
               {/* Дневник эмоций */}
               <NavLink to="/emotion-tracker">
-              <a href="#" className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+              <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
                 <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                   <div className="absolute contents inset-[10%]">
                     <div className="absolute inset-[10%]">
@@ -144,37 +172,14 @@ export default function Profile() {
                   </div>
                 </div>
                 <span className="text-[14px] leading-[21px]">Дневник эмоций</span>
-              </a>
+              </span>
               </NavLink>
-
-              {/* Настройки */}
-              <a href="#" className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
-                <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
-                  <div className="absolute contents inset-[8.41%_12.68%]">
-                    <div className="absolute inset-[8.41%_12.68%]">
-                      <div className="absolute inset-[-5.01%_-5.58%]">
-                        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16.5939 18.3035">
-                          <path d={svgPaths.p33ad6400} stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
-                        </svg>
-                      </div>
-                    </div>
-                    <div className="absolute inset-[37.5%]">
-                      <div className="absolute inset-[-16.67%]">
-                        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 6.66667 6.66667">
-                          <path d={svgPaths.p3d26e2c0} stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <span className="text-[14px] leading-[21px]">Настройки</span>
-              </a>
             </nav>
           </div>
         </div>
 
         {/* Exit Button */}
-        <button className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors">
+        <button onClick={onLogout} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d={svgPathsBack.p14ca9100} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
             <path d="M17.5 10H7.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
@@ -203,10 +208,10 @@ export default function Profile() {
               {/* User Info */}
               <div>
                 <h2 className="text-[#3d1f00] text-[24px] font-semibold mb-1">
-                  Александр Иванов
+                  {name} {lastName}
                 </h2>
                 <p className="text-[#83451e] text-[14px] mb-4">
-                  alexandr.ivanov@email.com
+                  {email}
                 </p>
                 <div className="flex gap-4">
                   <div className="bg-[#f0e8d8] px-4 py-2 rounded-full">
@@ -229,7 +234,7 @@ export default function Profile() {
                   </label>
                   <input
                     type="text"
-                    defaultValue="Александр"
+                    defaultValue={name}
                     className="w-full h-[56px] px-6 bg-[#faf8f0] rounded-[25px] text-[#3d1f00] text-[16px] placeholder:text-[rgba(131,69,30,0.5)] focus:outline-none focus:ring-2 focus:ring-[#f5a623] focus:bg-[#f0e8d8] transition-colors"
                   />
                 </div>
@@ -239,7 +244,7 @@ export default function Profile() {
                   </label>
                   <input
                     type="text"
-                    defaultValue="Иванов"
+                    defaultValue={lastName}
                     className="w-full h-[56px] px-6 bg-[#faf8f0] rounded-[25px] text-[#3d1f00] text-[16px] placeholder:text-[rgba(131,69,30,0.5)] focus:outline-none focus:ring-2 focus:ring-[#f5a623] focus:bg-[#f0e8d8] transition-colors"
                   />
                 </div>
@@ -252,7 +257,7 @@ export default function Profile() {
                 </label>
                 <input
                   type="email"
-                  defaultValue="alexandr.ivanov@email.com"
+                  defaultValue={email}
                   className="w-full h-[56px] px-6 bg-[#faf8f0] rounded-[25px] text-[#3d1f00] text-[16px] placeholder:text-[rgba(131,69,30,0.5)] focus:outline-none focus:ring-2 focus:ring-[#f5a623] focus:bg-[#f0e8d8] transition-colors"
                 />
               </div>
@@ -299,6 +304,36 @@ export default function Profile() {
               </div>
             </div>
           </div>
+
+          <div className="bg-white relative rounded-[20px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)] shrink-0 w-full p-8 mb-8">
+            <div className="flex flex-col gap-6">
+                <div className="h-[30px] relative shrink-0 w-full">
+                    <p className="absolute font-['Arimo:Bold',sans-serif] font-bold leading-[30px] left-0 text-[#3d1f00] text-[20px] top-[-2.4px]">Подписка</p>
+                </div>
+                
+                <div className="flex items-center justify-between p-6 bg-[#faf8f0] rounded-[20px]">
+                    <div>
+                        <p className="text-[#3d1f00] font-['Arimo:Bold',sans-serif] text-[18px] font-bold">Бесплатный план</p>
+                        <div className="flex flex-col gap-1 mt-2">
+                             <div className="flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#83451e]" />
+                                <p className="text-[#83451e] font-['Arimo:Regular',sans-serif] text-[14px]">ограниченное количество персональных рекомендаций</p>
+                             </div>
+                             <div className="flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#83451e]" />
+                                <p className="text-[#83451e] font-['Arimo:Regular',sans-serif] text-[14px]">базовый уровень анализа прогресса</p>
+                             </div>
+                        </div>
+                    </div>
+                    <button 
+                        onClick={() => navigate('/subscription')}
+                        className="bg-[#f5a623] hover:bg-[#e59615] text-white font-['Arimo:Bold',sans-serif] font-bold py-3 px-6 rounded-[15px] shadow-md transition-all active:scale-[0.98]"
+                    >
+                        Купить подписку
+                    </button>
+                </div>
+            </div>
+        </div>
 
           {/* Additional Settings Card */}
           <div className="bg-white rounded-[20px] p-8 shadow-sm">

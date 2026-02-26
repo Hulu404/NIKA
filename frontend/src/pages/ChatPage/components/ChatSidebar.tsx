@@ -1,6 +1,6 @@
 import { Plus, Clock, Search, Settings, LogOut, ChevronLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { NavLink} from 'react-router';
+import { NavLink, useNavigate} from 'react-router';
 
 interface ChatSidebarProps {
   isOpen: boolean;
@@ -18,6 +18,28 @@ const RECENT_CHATS = [
 
 
 export function ChatSidebar({ isOpen, onToggle, onNewChat }: ChatSidebarProps) {
+  const navigate = useNavigate();
+
+  const onLogout = async () => {
+  try {
+    const response = await fetch('/api/v1/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('refresh_token')}`,
+      },
+    })
+    if (!response.ok) {
+        throw new Error('Ошибка выхода');
+      }
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    navigate('/');
+  } catch (err) {
+    console.error(err);
+  }
+}
+
   return (
     <>
       {/* Mobile overlay */}
@@ -179,11 +201,7 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat }: ChatSidebarProps) {
 
             {/* Footer */}
             <div className="p-4 border-t border-black/5 space-y-1">
-              <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all text-gray-600 hover:text-gray-900 group">
-                <Settings size={18} className="text-gray-400 group-hover:text-gray-600 transition-colors" strokeWidth={2.5} />
-                <span className="text-sm font-medium">Настройки</span>
-              </button>
-              <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 transition-all text-gray-600 hover:text-red-500 group">
+              <button onClick={onLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 transition-all text-gray-600 hover:text-red-500 group">
                 <LogOut size={18} className="text-gray-400 group-hover:text-red-500 transition-colors" strokeWidth={2.5} />
                 <span className="text-sm font-medium">Выйти</span>
               </button>

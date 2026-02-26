@@ -7,7 +7,6 @@ import 'react-toastify/dist/ReactToastify.css'; // стили для тосто�
 
 // Страницы
 import MainPage from './pages/MainPage/MainPage';
-import ChatPage from './pages/ChatPage/ChatPage';
 import FAQPage from './pages/FAQPage/FAQPage';
 import Policy from './pages/Policy/Policy';
 import ConnectionError from './pages/ConnectionError/ConnectionError';
@@ -21,6 +20,7 @@ import EmotionTracker from './pages/EmotionTracker/emotion-tracker';
 import FoodTracker from './pages/Diet/food-tracker';
 import ProtectedRoute from './components/ProtectedRoute';
 import OldChatPage from './pages/ChatPage/OldchatPage';
+import Subscription from './pages/Subscription/Subscription';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -36,6 +36,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path='/profile' element={<Profile />} />
         <Route path='/emotion-tracker' element={<EmotionTracker />} />
         <Route path='/food-tracker' element={<FoodTracker />} />
+        <Route path='/subscription' element={<Subscription/>} />
       </Routes>
     </BrowserRouter>
 
