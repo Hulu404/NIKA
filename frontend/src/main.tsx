@@ -9,7 +9,6 @@ import 'react-toastify/dist/ReactToastify.css'; // стили для тосто�
 import MainPage from './pages/MainPage/MainPage';
 import FAQPage from './pages/FAQPage/FAQPage';
 import Policy from './pages/Policy/Policy';
-import ConnectionError from './pages/ConnectionError/ConnectionError';
 import RegistrationPage from './pages/Registration/Registration';
 import LoginPage from './pages/Login/LoginPage';
 
@@ -30,7 +29,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/chat" element={<ProtectedRoute> <OldChatPage /> </ProtectedRoute>} />
         <Route path="/policy" element={<Policy />} />
         <Route path="/FAQ" element={<FAQPage />} />
-        <Route path="/connection-error" element={<ConnectionError />} />
         <Route path="/registration" element={<RegistrationPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path='/profile' element={<Profile />} />

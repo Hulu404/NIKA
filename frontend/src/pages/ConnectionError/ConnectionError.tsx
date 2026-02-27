@@ -1,5 +1,3 @@
-import ChatPage from "../ChatPage/ChatPage";
-import svgPaths from "./imports/svg-tyd27m3zhp";
 import { WifiOff } from "lucide-react";
 
 function WifiOffIcon() {
@@ -10,7 +8,10 @@ function WifiOffIcon() {
   );
 }
 
-function ConnectionErrorModal() {
+export default function ConnectionErrorModal() {
+  const handleRefresh = () => {
+    window.location.reload()
+  }
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Glassmorphism Modal */}
@@ -36,7 +37,7 @@ function ConnectionErrorModal() {
         {/* Buttons */}
         <div className="mt-8 w-full flex flex-col gap-3">
           {/* Primary Button - Try Again */}
-          <button 
+          <button onClick={handleRefresh}
             className="w-full h-[56px] rounded-[28px] bg-[#F6B044] text-white font-bold text-[16px] shadow-[0px_4px_12px_0px_rgba(246,176,68,0.3)] hover:bg-[#f5a832] transition-colors"
           >
             Попробовать снова
@@ -63,22 +64,3 @@ function ConnectionErrorModal() {
   );
 }
 
-export default function ConnectionError() {
-  return (
-    <div className="relative w-full h-screen overflow-hidden bg-[#FAF7EC]">
-      {/* Background Chat Interface - Blurred */}
-      <div className="absolute inset-0">
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/20 z-10" />
-        
-        {/* Blurred Chat Background */}
-        <div className="absolute inset-0 blur-[8px]">
-          <ChatPage />
-        </div>
-      </div>
-      
-      {/* Connection Error Modal */}
-      <ConnectionErrorModal />
-    </div>
-  );
-}

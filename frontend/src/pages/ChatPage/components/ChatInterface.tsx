@@ -15,7 +15,7 @@ export interface Message {
 }
 
 
-export function ChatInterface() {
+export function ChatInterface({isError}) {
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -118,8 +118,9 @@ export function ChatInterface() {
         scrollToBottom();
       } catch (err) {
         console.error(err);
-        alert(err.message);
+        isError(true)
       } finally {
+        isError(false)
         setLoading(false);
       }
     };
