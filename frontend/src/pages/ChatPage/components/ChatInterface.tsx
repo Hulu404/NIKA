@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Menu, X, Sparkles, Mic, Paperclip, MoreVertical, Plus } from 'lucide-react';
+import { Send, Menu, X, Sparkles, Mic, Paperclip, MoreVertical } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ChatMessage } from './ChatMessage';
 import { ChatSidebar } from './ChatSidebar';
@@ -14,13 +14,16 @@ export interface Message {
   timestamp: Date;
 }
 
+interface Error {
+  isError: Function
+}
 
-export function ChatInterface({isError}) {
+export function ChatInterface({isError}: Error) {
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isTyping, setIsTyping] = useState(false);
+  const isTyping = false
   const [isFocused, setIsFocused] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(localStorage.getItem('chat_session_id'));
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -156,6 +159,8 @@ export function ChatInterface({isError}) {
     return acc;
   }, [] as (Message & { showAvatar: boolean; isFirstInGroup: boolean; isLastInGroup: boolean })[]);
 
+  
+
   return (
     <div className="flex h-screen bg-gradient-to-br from-[#fafafa] via-[#ffffff] to-[#f5f5f5] relative overflow-hidden">
       {/* Animated Background */}
@@ -252,14 +257,11 @@ export function ChatInterface({isError}) {
               </div>
             ) : (
               <div className="space-y-1">
-                {groupedMessages.map((message) => (
+                {groupedMessages.map((message: Message) => (
                   <ChatMessage 
                     key={message.id} 
                     message={message}
                     avatarUrl={message.role === 'assistant' ? imgImage2 : undefined}
-                    showAvatar={message.showAvatar}
-                    isFirstInGroup={message.isFirstInGroup}
-                    isLastInGroup={message.isLastInGroup}
                   />
                 ))}
                 

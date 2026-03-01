@@ -113,7 +113,7 @@ export default function Component1() {
         <p className="mb-0 text-[13px]">
           <span className="leading-[normal]">{`2.8. Персональные данные — любая информация, относящаяся прямо или косвенно к определенному или определяемому Пользователю веб-сайта `}</span>
           <a className="[text-decoration-skip-ink:none] cursor-pointer decoration-solid leading-[normal] underline" href="https://thismywebsite.com/">
-            <span className="[text-decoration-skip-ink:none] decoration-solid leading-[normal]" href="https://thismywebsite.com/">
+            <span className="[text-decoration-skip-ink:none] decoration-solid leading-[normal]">
               https://thismywebsite.com
             </span>
           </a>
@@ -127,7 +127,7 @@ export default function Component1() {
             {`2.10. Пользователь — любой посетитель веб-сайта `}
           </span>
           <a className="[text-decoration-skip-ink:none] cursor-pointer decoration-solid leading-[normal] underline" href="https://thismywebsite.com/">
-            <span className="[text-decoration-skip-ink:none] decoration-solid leading-[normal]" href="https://thismywebsite.com/">
+            <span className="[text-decoration-skip-ink:none] decoration-solid leading-[normal]" >
               https://thismywebsite.com
             </span>
           </a>

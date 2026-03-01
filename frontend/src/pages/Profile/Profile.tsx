@@ -1,5 +1,5 @@
-import { Settings, LogOut, ChevronRight, User } from 'lucide-react';
-import { ImageWithFallback } from './components/figma/ImageWithFallback';
+import { ChevronRight} from 'lucide-react';
+
 import svgPathsBack from './imports/svg-n101rx8ak0';
 import svgPaths from './imports/svg-nfsr0erm4u';
 import { NavLink, useNavigate } from 'react-router-dom';

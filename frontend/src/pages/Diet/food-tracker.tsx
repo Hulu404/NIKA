@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { User, Settings, LogOut, Plus, Edit2, Trash2, X } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Trash2, X } from 'lucide-react';
 import svgPathsBack from './imports/svg-n101rx8ak0';
 import svgPaths from './imports/svg-nfsr0erm4u';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -86,10 +86,6 @@ export default function FoodTracker() {
 
   const getMealLabel = (mealType: string) => {
     return mealTypes.find(m => m.type === mealType)?.label || '';
-  };
-
-  const getMealIcon = (mealType: string) => {
-    return mealTypes.find(m => m.type === mealType)?.icon || '';
   };
 
   return (

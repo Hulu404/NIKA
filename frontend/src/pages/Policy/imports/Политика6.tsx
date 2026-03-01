@@ -103,7 +103,7 @@ export default function Component1() {
             {`Пользователь может в любой момент отозвать свое согласие на обработку персональных данных, направив Оператору уведомление посредством электронной почты на электронный адрес Оператора `}
           </span>
           <a className="[text-decoration-skip-ink:none] cursor-pointer decoration-solid font-['Manrope:Regular',sans-serif] font-normal leading-[normal] underline" href="mailto:privacy@thismywebsite.com">
-            <span className="[text-decoration-skip-ink:none] decoration-solid leading-[normal]" href="mailto:privacy@thismywebsite.com">
+            <span className="[text-decoration-skip-ink:none] decoration-solid leading-[normal]" >
               privacy@thismywebsite.com
             </span>
           </a>

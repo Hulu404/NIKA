@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, Plus, Search, Settings, LogOut, Clock } from 'lucide-react';
-import imgImageNika from "./assets/23ab7528e0cbc70eec16bb3be67f5d33b9e64433.png";
+
 
 interface FAQItem {
   question: string;

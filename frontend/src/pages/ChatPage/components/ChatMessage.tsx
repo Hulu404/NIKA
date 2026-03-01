@@ -16,9 +16,7 @@ export function ChatMessage({ message, avatarUrl, showAvatar = true, isFirstInGr
   const [isCopied, setIsCopied] = useState(false);
   const isUser = message.role === 'user';
   
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-  };
+  
 
   const handleCopy = () => {
     navigator.clipboard.writeText(message.content);

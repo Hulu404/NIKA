@@ -92,7 +92,7 @@ export default function ChatPage() {
       }
 
       scrollToBottom();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert(err.message);
     } finally {

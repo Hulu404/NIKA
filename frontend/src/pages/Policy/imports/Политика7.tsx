@@ -104,13 +104,13 @@ export default function Component1() {
         <p className="font-['Manrope:Regular',sans-serif] font-normal mb-0 text-[13px]">
           <span className="leading-[normal]">{`12.1. Пользователь может получить любые разъяснения по интересующим вопросам, касающимся обработки его персональных данных, обратившись к Оператору с помощью электронной почты `}</span>
           <a className="[text-decoration-skip-ink:none] cursor-pointer decoration-solid leading-[normal] underline" href="mailto:privacy@thismywebsite.com">
-            <span className="[text-decoration-skip-ink:none] decoration-solid leading-[normal]" href="mailto:privacy@thismywebsite.com">
+            <span className="[text-decoration-skip-ink:none] decoration-solid leading-[normal]" >
               privacy@thismywebsite.com
             </span>
           </a>
           <span className="leading-[normal]">{`. 12.2. В данном документе будут отражены любые изменения политики обработки персональных данных Оператором. Политика действует бессрочно до замены ее новой версией. 12.3. Актуальная версия Политики в свободном доступе расположена в сети Интернет по адресу `}</span>
           <a className="[text-decoration-skip-ink:none] cursor-pointer decoration-solid leading-[normal] underline" href="https://thismywebsite.com/privacy/">
-            <span className="[text-decoration-skip-ink:none] decoration-solid leading-[normal]" href="https://thismywebsite.com/privacy/">
+            <span className="[text-decoration-skip-ink:none] decoration-solid leading-[normal]">
               https://thismywebsite.com/privacy/
             </span>
           </a>

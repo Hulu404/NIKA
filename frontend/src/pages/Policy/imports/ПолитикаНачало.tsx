@@ -188,7 +188,7 @@ export default function Component() {
         <p className="mb-0 text-[13px]">
           <span className="leading-[normal]">{`1.2. Настоящая политика Оператора в отношении обработки персональных данных (далее — Политика) применяется ко всей информации, которую Оператор может получить о посетителях веб-сайта `}</span>
           <a className="[text-decoration-skip-ink:none] cursor-pointer decoration-solid leading-[normal] underline" href="https://thismywebsite.com/">
-            <span className="[text-decoration-skip-ink:none] decoration-solid leading-[normal]" href="https://thismywebsite.com/">
+            <span className="[text-decoration-skip-ink:none] decoration-solid leading-[normal]">
               https://thismywebsite.com
             </span>
           </a>
@@ -208,7 +208,7 @@ export default function Component() {
             {`2.3. Веб-сайт — совокупность графических и информационных материалов, а также программ для ЭВМ и баз данных, обеспечивающих их доступность в сети интернет по сетевому адресу `}
           </span>
           <a className="[text-decoration-skip-ink:none] cursor-pointer decoration-solid leading-[normal] underline" href="https://thismywebsite.com/">
-            <span className="[text-decoration-skip-ink:none] decoration-solid leading-[normal]" href="https://thismywebsite.com/">
+            <span className="[text-decoration-skip-ink:none] decoration-solid leading-[normal]">
               https://thismywebsite.com
             </span>
           </a>

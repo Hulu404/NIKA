@@ -8,7 +8,6 @@ export default function OldChatPage() {
   const onConnectionError = (e: boolean) => {
     if (e) {
       setError(e)
-      
     }
   }
 

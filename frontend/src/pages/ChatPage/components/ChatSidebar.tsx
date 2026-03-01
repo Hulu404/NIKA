@@ -1,4 +1,4 @@
-import { Plus, Clock, Search, Settings, LogOut, ChevronLeft } from 'lucide-react';
+import { Plus, Clock, Search, LogOut, ChevronLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink, useNavigate} from 'react-router';
 

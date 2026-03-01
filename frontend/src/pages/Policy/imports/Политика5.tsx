@@ -155,7 +155,7 @@ export default function Component1() {
             {`8.3. В случае выявления неточностей в персональных данных, Пользователь может актуализировать их самостоятельно, путем направления Оператору уведомление на адрес электронной почты Оператора `}
           </span>
           <a className="[text-decoration-skip-ink:none] cursor-pointer decoration-solid font-['Manrope:Regular',sans-serif] font-normal leading-[normal] underline" href="mailto:privacy@thismywebsite.com">
-            <span className="[text-decoration-skip-ink:none] decoration-solid leading-[normal]" href="mailto:privacy@thismywebsite.com">
+            <span className="[text-decoration-skip-ink:none] decoration-solid leading-[normal]" >
               privacy@thismywebsite.com
             </span>
           </a>
