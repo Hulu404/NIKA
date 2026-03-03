@@ -1,6 +1,7 @@
 from app.extensions import db
 from datetime import datetime
 
+
 class Message(db.Model):
     __tablename__ = "messages"
 

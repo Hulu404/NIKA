@@ -3,7 +3,7 @@ from datetime import datetime
 import uuid
 import base64
 from pathlib import Path
-from flask import Blueprint, request, jsonify, current_app, send_file
+from flask import Blueprint, request, jsonify, current_app, send_file, session
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_login import current_user
 from app.models.guest_manager import GuestManager
@@ -121,21 +121,22 @@ def send_message():
         # 4. Сохраняем сообщения в БД
         session_id = data.get('session_id') or str(uuid.uuid4())
 
-        user_msg = Message(
-            user_id=user_id,
-            session_id=session_id,
-            role="user",
-            content=user_text
-        )
-        assistant_msg = Message(
-            user_id=user_id,
-            session_id=session_id,
-            role="assistant",
-            content=reply
-        )
+        if not is_guest and user_id:
+            user_msg = Message(
+                user_id=user_id,
+                session_id=session_id,
+                role="user",
+                content=user_text
+            )
+            assistant_msg = Message(
+                user_id=user_id,
+                session_id=session_id,
+                role="assistant",
+                content=reply
+            )
 
-        db.session.add_all([user_msg, assistant_msg])
-        db.session.commit()
+            db.session.add_all([user_msg, assistant_msg])
+            db.session.commit()
 
         # 5. Увеличиваем счётчик запросов
         if not is_guest:
@@ -262,3 +263,26 @@ def get_sessions():
 @chat_v1.get('/health')
 def health_check():
     return jsonify({"success": True, "status": "ok"})
+
+
+@chat_v1.get('/test-session')
+def test_session():
+    """Тест"""
+    try:
+        
+        if 'test_counter' not in session:
+            session['test_counter'] = 0
+        session['test_counter'] += 1
+        
+        return jsonify({
+            'success': True,
+            'session_data': dict(session),
+            'session_id': request.cookies.get('session'),
+            'counter': session['test_counter']
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+    
