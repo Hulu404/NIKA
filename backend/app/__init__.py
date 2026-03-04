@@ -5,17 +5,16 @@ from pathlib import Path
 from flask import Flask, jsonify
 from flask_login import LoginManager
 from flask_jwt_extended import JWTManager
-from flask_session import Session  # ⚠️ ДОБАВЛЕНО: импорт Flask-Session
+from flask_session import Session
 from .config import get_config
 
 # Импортируем расширения и модели (только расширения на уровне модуля)
 from .extensions import db
 
-
 # Создаём экземпляры расширений на уровне модуля
 login_manager = LoginManager()
 jwt = JWTManager()
-session = Session()  
+session = Session()
 
 
 def create_app(config_name=None):
@@ -37,21 +36,21 @@ def create_app(config_name=None):
     app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)
 
     # Настройки сессий
-    app.config['SESSION_TYPE'] = 'filesystem'  # Хранить сессии в файловой системе
+    app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SESSION_PERMANENT'] = True
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=31)
-    app.config['SESSION_USE_SIGNER'] = True  # Подписывать сессионные cookie
-    app.config['SESSION_KEY_PREFIX'] = 'nika:'  # Префикс для ключей сессии
+    app.config['SESSION_USE_SIGNER'] = True
+    app.config['SESSION_KEY_PREFIX'] = 'nika:'
     app.config['SESSION_COOKIE_NAME'] = 'nika_session'
-    app.config['SESSION_COOKIE_SECURE'] = False  # True в продакшене (HTTPS)
+    app.config['SESSION_COOKIE_SECURE'] = False
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-    
+
     # Директория для хранения файлов сессий
     session_dir = Path(app.instance_path) / 'flask_session'
     app.config['SESSION_FILE_DIR'] = str(session_dir)
-    app.config['SESSION_FILE_THRESHOLD'] = 100  # Максимум файлов сессий
-    app.config['SESSION_FILE_MODE'] = 0o600  # Права доступа к файлам сессий
+    app.config['SESSION_FILE_THRESHOLD'] = 100
+    app.config['SESSION_FILE_MODE'] = 0o600
 
     # Проверяем наличие URI для БД
     if not app.config.get("SQLALCHEMY_DATABASE_URI"):
@@ -60,8 +59,7 @@ def create_app(config_name=None):
     # 2. Создаём необходимые директории
     Path(app.instance_path).mkdir(parents=True, exist_ok=True)
     print(f"📁 Папка instance: {app.instance_path}")
-    
-    # Создаем директорию для сессий
+
     session_dir.mkdir(parents=True, exist_ok=True)
     print(f"📁 Папка сессий: {session_dir}")
 
@@ -78,8 +76,8 @@ def create_app(config_name=None):
     db.init_app(app)
     login_manager.init_app(app)
     jwt.init_app(app)
-    session.init_app(app)  
-    
+    session.init_app(app)
+
     # 4. Настройка flask-login
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Пожалуйста, войдите для доступа к этой странице'
@@ -107,10 +105,15 @@ def create_app(config_name=None):
     from .views.main import main_bp
     from .api.v1.chat import chat_v1
     from .api.v1.auth import auth_bp
+    from .api.v1.food import food_v1
 
+    app.register_blueprint(food_v1)
     app.register_blueprint(main_bp)
     app.register_blueprint(chat_v1)
     app.register_blueprint(auth_bp)
+
+    # 6. Импортируем модель FoodEntry перед созданием таблиц
+    from .models.food_entry import FoodEntry
 
     # Создание таблиц базы данных (только для development)
     if app.config.get('ENV') == 'development' or app.debug:
@@ -118,7 +121,7 @@ def create_app(config_name=None):
             db.create_all()
             print("✅ Таблицы созданы (режим разработки)")
 
-    # 6. CLI-команды
+    # 7. CLI-команды
     @app.cli.command("create-test-user")
     def create_test_user():
         from .models.user import User
@@ -139,22 +142,21 @@ def create_app(config_name=None):
             print("✅ Тестовый пользователь создан (email: admin@example.com, пароль: admin123)")
         else:
             print(f"👤 В базе уже есть {User.query.count()} пользователей")
-    
-    
+
     @app.cli.command("clean-sessions")
     def clean_sessions():
         """Очищает старые файлы сессий (старше 32 дней)"""
         import time
         from pathlib import Path
-        
+
         session_dir = Path(app.config['SESSION_FILE_DIR'])
         if not session_dir.exists():
             print("📁 Директория сессий не найдена")
             return
-        
+
         now = time.time()
         max_age = 32 * 24 * 60 * 60  # 32 дня в секундах
-        
+
         deleted = 0
         for session_file in session_dir.glob('*'):
             if session_file.is_file():
@@ -162,24 +164,26 @@ def create_app(config_name=None):
                 if file_age > max_age:
                     session_file.unlink()
                     deleted += 1
-        
+
         print(f"🧹 Удалено старых сессий: {deleted}")
 
-    # 7. Shell context
+    # 8. Shell context
     @app.shell_context_processor
     def make_shell_context():
         from .models.user import User
         from .models.message import Message
         from .models.refresh_token import RefreshToken
+        from .models.food_entry import FoodEntry  
 
         return {
             'db': db,
             'User': User,
             'Message': Message,
             'RefreshToken': RefreshToken,
+            'FoodEntry': FoodEntry,
             'app': app
         }
-    
+
     @app.post("/test-post")
     def test_post():
         return jsonify({"success": True, "message": "POST работает"})

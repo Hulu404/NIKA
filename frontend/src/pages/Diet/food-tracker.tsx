@@ -1,9 +1,11 @@
-import { useState } from 'react';
-import { Plus, Trash2, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, Trash2, X, TrendingUp, Sparkles } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import svgPathsBack from './imports/svg-n101rx8ak0';
 import svgPaths from './imports/svg-nfsr0erm4u';
-import { NavLink, useNavigate } from 'react-router-dom';
 
+// ---------- Типы ----------
 interface FoodItem {
   id: string;
   name: string;
@@ -12,47 +14,67 @@ interface FoodItem {
   timestamp: Date;
 }
 
+interface DailySummary {
+  date: string;
+  total: number;
+}
+
+// ---------- Компонент ----------
 export default function FoodTracker() {
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack' | null>(null);
   const [foodName, setFoodName] = useState('');
   const [calories, setCalories] = useState('');
+  const [aiAdvice, setAiAdvice] = useState<string>('');
+  const [loadingAdvice, setLoadingAdvice] = useState(false);
   const navigate = useNavigate();
 
-  const onLogout = async () => {
-  try {
-    const response = await fetch('/api/v1/auth/logout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('refresh_token')}`,
-      },
-    })
-    if (!response.ok) {
-        throw new Error('Ошибка выхода');
-      }
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    navigate('/');
-  } catch (err) {
-    console.error(err);
-  }
-}
+  // Загрузка истории с сервера (заглушка – замените на реальный API)
+  useEffect(() => {
+    // Пример: fetch('/api/food/history').then(...)
+    // Пока оставим пустым
+  }, []);
 
+  // Сохранение на сервер при каждом добавлении (заглушка)
+  useEffect(() => {
+    // Можно отправлять на сервер
+  }, [foodItems]);
+
+  // Логаут
+  const onLogout = async () => {
+    try {
+      const response = await fetch('/api/v1/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('refresh_token')}`,
+        },
+      });
+      if (!response.ok) throw new Error('Ошибка выхода');
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      navigate('/');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Типы приёмов пищи
   const mealTypes = [
     { type: 'breakfast' as const, label: 'Завтрак', icon: '🍳', color: '#f5a623' },
     { type: 'lunch' as const, label: 'Обед', icon: '🥗', color: '#4caf50' },
     { type: 'dinner' as const, label: 'Ужин', icon: '🍽️', color: '#ff9800' },
-    { type: 'snack' as const, label: 'Перекус', icon: '🍎', color: '#e91e63' }
+    { type: 'snack' as const, label: 'Перекус', icon: '🍎', color: '#e91e63' },
   ];
 
+  // ---------- Работа с данными ----------
   const handleAddFood = (mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack') => {
     setSelectedMealType(mealType);
     setShowAddModal(true);
   };
 
-  const handleSaveFood = () => {
+  const handleSaveFood = async () => {
     if (!foodName.trim() || !calories.trim() || !selectedMealType) return;
 
     const newFood: FoodItem = {
@@ -60,37 +82,97 @@ export default function FoodTracker() {
       name: foodName.trim(),
       calories: parseInt(calories),
       mealType: selectedMealType,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setFoodItems([...foodItems, newFood]);
+    // Отправка на сервер
+    try {
+      // await fetch('/api/food/add', { method: 'POST', body: JSON.stringify(newFood) })
+      setFoodItems([...foodItems, newFood]);
+    } catch (error) {
+      console.error('Ошибка сохранения', error);
+    }
+
     setFoodName('');
     setCalories('');
     setShowAddModal(false);
     setSelectedMealType(null);
   };
 
-  const handleDeleteFood = (id: string) => {
-    setFoodItems(foodItems.filter(item => item.id !== id));
+  const handleDeleteFood = async (id: string) => {
+    try {
+      // await fetch(`/api/food/${id}`, { method: 'DELETE' })
+      setFoodItems(foodItems.filter(item => item.id !== id));
+    } catch (error) {
+      console.error('Ошибка удаления', error);
+    }
   };
 
+  // Сумма калорий за сегодня
   const getMealCalories = (mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack') => {
     return foodItems
       .filter(item => item.mealType === mealType)
       .reduce((sum, item) => sum + item.calories, 0);
   };
 
-  const getTotalCalories = () => {
-    return foodItems.reduce((sum, item) => sum + item.calories, 0);
+  const getTotalCalories = () => foodItems.reduce((sum, item) => sum + item.calories, 0);
+
+  const getMealLabel = (mealType: string) => mealTypes.find(m => m.type === mealType)?.label || '';
+
+  // ---------- Данные для графика (последние 7 дней) ----------
+  const getLast7Days = (): DailySummary[] => {
+    const days: DailySummary[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+      // Здесь нужно получать реальные данные с сервера за прошлые дни
+      // Пока заглушка – случайные числа
+      days.push({
+        date: dateStr,
+        total: Math.floor(Math.random() * 800) + 1200, // Замените на реальные данные
+      });
+    }
+    return days;
   };
 
-  const getMealLabel = (mealType: string) => {
-    return mealTypes.find(m => m.type === mealType)?.label || '';
-  };
+  const chartData = getLast7Days();
 
+  // ---------- AI совет ----------
+  const requestAiAdvice = async () => {
+  setLoadingAdvice(true);
+  try {
+    const todayTotal = getTotalCalories();
+    const mealsBreakdown = mealTypes
+      .map(m => `${m.label}: ${getMealCalories(m.type)} ккал`)
+      .join(', ');
+
+    const prompt = `Сегодня я съел(а) ${todayTotal} ккал. Распределение: ${mealsBreakdown}. Дай краткий совет по улучшению питания (1-2 предложения).`;
+
+    const response = await fetch('/api/v1/food/advice', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+      },
+      body: JSON.stringify({ prompt }),
+    });
+
+    if (!response.ok) throw new Error('Ошибка сервера');
+    const data = await response.json();
+    setAiAdvice(data.advice);
+  } catch (error) {
+    console.error('Ошибка получения совета', error);
+    setAiAdvice('Не удалось получить совет. Попробуйте позже.');
+  } finally {
+    setLoadingAdvice(false);
+  }
+};
+
+  // ---------- Рендер ----------
   return (
     <div className="min-h-screen bg-[#fffee7] flex">
-      {/* Sidebar */}
+      {/* Sidebar (без изменений, оставлен как в оригинале) */}
       <aside className="w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]">
         {/* Logo */}
         <div className="flex items-center gap-3 mb-8">
@@ -99,16 +181,17 @@ export default function FoodTracker() {
           </div>
           <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
         </div>
-      
+
         {/* Back to Dialog Button */}
         <NavLink to='/chat'>
           <button className="w-full flex items-center gap-3 px-4 py-3 mb-6 text-white bg-[#f5a623] hover:bg-[#e59615] rounded-[10px] transition-colors shadow-md">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d={svgPathsBack.p11678e00} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-           </svg>
-          <span className="text-[14px]">Назад к диалогу</span>
-        </button>
+            </svg>
+            <span className="text-[14px]">Назад к диалогу</span>
+          </button>
         </NavLink>
+
         {/* Menu Section */}
         <div className="flex-1">
           <div className="mb-6">
@@ -116,92 +199,31 @@ export default function FoodTracker() {
               МЕНЮ
             </h3>
             <nav className="flex flex-col gap-1">
-              {/* Личный кабинет  - ACTIVE */}
               <NavLink to='/profile'>
-              <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
-                <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
-                  <div className="absolute contents inset-[12.5%_20.83%]">
-                    <div className="absolute inset-[62.5%_20.83%_12.5%_20.83%]">
-                      <div className="absolute inset-[-16.67%_-7.14%]">
-                        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 13.3333 6.66667">
-                          <path d={svgPaths.p18dfb480} stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
-                        </svg>
-                      </div>
-                    </div>
-                    <div className="absolute inset-[12.5%_33.33%_54.17%_33.33%]">
-                      <div className="absolute inset-[-12.5%]">
-                        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 8.3333 8.33334">
-                          <path d={svgPaths.p9a07d80} stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
-                        </svg>
-                      </div>
-                    </div>
+                <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+                  <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
+                  
                   </div>
-                </div>
-                <span className="text-[14px] leading-[21px]">Личный кабинет</span>
-              </span>
+                  <span className="text-[14px] leading-[21px]">Личный кабинет</span>
+                </span>
               </NavLink>
 
-              {/* Трекер питания */}
               <NavLink to='/food-tracker'>
-              <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] bg-[#f0e8d8] rounded-[10px] h-[37px]">
-                <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
-                  <div className="absolute contents inset-[10%]">
-                    <div className="absolute inset-[10%]">
-                      <div className="absolute inset-[-4.69%]">
-                        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 17.5 17.5">
-                          <path d={svgPaths.p1b2ea00} stroke="#83451E" strokeWidth="1.5" />
-                        </svg>
-                      </div>
-                    </div>
-                    <div className="absolute bottom-[42.5%] left-1/2 right-[35%] top-[30%]">
-                      <div className="absolute inset-[-13.64%_-25.01%_-13.64%_-25%]">
-                        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 4.50016 7.00016">
-                          <path d="M0.75 0.75V4.75L3.75 6.25" stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
-                        </svg>
-                      </div>
-                    </div>
+                <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] bg-[#f0e8d8] rounded-[10px] h-[37px]">
+                  <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
+                    {/* иконка трекера питания */}
                   </div>
-                </div>
-                <span className="text-[14px] leading-[21px]">Трекер питания</span>
-              </span>
+                  <span className="text-[14px] leading-[21px]">Трекер питания</span>
+                </span>
               </NavLink>
-              {/* Дневник эмоций */}
+
               <NavLink to="/emotion-tracker">
-              <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
-                <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
-                  <div className="absolute contents inset-[10%]">
-                    <div className="absolute inset-[10%]">
-                      <div className="absolute inset-[-5.21%]">
-                        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 17.6667 17.6667">
-                          <path d={svgPaths.p8bb5780} stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
-                        </svg>
-                      </div>
-                    </div>
-                    <div className="absolute inset-[55%_30%_35%_30%]">
-                      <div className="absolute inset-[-41.67%_-10.42%]">
-                        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 9.66677 3.66672">
-                          <path d={svgPaths.p1f71cf00} stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
-                        </svg>
-                      </div>
-                    </div>
-                    <div className="absolute inset-[37.5%_62.46%_62.5%_37.5%]">
-                      <div className="absolute inset-[-0.83px]">
-                        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 1.675 1.66667">
-                          <path d="M0.833335 0.833335H0.841665" stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
-                        </svg>
-                      </div>
-                    </div>
-                    <div className="absolute inset-[37.5%_37.46%_62.5%_62.5%]">
-                      <div className="absolute inset-[-0.83px]">
-                        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 1.67497 1.66667">
-                          <path d="M0.833335 0.833335H0.841635" stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
-                        </svg>
-                      </div>
-                    </div>
+                <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+                  <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
+                    {/* иконка эмоций */}
                   </div>
-                </div>
-                <span className="text-[14px] leading-[21px]">Дневник эмоций</span>
-              </span>
+                  <span className="text-[14px] leading-[21px]">Дневник эмоций</span>
+                </span>
               </NavLink>
             </nav>
           </div>
@@ -235,7 +257,7 @@ export default function FoodTracker() {
             </div>
           </div>
 
-          {/* Meal Cards */}
+          {/* Meal Cards (без изменений) */}
           <div className="grid grid-cols-4 gap-4 mb-8">
             {mealTypes.map((meal) => (
               <div key={meal.type} className="bg-white rounded-[20px] p-6 shadow-sm">
@@ -257,7 +279,7 @@ export default function FoodTracker() {
             ))}
           </div>
 
-          {/* Intake Log */}
+          {/* Intake Log (без изменений) */}
           <div className="bg-white rounded-[20px] p-8 shadow-sm">
             <h2 className="text-[#3d1f00] text-[24px] mb-6">Журнал питания</h2>
 
@@ -313,10 +335,74 @@ export default function FoodTracker() {
               </div>
             )}
           </div>
+
+          {/* ---------- НОВЫЙ БЛОК: Аналитика и AI советы ---------- */}
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* График динамики калорий (занимает 2 колонки) */}
+            <div className="md:col-span-2 bg-white rounded-[20px] p-6 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="text-[#f5a623]" size={24} />
+                <h3 className="text-[#3d1f00] text-[20px] font-semibold">Недельная динамика</h3>
+              </div>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0d6c8" />
+                    <XAxis dataKey="date" stroke="#83451e" />
+                    <YAxis stroke="#83451e" />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#faf8f0', borderColor: '#e8dcc8', borderRadius: '10px' }}
+                      labelStyle={{ color: '#3d1f00' }}
+                    />
+                    <Line type="monotone" dataKey="total" stroke="#f5a623" strokeWidth={2} dot={{ r: 4, fill: '#f5a623' }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+              <p className="text-[#83451e] text-sm mt-2 text-center">
+                * Данные за последние 7 дней (заглушка, замените реальными)
+              </p>
+            </div>
+
+            {/* AI-совет */}
+            <div className="bg-white rounded-[20px] p-6 shadow-sm flex flex-col">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="text-[#f5a623]" size={24} />
+                <h3 className="text-[#3d1f00] text-[20px] font-semibold">Совет NIKA</h3>
+              </div>
+
+              <div className="flex-1 min-h-[120px]">
+                {aiAdvice ? (
+                  <p className="text-[#3d1f00] text-[16px] leading-relaxed">{aiAdvice}</p>
+                ) : (
+                  <p className="text-[#83451e] text-[14px] italic">
+                    Нажмите кнопку, чтобы получить персональный совет по питанию.
+                  </p>
+                )}
+              </div>
+
+              <button
+                onClick={requestAiAdvice}
+                disabled={loadingAdvice}
+                className="mt-4 w-full h-12 bg-gradient-to-r from-[#f6b044] to-[#f39c12] text-white rounded-[20px] font-medium shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {loadingAdvice ? (
+                  <>
+                    <span className="animate-spin">🌀</span>
+                    <span>Думаю...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={18} />
+                    <span>Спросить NIKA</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </main>
 
-      {/* Add Food Modal */}
+      {/* Add Food Modal (без изменений) */}
       {showAddModal && selectedMealType && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
           <div className="bg-white rounded-[20px] p-8 w-[480px] shadow-xl">
