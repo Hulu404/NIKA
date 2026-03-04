@@ -30,18 +30,39 @@ export default function FoodTracker() {
   const [loadingAdvice, setLoadingAdvice] = useState(false);
   const navigate = useNavigate();
 
-  // Загрузка истории с сервера (заглушка – замените на реальный API)
+  // Типы приёмов пищи
+  const mealTypes = [
+    { type: 'breakfast' as const, label: 'Завтрак', icon: '🍳', color: '#f5a623' },
+    { type: 'lunch' as const, label: 'Обед', icon: '🥗', color: '#4caf50' },
+    { type: 'dinner' as const, label: 'Ужин', icon: '🍽️', color: '#ff9800' },
+    { type: 'snack' as const, label: 'Перекус', icon: '🍎', color: '#e91e63' },
+  ];
+
+  // ---------- 1. Загрузка истории с сервера ----------
   useEffect(() => {
-    // Пример: fetch('/api/food/history').then(...)
-    // Пока оставим пустым
+    const fetchEntries = async () => {
+      try {
+        const response = await fetch('/api/v1/food/entries', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        });
+        if (!response.ok) throw new Error('Ошибка загрузки');
+        const data = await response.json();
+        // Преобразуем строки дат в объекты Date
+        const entries = data.map((item: any) => ({
+          ...item,
+          timestamp: new Date(item.timestamp),
+        }));
+        setFoodItems(entries);
+      } catch (error) {
+        console.error('Не удалось загрузить записи:', error);
+      }
+    };
+    fetchEntries();
   }, []);
 
-  // Сохранение на сервер при каждом добавлении (заглушка)
-  useEffect(() => {
-    // Можно отправлять на сервер
-  }, [foodItems]);
-
-  // Логаут
+  // ---------- Логаут ----------
   const onLogout = async () => {
     try {
       const response = await fetch('/api/v1/auth/logout', {
@@ -60,48 +81,62 @@ export default function FoodTracker() {
     }
   };
 
-  // Типы приёмов пищи
-  const mealTypes = [
-    { type: 'breakfast' as const, label: 'Завтрак', icon: '🍳', color: '#f5a623' },
-    { type: 'lunch' as const, label: 'Обед', icon: '🥗', color: '#4caf50' },
-    { type: 'dinner' as const, label: 'Ужин', icon: '🍽️', color: '#ff9800' },
-    { type: 'snack' as const, label: 'Перекус', icon: '🍎', color: '#e91e63' },
-  ];
-
   // ---------- Работа с данными ----------
   const handleAddFood = (mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack') => {
     setSelectedMealType(mealType);
     setShowAddModal(true);
   };
 
+  // ---------- 2. Сохранение новой записи на сервер ----------
   const handleSaveFood = async () => {
     if (!foodName.trim() || !calories.trim() || !selectedMealType) return;
 
-    const newFood: FoodItem = {
-      id: Date.now().toString(),
+    const newFood = {
       name: foodName.trim(),
       calories: parseInt(calories),
       mealType: selectedMealType,
-      timestamp: new Date(),
     };
 
-    // Отправка на сервер
     try {
-      // await fetch('/api/food/add', { method: 'POST', body: JSON.stringify(newFood) })
-      setFoodItems([...foodItems, newFood]);
+      const response = await fetch('/api/v1/food/entries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+        body: JSON.stringify(newFood),
+      });
+      if (!response.ok) throw new Error('Ошибка сохранения');
+      const result = await response.json();
+
+      setFoodItems([
+        ...foodItems,
+        {
+          ...newFood,
+          id: result.id.toString(),
+          timestamp: new Date(),
+        },
+      ]);
+
+      setFoodName('');
+      setCalories('');
+      setShowAddModal(false);
+      setSelectedMealType(null);
     } catch (error) {
       console.error('Ошибка сохранения', error);
     }
-
-    setFoodName('');
-    setCalories('');
-    setShowAddModal(false);
-    setSelectedMealType(null);
   };
 
+  // ---------- 3. Удаление записи с сервера ----------
   const handleDeleteFood = async (id: string) => {
     try {
-      // await fetch(`/api/food/${id}`, { method: 'DELETE' })
+      const response = await fetch(`/api/v1/food/entries/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      });
+      if (!response.ok) throw new Error('Ошибка удаления');
       setFoodItems(foodItems.filter(item => item.id !== id));
     } catch (error) {
       console.error('Ошибка удаления', error);
@@ -110,71 +145,104 @@ export default function FoodTracker() {
 
   // Сумма калорий за сегодня
   const getMealCalories = (mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack') => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
     return foodItems
-      .filter(item => item.mealType === mealType)
+      .filter(item => {
+        const itemDate = new Date(item.timestamp);
+        return item.mealType === mealType && itemDate >= today && itemDate < tomorrow;
+      })
       .reduce((sum, item) => sum + item.calories, 0);
   };
 
-  const getTotalCalories = () => foodItems.reduce((sum, item) => sum + item.calories, 0);
+  const getTotalCalories = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    return foodItems
+      .filter(item => {
+        const itemDate = new Date(item.timestamp);
+        return itemDate >= today && itemDate < tomorrow;
+      })
+      .reduce((sum, item) => sum + item.calories, 0);
+  };
 
   const getMealLabel = (mealType: string) => mealTypes.find(m => m.type === mealType)?.label || '';
 
-  // ---------- Данные для графика (последние 7 дней) ----------
-  const getLast7Days = (): DailySummary[] => {
+  // ---------- 4. Данные для графика (реальные, за последние 7 дней) ----------
+  const getLast7DaysData = (): DailySummary[] => {
     const days: DailySummary[] = [];
     for (let i = 6; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      const dateStr = date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
-      // Здесь нужно получать реальные данные с сервера за прошлые дни
-      // Пока заглушка – случайные числа
+      date.setHours(0, 0, 0, 0);
+      const nextDay = new Date(date);
+      nextDay.setDate(date.getDate() + 1);
+
+      const total = foodItems
+        .filter(item => {
+          const itemDate = new Date(item.timestamp);
+          return itemDate >= date && itemDate < nextDay;
+        })
+        .reduce((sum, item) => sum + item.calories, 0);
+
       days.push({
-        date: dateStr,
-        total: Math.floor(Math.random() * 800) + 1200, // Замените на реальные данные
+        date: date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }),
+        total,
       });
     }
     return days;
   };
 
-  const chartData = getLast7Days();
+  const chartData = getLast7DaysData();
 
-  // ---------- AI совет ----------
+  // ---------- 5. AI‑совет с учётом недельной статистики ----------
   const requestAiAdvice = async () => {
-  setLoadingAdvice(true);
-  try {
-    const todayTotal = getTotalCalories();
-    const mealsBreakdown = mealTypes
-      .map(m => `${m.label}: ${getMealCalories(m.type)} ккал`)
-      .join(', ');
+    setLoadingAdvice(true);
+    try {
+      const todayTotal = getTotalCalories();
+      const mealsBreakdown = mealTypes
+        .map(m => `${m.label}: ${getMealCalories(m.type)} ккал`)
+        .join(', ');
 
-    const prompt = `Сегодня я съел(а) ${todayTotal} ккал. Распределение: ${mealsBreakdown}. Дай краткий совет по улучшению питания (1-2 предложения).`;
+      // Средняя калорийность за последние 7 дней
+      const last7Days = getLast7DaysData();
+      const avgWeek = last7Days.length
+        ? Math.round(last7Days.reduce((sum, d) => sum + d.total, 0) / last7Days.length)
+        : 0;
 
-    const response = await fetch('/api/v1/food/advice', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-      },
-      body: JSON.stringify({ prompt }),
-    });
+      const prompt = `Сегодня я съел(а) ${todayTotal} ккал. Распределение: ${mealsBreakdown}. Средняя калорийность за последние 7 дней: ${avgWeek} ккал. Дай краткий совет по улучшению питания (1-2 предложения).`;
 
-    if (!response.ok) throw new Error('Ошибка сервера');
-    const data = await response.json();
-    setAiAdvice(data.advice);
-  } catch (error) {
-    console.error('Ошибка получения совета', error);
-    setAiAdvice('Не удалось получить совет. Попробуйте позже.');
-  } finally {
-    setLoadingAdvice(false);
-  }
-};
+      const response = await fetch('/api/v1/food/advice', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      if (!response.ok) throw new Error('Ошибка сервера');
+      const data = await response.json();
+      setAiAdvice(data.advice);
+    } catch (error) {
+      console.error('Ошибка получения совета', error);
+      setAiAdvice('Не удалось получить совет. Попробуйте позже.');
+    } finally {
+      setLoadingAdvice(false);
+    }
+  };
 
   // ---------- Рендер ----------
   return (
     <div className="min-h-screen bg-[#fffee7] flex">
-      {/* Sidebar (без изменений, оставлен как в оригинале) */}
+      {/* Sidebar (без изменений) */}
       <aside className="w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]">
-        {/* Logo */}
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
             <span className="text-white text-[18px] font-bold">N</span>
@@ -182,7 +250,6 @@ export default function FoodTracker() {
           <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
         </div>
 
-        {/* Back to Dialog Button */}
         <NavLink to='/chat'>
           <button className="w-full flex items-center gap-3 px-4 py-3 mb-6 text-white bg-[#f5a623] hover:bg-[#e59615] rounded-[10px] transition-colors shadow-md">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -192,36 +259,25 @@ export default function FoodTracker() {
           </button>
         </NavLink>
 
-        {/* Menu Section */}
         <div className="flex-1">
           <div className="mb-6">
-            <h3 className="text-[#83451e] text-[12px] uppercase tracking-[0.6px] mb-4 px-3 leading-[18px]">
-              МЕНЮ
-            </h3>
+            <h3 className="text-[#83451e] text-[12px] uppercase tracking-[0.6px] mb-4 px-3 leading-[18px]">МЕНЮ</h3>
             <nav className="flex flex-col gap-1">
               <NavLink to='/profile'>
                 <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
-                  <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
-                  
-                  </div>
+                  <div className="h-[20px] w-[20px] overflow-clip relative shrink-0"></div>
                   <span className="text-[14px] leading-[21px]">Личный кабинет</span>
                 </span>
               </NavLink>
-
               <NavLink to='/food-tracker'>
                 <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] bg-[#f0e8d8] rounded-[10px] h-[37px]">
-                  <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
-                    {/* иконка трекера питания */}
-                  </div>
+                  <div className="h-[20px] w-[20px] overflow-clip relative shrink-0"></div>
                   <span className="text-[14px] leading-[21px]">Трекер питания</span>
                 </span>
               </NavLink>
-
               <NavLink to="/emotion-tracker">
                 <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
-                  <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
-                    {/* иконка эмоций */}
-                  </div>
+                  <div className="h-[20px] w-[20px] overflow-clip relative shrink-0"></div>
                   <span className="text-[14px] leading-[21px]">Дневник эмоций</span>
                 </span>
               </NavLink>
@@ -229,7 +285,6 @@ export default function FoodTracker() {
           </div>
         </div>
 
-        {/* Exit Button */}
         <button onClick={onLogout} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d={svgPathsBack.p14ca9100} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
@@ -257,16 +312,14 @@ export default function FoodTracker() {
             </div>
           </div>
 
-          {/* Meal Cards (без изменений) */}
+          {/* Meal Cards */}
           <div className="grid grid-cols-4 gap-4 mb-8">
             {mealTypes.map((meal) => (
               <div key={meal.type} className="bg-white rounded-[20px] p-6 shadow-sm">
                 <div className="flex flex-col items-center">
                   <div className="text-[48px] mb-3">{meal.icon}</div>
                   <h3 className="text-[#3d1f00] text-[16px] mb-2">{meal.label}</h3>
-                  <p className="text-[#83451e] text-[14px] mb-4">
-                    {getMealCalories(meal.type)} ккал
-                  </p>
+                  <p className="text-[#83451e] text-[14px] mb-4">{getMealCalories(meal.type)} ккал</p>
                   <button
                     onClick={() => handleAddFood(meal.type)}
                     className="w-12 h-12 rounded-full flex items-center justify-center transition-colors shadow-md"
@@ -279,7 +332,7 @@ export default function FoodTracker() {
             ))}
           </div>
 
-          {/* Intake Log (без изменений) */}
+          {/* Intake Log */}
           <div className="bg-white rounded-[20px] p-8 shadow-sm">
             <h2 className="text-[#3d1f00] text-[24px] mb-6">Журнал питания</h2>
 
@@ -301,7 +354,7 @@ export default function FoodTracker() {
                           <h3 className="text-[#3d1f00] text-[18px] font-semibold">{meal.label}</h3>
                         </div>
                         <span className="text-[#f5a623] text-[20px] font-semibold">
-                          {getMealCalories(meal.type)} ккал
+                          {mealItems.reduce((sum, item) => sum + item.calories, 0)} ккал
                         </span>
                       </div>
 
@@ -336,9 +389,9 @@ export default function FoodTracker() {
             )}
           </div>
 
-          {/* ---------- НОВЫЙ БЛОК: Аналитика и AI советы ---------- */}
+          {/* Блок аналитики и AI‑совета */}
           <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* График динамики калорий (занимает 2 колонки) */}
+            {/* График */}
             <div className="md:col-span-2 bg-white rounded-[20px] p-6 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="text-[#f5a623]" size={24} />
@@ -359,11 +412,11 @@ export default function FoodTracker() {
                 </ResponsiveContainer>
               </div>
               <p className="text-[#83451e] text-sm mt-2 text-center">
-                * Данные за последние 7 дней (заглушка, замените реальными)
+                * Данные за последние 7 дней
               </p>
             </div>
 
-            {/* AI-совет */}
+            {/* AI‑совет */}
             <div className="bg-white rounded-[20px] p-6 shadow-sm flex flex-col">
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="text-[#f5a623]" size={24} />
@@ -402,7 +455,7 @@ export default function FoodTracker() {
         </div>
       </main>
 
-      {/* Add Food Modal (без изменений) */}
+      {/* Add Food Modal */}
       {showAddModal && selectedMealType && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
           <div className="bg-white rounded-[20px] p-8 w-[480px] shadow-xl">
@@ -425,9 +478,7 @@ export default function FoodTracker() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-[#3d1f00] text-[14px] mb-2">
-                  Название блюда
-                </label>
+                <label className="block text-[#3d1f00] text-[14px] mb-2">Название блюда</label>
                 <input
                   type="text"
                   value={foodName}
@@ -438,9 +489,7 @@ export default function FoodTracker() {
               </div>
 
               <div>
-                <label className="block text-[#3d1f00] text-[14px] mb-2">
-                  Калории
-                </label>
+                <label className="block text-[#3d1f00] text-[14px] mb-2">Калории</label>
                 <input
                   type="number"
                   value={calories}
