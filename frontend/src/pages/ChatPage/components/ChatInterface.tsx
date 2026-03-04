@@ -43,7 +43,6 @@ export function ChatInterface({isError}: Error) {
         return;
       }
   
-      // Загрузка истории чата (если уже есть)
       loadHistory();
     }, [navigate]);
 
@@ -67,18 +66,33 @@ export function ChatInterface({isError}: Error) {
       }
 
       const data = await res.json();
-      setMessages(data.messages || []);
+      const messagesWithDates = (data.messages || []).map((msg: any) => ({
+        ...msg,
+        timestamp: msg.created_at ? new Date(msg.created_at) : new Date()
+      }));
+      setMessages(messagesWithDates);
       scrollToBottom();
     } catch (err) {
       console.error(err);
     }
   };
 
+  const [voiceMode, setVoiceMode] = useState<boolean>(() => {
+  // Загружаем сохранённое значение из localStorage (опционально)
+  const saved = localStorage.getItem('voiceMode');
+  return saved ? saved === 'true' : false;
+  });
+
   const sendMessage = async (e: React.FormEvent) => {
       e.preventDefault();
       if (!input.trim() || loading) return;
   
-      const userMessage = { role: 'user', content: input };
+      const userMessage = { 
+        role: 'user', 
+        content: input,
+        id: Date.now().toString(),
+        timestamp: new Date()
+      };
       setMessages((prev) => [...prev, userMessage]);
       setInput('');
       setLoading(true);
@@ -92,7 +106,7 @@ export function ChatInterface({isError}: Error) {
           },
           body: JSON.stringify({
             message: input,
-            with_audio: true, // или false, если хочешь только текст
+            with_audio: voiceMode,
             session_id: sessionId,
           }),
         });
@@ -103,16 +117,19 @@ export function ChatInterface({isError}: Error) {
           throw new Error(data.error || 'Ошибка отправки');
         }
   
-        // Сохраняем session_id
         setSessionId(data.session_id);
         localStorage.setItem('chat_session_id', data.session_id);
   
         setMessages((prev) => [
           ...prev,
-          { role: 'assistant', content: data.reply },
+          { 
+            role: 'assistant', 
+            content: data.reply,
+            id: (Date.now() + 1).toString(),
+            timestamp: new Date()
+          },
         ]);
   
-        // Воспроизведение аудио
         if (data.audio_base64) {
           const audio = new Audio(`data:audio/mp3;base64,${data.audio_base64}`);
           audio.play().catch((e) => console.error('Ошибка аудио:', e));
@@ -144,7 +161,6 @@ export function ChatInterface({isError}: Error) {
     inputRef.current?.focus();
   };
 
-  // Group consecutive messages from the same sender
   const groupedMessages = messages.reduce((acc, message, index) => {
     const prevMessage = messages[index - 1];
     const isGrouped = prevMessage && prevMessage.role === message.role;
@@ -163,22 +179,18 @@ export function ChatInterface({isError}: Error) {
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-[#fafafa] via-[#ffffff] to-[#f5f5f5] relative overflow-hidden">
-      {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#fafafa] via-[#ffffff] to-[#f5f5f5]">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#f6b044]/8 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#f39c12]/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
       </div>
 
-      {/* Sidebar */}
       <ChatSidebar 
         isOpen={isSidebarOpen} 
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
         onNewChat={handleNewChat}
       />
 
-      {/* Main Chat Area */}
       <div className="flex-1 flex flex-col relative z-10">
-        {/* Header */}
         <motion.div 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -206,7 +218,7 @@ export function ChatInterface({isError}: Error) {
                 </div>
                 
                 <div>
-                  <h1 className="font-semibold text-gray-900 tracking-tight">NIKA Pro</h1>
+                  <h1 className="font-semibold text-gray-900 tracking-tight">NIKA</h1>
                   <p className="text-xs text-gray-500">Наш самый умный помощник</p>
                 </div>
               </div>
@@ -220,7 +232,6 @@ export function ChatInterface({isError}: Error) {
           </div>
         </motion.div>
 
-        {/* Messages Container */}
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-4xl mx-auto px-6 py-8">
             {messages.length === 0 ? (
@@ -290,7 +301,6 @@ export function ChatInterface({isError}: Error) {
           </div>
         </div>
 
-        {/* Input Area */}
         <div className="sticky bottom-0 border-t border-black/5 bg-white/80 backdrop-blur-2xl">
           <div className="max-w-4xl mx-auto px-6 py-6">
             <motion.div 
@@ -331,9 +341,15 @@ export function ChatInterface({isError}: Error) {
                   <motion.button 
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
-                    className="p-2 rounded-xl hover:bg-black/5 transition-colors"
+                    onClick={() => setVoiceMode(!voiceMode)}
+                    className={`p-2 rounded-xl transition-colors ${
+                      voiceMode 
+                        ? 'bg-[#f6b044]/20 text-[#f6b044]' 
+                        : 'text-gray-400 hover:text-gray-600 hover:bg-black/5'
+                    }`}
+                    title={voiceMode ? 'Голосовой режим включён' : 'Голосовой режим выключен'}
                   >
-                    <Mic className="text-gray-400 hover:text-gray-600 transition-colors" size={20} />
+                    <Mic size={20} strokeWidth={2.5} />
                   </motion.button>
                   
                   <motion.button
@@ -346,15 +362,14 @@ export function ChatInterface({isError}: Error) {
                     <Send className={`${input.trim() ? 'text-white' : 'text-gray-400'} transition-colors`} size={18} strokeWidth={2.5} />
                   </motion.button>
                 </div>
-              </div>
-            </motion.div>
-            
+              </div> 
+            </motion.div> 
             <p className="text-xs text-center text-gray-400 mt-4">
               NIKA может делать ошибки. Проверяйте важную информацию.
             </p>
-          </div>
-        </div>
-      </div>
-    </div>
+          </div> 
+        </div> 
+      </div> 
+    </div> 
   );
 }

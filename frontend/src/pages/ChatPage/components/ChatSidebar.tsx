@@ -76,7 +76,7 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat }: ChatSidebarProps) {
                 </div>
                 <button
                   onClick={onToggle}
-                  className="lg:hidden p-2 hover:bg-black/5 rounded-xl transition-all"
+                  className="p-2 hover:bg-black/5 rounded-xl transition-all"
                 >
                   <ChevronLeft size={18} className="text-gray-500" />
                 </button>

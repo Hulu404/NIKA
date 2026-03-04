@@ -16,7 +16,12 @@ export function ChatMessage({ message, avatarUrl, showAvatar = true, isFirstInGr
   const [isCopied, setIsCopied] = useState(false);
   const isUser = message.role === 'user';
   
-  
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('ru-RU', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(message.content);
@@ -35,7 +40,6 @@ export function ChatMessage({ message, avatarUrl, showAvatar = true, isFirstInGr
         isUser ? 'flex-row-reverse' : 'flex-row'
       }`}
     >
-      {/* Avatar */}
       <div className={`w-10 h-10 flex-shrink-0 ${showAvatar ? 'opacity-100' : 'opacity-0'}`}>
         {showAvatar && (
           <motion.div 
@@ -58,7 +62,6 @@ export function ChatMessage({ message, avatarUrl, showAvatar = true, isFirstInGr
         )}
       </div>
 
-      {/* Message Content */}
       <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} flex-1 max-w-[85%] ${!showAvatar ? (isUser ? 'mr-13' : 'ml-13') : ''}`}>
         <motion.div
           initial={{ scale: 0.97 }}
@@ -75,7 +78,6 @@ export function ChatMessage({ message, avatarUrl, showAvatar = true, isFirstInGr
             </p>
           </div>
 
-          {/* Message Actions */}
           <AnimatePresence>
             {isHovered && isLastInGroup && (
               <motion.div
@@ -135,7 +137,6 @@ export function ChatMessage({ message, avatarUrl, showAvatar = true, isFirstInGr
           </AnimatePresence>
         </motion.div>
         
-        {/* Timestamp */}
         {isLastInGroup && (
           <motion.span 
             initial={{ opacity: 0 }}
@@ -143,8 +144,7 @@ export function ChatMessage({ message, avatarUrl, showAvatar = true, isFirstInGr
             transition={{ delay: 0.2 }}
             className="text-xs text-gray-400 mt-2 px-2"
           >
-            {/*{formatTime(message.timestamp)} */}
-            {'9:11'}
+            {formatTime(message.timestamp)}
           </motion.span>
         )}
       </div>
