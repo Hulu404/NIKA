@@ -106,7 +106,9 @@ def create_app(config_name=None):
     from .api.v1.chat import chat_v1
     from .api.v1.auth import auth_bp
     from .api.v1.food import food_v1
+    from .api.v1.emotion import emotion_v1
 
+    app.register_blueprint(emotion_v1)
     app.register_blueprint(food_v1)
     app.register_blueprint(main_bp)
     app.register_blueprint(chat_v1)
@@ -114,6 +116,7 @@ def create_app(config_name=None):
 
     # 6. Импортируем модель FoodEntry перед созданием таблиц
     from .models.food_entry import FoodEntry
+    from .models.emotion_entry import EmotionEntry
 
     # Создание таблиц базы данных (только для development)
     if app.config.get('ENV') == 'development' or app.debug:
@@ -174,6 +177,7 @@ def create_app(config_name=None):
         from .models.message import Message
         from .models.refresh_token import RefreshToken
         from .models.food_entry import FoodEntry  
+        from .models.emotion_entry import EmotionEntry
 
         return {
             'db': db,
