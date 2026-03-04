@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models.emotion_entry import EmotionEntry
 from app.extensions import db
+from datetime import datetime
 from app.services.gigachat.giga_text import response_gigachat
 
 emotion_v1 = Blueprint('emotion_v1', __name__, url_prefix='/api/v1/emotion')
@@ -25,9 +26,15 @@ def get_entries():
 def add_entry():
     user_id = get_jwt_identity()
     data = request.get_json()
+    try:
+        # Преобразуем строку в объект date
+        date_obj = datetime.strptime(data['date'], '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'error': 'Неверный формат даты. Используйте ГГГГ-ММ-ДД'}), 400
+
     entry = EmotionEntry(
         user_id=user_id,
-        date=data['date'],
+        date=date_obj,
         emotion=data['emotion']
     )
     db.session.add(entry)
@@ -60,3 +67,4 @@ def get_emotion_advice():
     except Exception as e:
         current_app.logger.error(f"[EMOTION ADVICE ERROR] {e}")
         return jsonify({'error': 'Не удалось получить совет'}), 500
+    
