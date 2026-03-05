@@ -6,6 +6,7 @@ import { ChatSidebar } from './ChatSidebar';
 import { SuggestedPrompts } from './SuggestedPrompts';
 import imgImage2 from "../assets/avatar.png";
 import { useNavigate } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface Message {
   id: string;
@@ -23,6 +24,7 @@ export function ChatInterface({isError}: Error) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [sessions, setSessions] = useState([])
   const isTyping = false
   const [isFocused, setIsFocused] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(localStorage.getItem('chat_session_id'));
@@ -44,7 +46,8 @@ export function ChatInterface({isError}: Error) {
       }
   
       loadHistory();
-    }, [navigate]);
+      getSessions()
+    }, [navigate, sessionId]);
 
   const loadHistory = async () => {
     try {
@@ -145,6 +148,34 @@ export function ChatInterface({isError}: Error) {
       }
     };
 
+  const getSessions = async () => {
+    try {
+      const url = '/api/v1/chat/sessions';
+
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      });
+
+      if (!res.ok) {
+        if (res.status === 401) {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          navigate('/login');
+        }
+        throw new Error('Ошибка загрузки истории');
+      }
+
+      const data = await res.json();
+      setSessions(data.sessions)
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -153,8 +184,15 @@ export function ChatInterface({isError}: Error) {
   };
 
   const handleNewChat = () => {
-    setMessages([]);
+    getSessions()
+    localStorage.setItem('chat_session_id', uuidv4())
+    setSessionId(localStorage.getItem('chat_session_id'))
   };
+
+  const onOldChatClick = (id: string) => {
+    localStorage.setItem('chat_session_id', id)
+    setSessionId(localStorage.getItem('chat_session_id'))
+  }
 
   const handlePromptSelect = (prompt: string) => {
     setInput(prompt);
@@ -188,6 +226,8 @@ export function ChatInterface({isError}: Error) {
         isOpen={isSidebarOpen} 
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
         onNewChat={handleNewChat}
+        sessions={sessions }
+        onHistory={(id) => onOldChatClick(id)}
       />
 
       <div className="flex-1 flex flex-col relative z-10">

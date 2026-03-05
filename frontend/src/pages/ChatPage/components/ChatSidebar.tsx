@@ -4,21 +4,16 @@ import { NavLink, useNavigate} from 'react-router';
 
 interface ChatSidebarProps {
   isOpen: boolean;
+  sessions: any;
   onToggle: () => void;
   onNewChat: () => void;
+  onHistory: (id: string) => void;
 }
 
-const RECENT_CHATS = [
-  { id: '1', title: 'План тренировок на неделю', time: '2ч назад' },
-  { id: '2', title: 'Советы по питанию', time: '5ч назад' },
-  { id: '3', title: 'Упражнения для спины', time: 'Вчера' },
-  { id: '4', title: 'Восстановление после бега', time: '2 дня назад' },
-];
 
-
-
-export function ChatSidebar({ isOpen, onToggle, onNewChat }: ChatSidebarProps) {
+export function ChatSidebar({ isOpen, onToggle, onNewChat, sessions, onHistory }: ChatSidebarProps) {
   const navigate = useNavigate();
+
 
   const onLogout = async () => {
   try {
@@ -113,20 +108,21 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat }: ChatSidebarProps) {
                   <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Недавние</h3>
                 </div>
                 <div className="space-y-1">
-                  {RECENT_CHATS.map((chat, index) => (
+                  {sessions.map((s: any, i: number) => (
                     <motion.button
-                      key={chat.id}
+                      onClick={() => onHistory(s.session_id)}
+                      key={s.session_id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
+                      transition={{ delay: i++  * 0.05 }}
                       whileHover={{ x: 4 }}
                       className="w-full flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
                     >
                       <div className="flex-1 min-w-0">
                         <p className="text-sm text-gray-600 group-hover:text-gray-900 truncate transition-colors font-medium">
-                          {chat.title}
+                          {s.preview}
                         </p>
-                        <p className="text-xs text-gray-400 mt-0.5">{chat.time}</p>
+                        
                       </div>
                     </motion.button>
                   ))}
@@ -144,7 +140,7 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat }: ChatSidebarProps) {
                         key={'Дневник эмоций'}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: (RECENT_CHATS.length + 2) * 0.05 }}
+                        transition={{ delay: (sessions.length + 2) * 0.05 }}
                         whileHover={{ x: 4 }}
                         className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
                       >
@@ -158,7 +154,7 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat }: ChatSidebarProps) {
                         key={'Дневник питания'}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: (RECENT_CHATS.length + 2) * 0.05 }}
+                        transition={{ delay: (sessions.length + 2) * 0.05 }}
                         whileHover={{ x: 4 }}
                         className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
                       >
@@ -172,7 +168,7 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat }: ChatSidebarProps) {
                         key={'Профиль'}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: (RECENT_CHATS.length + 2) * 0.05 }}
+                        transition={{ delay: (sessions.length + 2) * 0.05 }}
                         whileHover={{ x: 4 }}
                         className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
                       >
@@ -186,7 +182,7 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat }: ChatSidebarProps) {
                         key={'FAQs'}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: (RECENT_CHATS.length + 3) * 0.05 }}
+                        transition={{ delay: (sessions.length + 3) * 0.05 }}
                         whileHover={{ x: 4 }}
                         className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
                       >
