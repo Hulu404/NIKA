@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Plus, Search, Settings, LogOut, Clock } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import svgPathsBack from './imports/svg-n101rx8ak0';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 
 interface FAQItem {
@@ -46,108 +48,8 @@ const faqData: FAQItem[] = [
   },
 ];
 
-const recentChats = [
-  { title: 'План тренировок на неделю', time: '2ч назад' },
-  { title: 'Советы по питанию', time: '5ч назад' },
-  { title: 'Упражнения для спины', time: 'Вчера' },
-  { title: 'Восстановление после бега', time: '2 дня назад' },
-];
 
-const menuItems = [
-  { title: 'Трекер прогресса', badge: 'Новое' },
-  { title: 'Упражнения', badge: null },
-  { title: 'Дневник питания', badge: null },
-];
 
-function Sidebar() {
-  return (
-    <div className="fixed left-0 top-0 bottom-0 w-[320px] backdrop-blur-[25px] bg-[rgba(255,255,255,0.8)] border-r border-[rgba(0,0,0,0.05)] flex flex-col shadow-[0px_8px_32px_0px_rgba(0,0,0,0.08)]">
-      {/* Header */}
-      <div className="px-6 pt-6 pb-6 border-b border-[rgba(0,0,0,0.05)]">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-8 bg-gradient-to-b from-[#f6b044] to-[#f39c12] rounded-[14px] flex items-center justify-center shadow-[0px_10px_15px_0px_rgba(0,0,0,0.1)]">
-            <span className="font-['Manrope:Bold',sans-serif] font-bold text-[14px] text-white">N</span>
-          </div>
-          <span className="font-['Manrope:Bold',sans-serif] font-bold text-[16px] text-[#101828]">NIKA</span>
-        </div>
-        
-        {/* New Chat Button */}
-        <button className="w-full bg-gradient-to-b from-[#f6b044] to-[#f39c12] rounded-[16px] px-4 py-3.5 flex items-center justify-center gap-2.5 shadow-[0px_10px_15px_0px_rgba(246,176,68,0.2)] hover:shadow-[0px_12px_20px_0px_rgba(246,176,68,0.3)] transition-all">
-          <Plus size={20} className="text-white" strokeWidth={2} />
-          <span className="font-['Manrope:Regular',sans-serif] font-normal text-[16px] text-white">Новый чат</span>
-        </button>
-      </div>
-
-      {/* Search */}
-      <div className="px-6 pt-6 pb-6">
-        <div className="relative">
-          <div className="absolute left-3.5 top-1/2 -translate-y-1/2">
-            <Search size={18} className="text-[#99a1af]" strokeWidth={1.875} />
-          </div>
-          <input
-            type="text"
-            placeholder="Поиск..."
-            className="w-full bg-white border border-[rgba(0,0,0,0.1)] rounded-[14px] pl-11 pr-4 py-2.5 text-[14px] text-[#99a1af] placeholder-[#99a1af] focus:outline-none shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1)] font-['Manrope:Regular',sans-serif]"
-          />
-        </div>
-      </div>
-
-      {/* Recent Chats */}
-      <div className="px-3 pb-6 flex-1 overflow-y-auto">
-        <div className="flex items-center gap-2 mb-3 px-3">
-          <Clock size={14} className="text-[#6a7282]" strokeWidth={1.458} />
-          <h3 className="font-['Manrope:Bold',sans-serif] text-[12px] font-bold text-[#6a7282] uppercase tracking-[0.6px]">Недавние</h3>
-        </div>
-        
-        <div className="space-y-1">
-          {recentChats.map((chat, index) => (
-            <button
-              key={index}
-              className="w-full text-left px-4 py-3 rounded-[14px] hover:bg-white/60 transition-all"
-            >
-              <p className="font-['Manrope:Regular',sans-serif] text-[14px] text-[#4a5565] font-normal leading-[20px] line-clamp-1">
-                {chat.title}
-              </p>
-              <p className="font-['Manrope:Regular',sans-serif] text-[12px] text-[#99a1af] leading-[16px] mt-0.5">{chat.time}</p>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Menu */}
-      <div className="px-3 pb-6 border-t border-[rgba(0,0,0,0.05)] pt-6">
-        <h3 className="font-['Manrope:Bold',sans-serif] text-[12px] font-bold text-[#6a7282] uppercase tracking-[0.6px] mb-3 px-3">Меню</h3>
-        
-        <div className="space-y-1 mb-4">
-          {menuItems.map((item, index) => (
-            <button
-              key={index}
-              className="w-full text-left px-4 py-2.5 rounded-[14px] hover:bg-white/60 transition-all flex items-center justify-between"
-            >
-              <span className="font-['Manrope:Regular',sans-serif] text-[14px] text-[#4a5565] font-normal leading-[20px]">{item.title}</span>
-              {item.badge && (
-                <span className="font-['Manrope:Bold',sans-serif] bg-[rgba(246,176,68,0.2)] text-[#f6b044] text-[12px] font-bold px-2 py-0.5 rounded-full leading-[16px]">
-                  {item.badge}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-        
-        <div className="space-y-1">
-          <button className="w-full text-left px-3 py-2.5 rounded-[14px] hover:bg-white/60 transition-all flex items-center gap-3">
-            <Settings size={18} className="text-[#99a1af]" strokeWidth={1.875} />
-            <span className="font-['Manrope:Regular',sans-serif] text-[14px] text-[#4a5565] font-normal leading-[20px]">Настройки</span>
-          </button>
-          <button className="w-full text-left px-3 py-2.5 rounded-[14px] hover:bg-white/60 transition-all flex items-center gap-3">
-            <LogOut size={18} className="text-[#99a1af]" strokeWidth={1.875} />
-            <span className="font-['Manrope:Regular',sans-serif] text-[14px] text-[#4a5565] font-normal leading-[20px]">Выйти</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function FAQAccordion() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -197,17 +99,86 @@ function FAQAccordion() {
 }
 
 export default function FAQPage() {
+  const navigate = useNavigate()
+  const onLogout = async () => {
+    try {
+      const response = await fetch('/api/v1/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('refresh_token')}`,
+        },
+      });
+      if (!response.ok) throw new Error('Ошибка выхода');
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      navigate('/');
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#faf7ec] via-[#fdf8f0] to-[#f9f4e8] relative overflow-hidden">
+    <div className="min-h-screen bg-[#fffee7] flex">
       {/* Background Gradients */}
       <div className="absolute bg-[rgba(246,176,68,0.08)] blur-[100px] left-[15%] opacity-50 rounded-full w-[450px] h-[450px] top-0" />
       <div className="absolute bg-[rgba(243,156,18,0.08)] blur-[100px] right-[15%] rounded-full w-[450px] h-[450px] top-[250px]" />
       
       {/* Sidebar */}
-      <Sidebar />
+      <aside className="w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
+            <span className="text-white text-[18px] font-bold">N</span>
+          </div>
+          <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
+        </div>
+
+        <NavLink to='/chat'>
+          <button className="w-full flex items-center gap-3 px-4 py-3 mb-6 text-white bg-[#f5a623] hover:bg-[#e59615] rounded-[10px] transition-colors shadow-md">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d={svgPathsBack.p11678e00} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span className="text-[14px]">Назад к диалогу</span>
+          </button>
+        </NavLink>
+
+        <div className="flex-1">
+          <div className="mb-6">
+            <h3 className="text-[#83451e] text-[12px] uppercase tracking-[0.6px] mb-4 px-3 leading-[18px]">МЕНЮ</h3>
+            <nav className="flex flex-col gap-1">
+              <NavLink to='/profile'>
+                <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+                  <div className="h-[20px] w-[20px] overflow-clip relative shrink-0"></div>
+                  <span className="text-[14px] leading-[21px]">Личный кабинет</span>
+                </span>
+              </NavLink>
+              <NavLink to='/food-tracker'>
+                <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+                  <div className="h-[20px] w-[20px] overflow-clip relative shrink-0"></div>
+                  <span className="text-[14px] leading-[21px]">Трекер питания</span>
+                </span>
+              </NavLink>
+              <NavLink to="/emotion-tracker">
+                <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+                  <div className="h-[20px] w-[20px] overflow-clip relative shrink-0"></div>
+                  <span className="text-[14px] leading-[21px]">Дневник эмоций</span>
+                </span>
+              </NavLink>
+            </nav>
+          </div>
+        </div>
+
+        <button onClick={onLogout} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d={svgPathsBack.p14ca9100} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
+            <path d="M17.5 10H7.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
+            <path d={svgPathsBack.p38966ca0} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
+          </svg>
+          <span className="text-[14px]">Выйти</span>
+        </button>
+      </aside>
       
       {/* Main Content */}
-      <div className="ml-[320px] mr-20 py-16 px-10 min-h-screen">
+      <div className="flex-1 p-8 overflow-auto">
         <div className="max-w-[1050px]">
           <div className="mb-12">
             <h1 className="font-['Manrope:Bold',sans-serif] text-[44px] font-bold text-[#2d3625] mb-3 tracking-tight">

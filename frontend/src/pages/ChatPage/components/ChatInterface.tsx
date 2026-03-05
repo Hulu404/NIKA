@@ -46,7 +46,7 @@ export function ChatInterface({isError}: Error) {
       loadHistory();
     }, [navigate]);
 
-    const loadHistory = async () => {
+  const loadHistory = async () => {
     try {
       const url = sessionId ? `/api/v1/chat/history?session_id=${sessionId}` : '/api/v1/chat/history';
 
