@@ -4,6 +4,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import svgPaths from './imports/svg-nfsr0erm4u';
 import svgPathsBack from './imports/svg-n101rx8ak0';
+import { fetchWithAuth } from '../../JWT_token_refresh';
 
 interface EmotionEntry {
   date: string; // YYYY-MM-DD
@@ -46,11 +47,7 @@ export default function EmotionTracker() {
     const fetchEntries = async () => {
       setLoading(true);
       try {
-        const response = await fetch('/api/v1/emotion/entries', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-          },
-        });
+        const response = await fetchWithAuth('/api/v1/emotion/entries');
         if (!response.ok) throw new Error('Ошибка загрузки');
         const data = await response.json();
         const entries = data.map((item: any) => ({
@@ -69,11 +66,10 @@ export default function EmotionTracker() {
 
   const onLogout = async () => {
     try {
-      const response = await fetch('/api/v1/auth/logout', {
+      const response = await fetchWithAuth('/api/v1/auth/logout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('refresh_token')}`,
         },
       });
       if (!response.ok) throw new Error('Ошибка выхода');
@@ -114,11 +110,10 @@ export default function EmotionTracker() {
     const newEntry = { date: selectedDate, emotion: emotionType };
 
     try {
-      const response = await fetch('/api/v1/emotion/entries', {
+      const response = await fetchWithAuth('/api/v1/emotion/entries', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
         body: JSON.stringify(newEntry),
       });
@@ -209,11 +204,10 @@ export default function EmotionTracker() {
 
       const prompt = `За последний месяц (${monthNames[currentMonth - 1]}) у меня было ${total} дней с отмеченными эмоциями. Чаще всего я чувствовал(а) ${topEmotionObj?.label || 'неизвестно'}. Средний эмоциональный фон (от -2 до +2) составил ${avgValence.toFixed(2)}. Дай краткий совет по улучшению эмоционального состояния (1-2 предложения).`;
 
-      const response = await fetch('/api/v1/emotion/advice', {
+      const response = await fetchWithAuth('/api/v1/emotion/advice', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
         body: JSON.stringify({ prompt }),
       });

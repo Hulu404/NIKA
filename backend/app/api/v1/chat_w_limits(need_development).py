@@ -3,8 +3,10 @@ from datetime import datetime
 import uuid
 import base64
 from pathlib import Path
-from flask import Blueprint, request, jsonify, current_app, send_file
+from flask import Blueprint, request, jsonify, current_app, send_file, session
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_login import current_user
+from app.models.guest_manager import GuestManager
 from app.models.message import Message
 from app.extensions import db
 from sqlalchemy import desc, func
@@ -17,10 +19,35 @@ chat_v1 = Blueprint('chat_v1', __name__, url_prefix='/api/v1/chat')
 
 
 # ────────────────────────────────────────────────
-# ЕДИНЫЙ ЭНДПОИНТ ОТПРАВКИ СООБЩЕНИЯ (только для авторизованных)
+# Получение лимитов (для фронта — чтобы показывать счётчик)
+# ────────────────────────────────────────────────
+# @chat_v1.get('/limits')
+# def get_limits():
+#     is_guest = not current_user.is_authenticated
+#
+#     if not is_guest:
+#         remaining = current_user.get_remaining_requests()
+#         reset_info = current_user.get_reset_info()
+#         limit = current_user.daily_requests_limit
+#     else:
+#         remaining = GuestManager.get_remaining_requests()
+#         reset_info = GuestManager.get_reset_info()
+#         limit = GuestManager.GUEST_LIMIT
+#
+#     return jsonify({
+#         "success": True,
+#         "is_guest": is_guest,
+#         "remaining": remaining,
+#         "limit": limit,
+#         "reset_info": reset_info
+#     })
+
+
+# ────────────────────────────────────────────────
+# ЕДИНЫЙ ЭНДПОИНТ ОТПРАВКИ СООБЩЕНИЯ (рекомендую использовать только его)
 # ────────────────────────────────────────────────
 @chat_v1.post('/send')
-@jwt_required()
+@jwt_required(optional=True)  # Гости тоже могут отправлять
 def send_message():
     data = request.get_json(silent=True) or {}
     user_text = data.get('message', '').strip()
@@ -31,13 +58,43 @@ def send_message():
 
     print(f"[SEND] ← {user_text[:100]}{'...' if len(user_text) > 100 else ''}")
 
-    user_id = get_jwt_identity()  # теперь всегда авторизованный пользователь
+    # 1. Определяем пользователя и проверяем лимиты
+    # is_guest = not current_user.is_authenticated
+    is_guest = False
+    user_id = get_jwt_identity() if not is_guest else 0  # 0 или guest ID
+
+    if not is_guest:
+        if not current_user.can_make_request():
+            return jsonify({
+                "success": False,
+                "error": f"Дневной лимит ({current_user.daily_requests_limit}) достигнут",
+                "limit_info": {
+                    "limit": current_user.daily_requests_limit,
+                    "used": current_user.requests_today,
+                    "remaining": 0,
+                    "reset_info": current_user.get_reset_info()
+                },
+                "is_guest": False
+            }), 429
+    else:
+        if not GuestManager.can_make_request():
+            return jsonify({
+                "success": False,
+                "error": "Гостевой лимит исчерпан. Зарегистрируйтесь.",
+                "limit_info": {
+                    "limit": GuestManager.GUEST_LIMIT,
+                    "used": session.get('guest_requests', 0),
+                    "remaining": 0,
+                    "reset_info": GuestManager.get_reset_info()
+                },
+                "upgrade_url": "/registration"
+            }), 429
 
     try:
-        # 1. Получаем ответ от GigaChat
+        # 2. Получаем ответ от GigaChat
         reply = response_gigachat(user_text)
 
-        # 2. Если нужен голос — синтезируем
+        # 3. Если нужен голос — синтезируем
         audio_base64 = None
         audio_url = None
         audio_size = 0
@@ -62,26 +119,33 @@ def send_message():
 
             print(f"[AUDIO] Сохранён: {filename} ({audio_size:,} байт)")
 
-        # 3. Сохраняем сообщения в БД
+        # 4. Сохраняем сообщения в БД
         session_id = data.get('session_id') or str(uuid.uuid4())
 
-        user_msg = Message(
-            user_id=user_id,
-            session_id=session_id,
-            role="user",
-            content=user_text
-        )
-        assistant_msg = Message(
-            user_id=user_id,
-            session_id=session_id,
-            role="assistant",
-            content=reply
-        )
+        if not is_guest and user_id:
+            user_msg = Message(
+                user_id=user_id,
+                session_id=session_id,
+                role="user",
+                content=user_text
+            )
+            assistant_msg = Message(
+                user_id=user_id,
+                session_id=session_id,
+                role="assistant",
+                content=reply
+            )
 
-        db.session.add_all([user_msg, assistant_msg])
-        db.session.commit()
+            db.session.add_all([user_msg, assistant_msg])
+            db.session.commit()
 
-        # 4. Формируем ответ для фронта
+        # 5. Увеличиваем счётчик запросов
+        if not is_guest:
+            current_user.increment_requests()
+        else:
+            GuestManager.increment_requests()
+
+        # 6. Формируем ответ для фронта
         return jsonify({
             "success": True,
             "reply": reply,
@@ -136,7 +200,7 @@ def get_history():
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 20, type=int)
 
-    pagination = query.order_by(Message.created_at.asc()).paginate(
+    pagination = query.order_by(desc(Message.created_at)).paginate(
         page=page, per_page=per_page, error_out=False
     )
 
@@ -205,3 +269,25 @@ def get_sessions():
 @chat_v1.get('/health')
 def health_check():
     return jsonify({"success": True, "status": "ok"})
+
+
+@chat_v1.get('/test-session')
+def test_session():
+    """Тест"""
+    try:
+
+        if 'test_counter' not in session:
+            session['test_counter'] = 0
+        session['test_counter'] += 1
+
+        return jsonify({
+            'success': True,
+            'session_data': dict(session),
+            'session_id': request.cookies.get('session'),
+            'counter': session['test_counter']
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500

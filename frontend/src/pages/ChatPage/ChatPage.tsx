@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchWithAuth } from '../../JWT_token_refresh';
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<any[]>([]);
@@ -24,22 +25,21 @@ export default function ChatPage() {
     try {
       const url = sessionId ? `/api/v1/chat/history?session_id=${sessionId}` : '/api/v1/chat/history';
 
-      const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-        },
-      });
+      const res = await fetchWithAuth(url);
 
       if (!res.ok) {
+        const errorText = await res.text();
+        console.error('Error response:', errorText);
         if (res.status === 401) {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-          navigate('/login');
-        }
-        throw new Error('Ошибка загрузки истории');
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            navigate('/login');
+          }
+        throw new Error(`Ошибка загрузки истории: ${res.status} ${errorText}`);
       }
 
       const data = await res.json();
+      console.log('History data:', data);
       setMessages(data.messages || []);
       scrollToBottom();
     } catch (err) {
@@ -57,11 +57,10 @@ export default function ChatPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/v1/chat/send', {
+      const res = await fetchWithAuth('/api/v1/chat/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
         body: JSON.stringify({
           message: input,

@@ -7,6 +7,8 @@ from flask_login import LoginManager
 from flask_jwt_extended import JWTManager
 from flask_session import Session
 from .config import get_config
+from dotenv import load_dotenv
+load_dotenv()  # ищет файл .env в текущей директории
 
 # Импортируем расширения и модели (только расширения на уровне модуля)
 from .extensions import db
@@ -31,7 +33,7 @@ def create_app(config_name=None):
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'your-secret-key-change-me'
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI') or 'sqlite:///' + str(Path(app.instance_path) / 'app.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY') or 'your-jwt-secret-key-change-me'
+    app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=15)
     app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)
 

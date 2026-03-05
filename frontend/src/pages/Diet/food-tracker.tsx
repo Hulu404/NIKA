@@ -4,6 +4,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import svgPathsBack from './imports/svg-n101rx8ak0';
 import svgPaths from './imports/svg-nfsr0erm4u';
+import { fetchWithAuth } from '../../JWT_token_refresh';
 
 // ---------- Типы ----------
 interface FoodItem {
@@ -42,11 +43,7 @@ export default function FoodTracker() {
   useEffect(() => {
     const fetchEntries = async () => {
       try {
-        const response = await fetch('/api/v1/food/entries', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-          },
-        });
+        const response = await fetchWithAuth('/api/v1/food/entries');
         if (!response.ok) throw new Error('Ошибка загрузки');
         const data = await response.json();
         // Преобразуем строки дат в объекты Date
@@ -98,11 +95,10 @@ export default function FoodTracker() {
     };
 
     try {
-      const response = await fetch('/api/v1/food/entries', {
+      const response = await fetchWithAuth('/api/v1/food/entries', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
         body: JSON.stringify(newFood),
       });
@@ -130,11 +126,8 @@ export default function FoodTracker() {
   // ---------- 3. Удаление записи с сервера ----------
   const handleDeleteFood = async (id: string) => {
     try {
-      const response = await fetch(`/api/v1/food/entries/${id}`, {
+      const response = await fetchWithAuth(`/api/v1/food/entries/${id}`, {
         method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-        },
       });
       if (!response.ok) throw new Error('Ошибка удаления');
       setFoodItems(foodItems.filter(item => item.id !== id));
@@ -218,11 +211,10 @@ export default function FoodTracker() {
 
       const prompt = `Сегодня я съел(а) ${todayTotal} ккал. Распределение: ${mealsBreakdown}. Средняя калорийность за последние 7 дней: ${avgWeek} ккал. Дай краткий совет по улучшению питания (1-2 предложения).`;
 
-      const response = await fetch('/api/v1/food/advice', {
+      const response = await fetchWithAuth('/api/v1/food/advice', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
         body: JSON.stringify({ prompt }),
       });

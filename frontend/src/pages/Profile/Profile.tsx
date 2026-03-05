@@ -4,6 +4,7 @@ import svgPathsBack from './imports/svg-n101rx8ak0';
 import svgPaths from './imports/svg-nfsr0erm4u';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { fetchWithAuth } from '../../JWT_token_refresh';
 
 
 export default function Profile() {
@@ -14,11 +15,10 @@ export default function Profile() {
 
   const onLogout = async () => {
     try {
-      const response = await fetch('/api/v1/auth/logout', {
+      const response = await fetchWithAuth('/api/v1/auth/logout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('refresh_token')}`,
         },
       })
       if (!response.ok) {
@@ -43,11 +43,10 @@ export default function Profile() {
 
   const getUserData = async () => {
     try {
-      const response = await fetch('api/v1/auth/profile', {
+      const response = await fetchWithAuth('/api/v1/auth/profile', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       })
       const data = await response.json()

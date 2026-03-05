@@ -1,6 +1,7 @@
 // src/pages/Login/LoginPage.tsx
 import React, { useState } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
+import { fetchWithAuth } from '../../JWT_token_refresh';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -15,7 +16,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/v1/auth/login', {
+      const response = await fetchWithAuth('/api/v1/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
