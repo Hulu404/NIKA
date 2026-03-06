@@ -10,7 +10,7 @@ from app.extensions import db
 from sqlalchemy import desc, func
 
 # Импорты из сервисов (твои реальные функции)
-from app.services.gigachat.giga_text import response_gigachat
+from app.services.gigachat.giga_text import response_gigachat, SYSTEM_PROMPT
 from app.services.salute.salute_speech import speech_syntesis
 
 chat_v1 = Blueprint('chat_v1', __name__, url_prefix='/api/v1/chat')
@@ -25,17 +25,46 @@ def send_message():
     data = request.get_json(silent=True) or {}
     user_text = data.get('message', '').strip()
     with_audio = data.get('with_audio', False)  # true = с голосом, false = только текст
+    session_id = data.get('session_id')
 
     if not user_text:
         return jsonify({"success": False, "error": "Сообщение пустое"}), 400
 
-    print(f"[SEND] ← {user_text[:100]}{'...' if len(user_text) > 100 else ''}")
-
     user_id = get_jwt_identity()  # теперь всегда авторизованный пользователь
+
+    # Если session_id не передан, создаём новый
+    if not session_id:
+        session_id = str(uuid.uuid4())
+
+
+    # Загружаем историю сообщений для данной сессии (последние 20)
+    # Сортируем по возрастанию, чтобы получить хронологический порядок
+    previous_messages = Message.query.filter_by(
+        user_id=user_id, session_id=session_id
+    ).order_by(Message.created_at.asc()).limit(20).all()
+
+    # Формируем список сообщений для GigaChat
+    messages_for_giga = []
+
+    # Добавляем системный промпт
+    messages_for_giga.append({"role": "system", "content": SYSTEM_PROMPT})
+
+    # Добавляем предыдущие сообщения из БД
+    for msg in previous_messages:
+        messages_for_giga.append({"role": msg.role, "content": msg.content})
+
+    # Добавляем текущее сообщение пользователя
+    messages_for_giga.append({"role": "user", "content": user_text})
+
+    # print(f"{'='*50}\nОтладочный вывод истории запросов:\n")
+    # for el in messages_for_giga:
+    #     print(el)
+
+    print(f"[SEND] ← {user_text[:100]}{'...' if len(user_text) > 100 else ''}")
 
     try:
         # 1. Получаем ответ от GigaChat
-        reply = response_gigachat(user_text)
+        reply = response_gigachat(messages=messages_for_giga)
 
         # 2. Если нужен голос — синтезируем
         audio_base64 = None

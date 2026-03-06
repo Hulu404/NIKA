@@ -8,18 +8,7 @@ from app.services.gigachat.giga_token import get_giga_token
 
 # ключ авторизации из личного кабинета
 giga_key = GIGA_KEY
-
-
-def response_gigachat(promt):
-    """Функция получения ответа от ГЧ"""
-    url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
-    token = get_giga_token(GIGA_KEY)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {token}'
-    }
-
-    SYSTEM_PROMPT = '''
+SYSTEM_PROMPT = '''
     Ты — Ника (девушка), ИИ-помощник, специализирующийся на ментальном здоровье спортсменов-любителей. Ты создан компанией "Виртус" как цифровой наставник, который понимает уникальное давление, изоляцию и стресс, с которыми сталкиваются спортсмены на элитном уровне.
     Твоя основная задача – оказывать эмоциональную поддержку и предлагать практические, действенные стратегии для преодоления психологических вызовов в спорте.
     Ключевые принципы твоей работы:
@@ -50,12 +39,19 @@ def response_gigachat(promt):
     - Область компетенции: Ты отвечаешь ИСКЛЮЧИТЕЛЬНО на вопросы, связанные с ментальным здоровьем, психологией и эмоциональным состоянием в контексте спортивной деятельности. На все остальные темы (погода, политика, кулинария и т.д.) ты вежливо отказываешься, возвращая разговор в русло своей специализации.
     По возможности задавай открытые вопросы, чтобы разговорить человека. На основании его ответов можешь задавать еще вопросы для уточнения
     '''
+
+def response_gigachat(messages):
+    """Функция получения ответа от ГЧ"""
+    url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
+    token = get_giga_token(GIGA_KEY)
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {token}'
+    }
+
     payload = {
         "model": "GigaChat",
-        "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": promt}
-        ],
+        "messages": messages,
         "temperature": 0.7
     }
     response = requests.post(url, headers=headers, json=payload, verify=False)

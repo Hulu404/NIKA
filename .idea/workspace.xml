@@ -4,22 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81e58e44-dce9-4fa0-ba3b-8dcb17ac5a20" name="Changes" comment="requirements.txt">
-      <change afterPath="$PROJECT_DIR$/backend/app/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.env" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/app/api/v1/chat.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app/api/v1/chat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/instance/app.db" beforeDir="false" afterPath="$PROJECT_DIR$/backend/instance/app.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/instance/flask_session/2029240f6d1128be89ddc32729463129" beforeDir="false" afterPath="$PROJECT_DIR$/backend/instance/flask_session/2029240f6d1128be89ddc32729463129" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/ChatPage/ChatPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/ChatPage/ChatPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Diet/food-tracker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Diet/food-tracker.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/EmotionTracker/emotion-tracker.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/EmotionTracker/emotion-tracker.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Login/LoginPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Login/LoginPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/Profile/Profile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/Profile/Profile.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/vite.config.ts" afterDir="false" />
-    </list>
+    <list default="true" id="81e58e44-dce9-4fa0-ba3b-8dcb17ac5a20" name="Changes" comment="Историю починил. На TS добавил глобальную функцию проверки и рефреша access_token для jwc." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -287,7 +272,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772374056942</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Историю починил. На TS добавил глобальную функцию проверки и рефреша access_token для jwc.">
+      <option name="closed" value="true" />
+      <created>1772720802290</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1772720802290</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -342,7 +335,8 @@
     <MESSAGE value="Добавил Flask-login" />
     <MESSAGE value="Регистрация заработала. Однако логин не робит" />
     <MESSAGE value="requirements.txt" />
-    <option name="LAST_COMMIT_MESSAGE" value="requirements.txt" />
+    <MESSAGE value="Историю починил. На TS добавил глобальную функцию проверки и рефреша access_token для jwc." />
+    <option name="LAST_COMMIT_MESSAGE" value="Историю починил. На TS добавил глобальную функцию проверки и рефреша access_token для jwc." />
     <option name="GROUP_MULTIFILE_MERGE_BY_DIRECTORY" value="true" />
   </component>
 </project>
