@@ -200,10 +200,10 @@ export default function EmotionTracker() {
       const total = emotionEntries.length;
       const topEmotion = Object.entries(stats).sort((a, b) => b[1] - a[1])[0];
       const topEmotionObj = emotions.find(e => e.type === topEmotion?.[0]);
-      const avgValence = chartData.reduce((sum, d) => sum + d.valence, 0) / chartData.length;
+      const daysWithEmotions = chartData.filter(d => d.valence !== 0); // или d.count > 0
+      const avgValence = daysWithEmotions.reduce((sum, d) => sum + d.valence, 0) / daysWithEmotions.length;
 
-      const prompt = `За последний месяц (${monthNames[currentMonth - 1]}) у меня было ${total} дней с отмеченными эмоциями. Чаще всего я чувствовал(а) ${topEmotionObj?.label || 'неизвестно'}. Средний эмоциональный фон (от -2 до +2) составил ${avgValence.toFixed(2)}. Дай краткий совет по улучшению эмоционального состояния (1-2 предложения).`;
-
+      const prompt = `За последний месяц (${monthNames[currentMonth - 1]}) у меня было ${total} дней с отмеченными эмоциями. Чаще всего я чувствовал(а) ${topEmotionObj?.label || 'неизвестно'}. Средний эмоциональный фон (от -2 до +2) за отмеченные дни составил ${avgValence.toFixed(2)}. Дай краткий совет по улучшению эмоционального состояния (1-2 предложения).`;
       const response = await fetchWithAuth('/api/v1/emotion/advice', {
         method: 'POST',
         headers: {
