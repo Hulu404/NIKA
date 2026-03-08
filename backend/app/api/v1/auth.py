@@ -109,9 +109,7 @@ def register():
 @auth_bp.post("/login")
 def login():
     """Вход пользователя — получение access и refresh токенов"""
-    print("📥 Заголовки запроса:", dict(request.headers))
     print("📥 Тело запроса (сырое):", request.get_data(as_text=True))
-    print("📥 request.get_json():", request.get_json())
 
     data = request.get_json() or {}
     email = data.get("email")

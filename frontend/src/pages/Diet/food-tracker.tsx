@@ -62,11 +62,10 @@ export default function FoodTracker() {
   // ---------- Логаут ----------
   const onLogout = async () => {
     try {
-      const response = await fetch('/api/v1/auth/logout', {
+      const response = await fetchWithAuth('/api/v1/auth/logout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('refresh_token')}`,
         },
       });
       if (!response.ok) throw new Error('Ошибка выхода');

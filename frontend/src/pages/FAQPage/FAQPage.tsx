@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import svgPathsBack from './imports/svg-n101rx8ak0';
 import svgPaths from './imports/svg-nfsr0erm4u';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { fetchWithAuth } from '../../JWT_token_refresh';
 
 
 interface FAQItem {
@@ -103,11 +104,10 @@ export default function FAQPage() {
   const navigate = useNavigate()
   const onLogout = async () => {
     try {
-      const response = await fetch('/api/v1/auth/logout', {
+      const response = await fetchWithAuth('/api/v1/auth/logout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('refresh_token')}`,
         },
       });
       if (!response.ok) { 
