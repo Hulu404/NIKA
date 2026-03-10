@@ -391,65 +391,9 @@ export default function EmotionTracker() {
             <div className="grid grid-cols-7 gap-2">{renderCalendar()}</div>
           </div>
 
-          {/* Emotional Graph */}
-          {totalEntries > 0 && (
-            <div className="bg-white rounded-[20px] p-6 mb-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-4">
-                <TrendingUp className="text-[#f5a623]" size={24} />
-                <h3 className="text-[#3d1f00] text-[20px] font-semibold">Динамика настроения</h3>
-              </div>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e0d6c8" />
-                    <XAxis dataKey="day" stroke="#83451e" />
-                    <YAxis domain={[-2, 2]} ticks={[-2, -1, 0, 1, 2]} stroke="#83451e" />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#faf8f0', borderColor: '#e8dcc8', borderRadius: '10px' }}
-                      labelStyle={{ color: '#3d1f00' }}
-                      formatter={(value: number, name, props) => {
-                        const point = props.payload;
-                        return [point.emotion ? `${point.emotion} (${value})` : 'Нет записи', 'Валентность'];
-                      }}
-                    />
-                    <Line type="monotone" dataKey="valence" stroke="#f5a623" strokeWidth={2} dot={{ r: 4, fill: '#f5a623' }} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          )}
-
           {/* Statistics and AI Advice */}
           {totalEntries > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="md:col-span-2 bg-white rounded-[20px] p-8 shadow-sm">
-                <h3 className="text-[#3d1f00] text-[24px] mb-6">Статистика эмоций</h3>
-                <div className="flex flex-wrap gap-4">
-                  {emotions.map(emotion => {
-                    const count = emotionStats[emotion.type] || 0;
-                    const percentage = totalEntries > 0 ? (count / totalEntries) * 100 : 0;
-                    if (count === 0) return null;
-                    return (
-                      <div key={emotion.type} className="bg-[#faf8f0] rounded-[15px] p-4 min-w-[240px]">
-                        <div className="flex gap-4 items-center mb-3">
-                          <div className="w-10 h-10 rounded-full flex items-center justify-center text-[20px]" style={{ backgroundColor: `${emotion.color}21` }}>
-                            {emotion.emoji}
-                          </div>
-                          <div>
-                            <p className="text-[#3d1f00] text-[16px] font-bold">{emotion.label}</p>
-                            <p className="text-[#83451e] text-[12px]">{count} {count === 1 ? 'день' : 'дня'}</p>
-                          </div>
-                        </div>
-                        <div className="h-2 relative w-full">
-                          <div className="bg-[#e8dcc8] h-2 rounded-full w-full" />
-                          <div className="h-2 rounded-full absolute top-0 left-0" style={{ width: `${percentage}%`, backgroundColor: emotion.color }} />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
               <div className="bg-white rounded-[20px] p-6 shadow-sm flex flex-col">
                 <div className="flex items-center gap-2 mb-4">
                   <Sparkles className="text-[#f5a623]" size={24} />
@@ -481,6 +425,62 @@ export default function EmotionTracker() {
                     </>
                   )}
                 </button>
+              </div>
+              
+              <div className="md:col-span-2 bg-white rounded-[20px] p-8 shadow-sm">
+                <h3 className="text-[#3d1f00] text-[24px] mb-6">Статистика эмоций</h3>
+                <div className="flex flex-wrap gap-4">
+                  {emotions.map(emotion => {
+                    const count = emotionStats[emotion.type] || 0;
+                    const percentage = totalEntries > 0 ? (count / totalEntries) * 100 : 0;
+                    if (count === 0) return null;
+                    return (
+                      <div key={emotion.type} className="bg-[#faf8f0] rounded-[15px] p-4 min-w-[240px]">
+                        <div className="flex gap-4 items-center mb-3">
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center text-[20px]" style={{ backgroundColor: `${emotion.color}21` }}>
+                            {emotion.emoji}
+                          </div>
+                          <div>
+                            <p className="text-[#3d1f00] text-[16px] font-bold">{emotion.label}</p>
+                            <p className="text-[#83451e] text-[12px]">{count} {count === 1 ? 'день' : 'дня'}</p>
+                          </div>
+                        </div>
+                        <div className="h-2 relative w-full">
+                          <div className="bg-[#e8dcc8] h-2 rounded-full w-full" />
+                          <div className="h-2 rounded-full absolute top-0 left-0" style={{ width: `${percentage}%`, backgroundColor: emotion.color }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Emotional Graph */}
+          {totalEntries > 0 && (
+            <div className="bg-white rounded-[20px] p-6 mb-6 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="text-[#f5a623]" size={24} />
+                <h3 className="text-[#3d1f00] text-[20px] font-semibold">Динамика настроения</h3>
+              </div>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0d6c8" />
+                    <XAxis dataKey="day" stroke="#83451e" />
+                    <YAxis domain={[-2, 2]} ticks={[-2, -1, 0, 1, 2]} stroke="#83451e" />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#faf8f0', borderColor: '#e8dcc8', borderRadius: '10px' }}
+                      labelStyle={{ color: '#3d1f00' }}
+                      formatter={(value: number, name, props) => {
+                        const point = props.payload;
+                        return [point.emotion ? `${point.emotion} (${value})` : 'Нет записи', 'Валентность'];
+                      }}
+                    />
+                    <Line type="monotone" dataKey="valence" stroke="#f5a623" strokeWidth={2} dot={{ r: 4, fill: '#f5a623' }} />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
             </div>
           )}
