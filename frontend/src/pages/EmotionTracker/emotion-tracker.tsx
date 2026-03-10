@@ -66,20 +66,23 @@ export default function EmotionTracker() {
 
   const onLogout = async () => {
     try {
-      const response = await fetchWithAuth('/api/v1/auth/logout', {
+      const response = await fetch('/api/v1/auth/logout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('refresh_token')}`,
         },
-      });
-      if (!response.ok) throw new Error('Ошибка выхода');
+      })
+      if (!response.ok) {
+          throw new Error('Ошибка выхода');
+        }
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       navigate('/');
     } catch (err) {
       console.error(err);
     }
-  };
+  }
 
   const monthNames = [
     'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
