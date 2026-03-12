@@ -39,7 +39,7 @@ export default function EmotionTracker() {
   const [showModal, setShowModal] = useState(false);
   const [aiAdvice, setAiAdvice] = useState<string>('');
   const [loadingAdvice, setLoadingAdvice] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [setLoading] = useState(false);
   const navigate = useNavigate();
 
   // Загрузка записей с сервера
@@ -473,10 +473,18 @@ export default function EmotionTracker() {
                     <Tooltip
                       contentStyle={{ backgroundColor: '#faf8f0', borderColor: '#e8dcc8', borderRadius: '10px' }}
                       labelStyle={{ color: '#3d1f00' }}
-                      formatter={(value: number, name, props) => {
-                        const point = props.payload;
-                        return [point.emotion ? `${point.emotion} (${value})` : 'Нет записи', 'Валентность'];
-                      }}
+                      formatter={(value: number | undefined, name: string | undefined, props: any) => {
+                          // Извлекаем точку данных (payload) из props
+                          const point = props?.payload;
+                          // Если нет данных – возвращаем пустые значения
+                          if (!point) return ['', ''];
+
+                          // Формируем метку: если есть emotion, показываем его и значение, иначе "Нет записи"
+                          const label = point.emotion ? `${point.emotion} (${value ?? ''})` : 'Нет записи';
+
+                          // Возвращаем кортеж: [метка, название серии данных]
+                          return [label, 'Валентность'];
+                        }}
                     />
                     <Line type="monotone" dataKey="valence" stroke="#f5a623" strokeWidth={2} dot={{ r: 4, fill: '#f5a623' }} />
                   </LineChart>
