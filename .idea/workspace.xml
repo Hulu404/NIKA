@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81e58e44-dce9-4fa0-ba3b-8dcb17ac5a20" name="Changes" comment="Историю починил. На TS добавил глобальную функцию проверки и рефреша access_token для jwc." />
+    <list default="true" id="81e58e44-dce9-4fa0-ba3b-8dcb17ac5a20" name="Changes" comment="fix: emotion-tracker.tsx">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/static/assets/index-BC1oEYvy.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/static/assets/index-M1G6Vl7e.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/static/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Dockerfile" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -280,7 +286,23 @@
       <option name="project" value="LOCAL" />
       <updated>1772720802290</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="fix: emotion-tracker.tsx">
+      <option name="closed" value="true" />
+      <created>1773324111076</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1773324111077</updated>
+    </task>
+    <task id="LOCAL-00011" summary="fix: emotion-tracker.tsx">
+      <option name="closed" value="true" />
+      <created>1773324244867</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1773324244867</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -336,7 +358,8 @@
     <MESSAGE value="Регистрация заработала. Однако логин не робит" />
     <MESSAGE value="requirements.txt" />
     <MESSAGE value="Историю починил. На TS добавил глобальную функцию проверки и рефреша access_token для jwc." />
-    <option name="LAST_COMMIT_MESSAGE" value="Историю починил. На TS добавил глобальную функцию проверки и рефреша access_token для jwc." />
+    <MESSAGE value="fix: emotion-tracker.tsx" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: emotion-tracker.tsx" />
     <option name="GROUP_MULTIFILE_MERGE_BY_DIRECTORY" value="true" />
   </component>
 </project>
