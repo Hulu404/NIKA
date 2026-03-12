@@ -39,7 +39,7 @@ export default function EmotionTracker() {
   const [showModal, setShowModal] = useState(false);
   const [aiAdvice, setAiAdvice] = useState<string>('');
   const [loadingAdvice, setLoadingAdvice] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
     useEffect(() => {
