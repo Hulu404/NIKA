@@ -39,30 +39,29 @@ export default function EmotionTracker() {
   const [showModal, setShowModal] = useState(false);
   const [aiAdvice, setAiAdvice] = useState<string>('');
   const [loadingAdvice, setLoadingAdvice] = useState(false);
-  const [setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Загрузка записей с сервера
-  useEffect(() => {
-    const fetchEntries = async () => {
-      setLoading(true);
-      try {
-        const response = await fetchWithAuth('/api/v1/emotion/entries');
-        if (!response.ok) throw new Error('Ошибка загрузки');
-        const data = await response.json();
-        const entries = data.map((item: any) => ({
-          date: item.date,
-          emotion: item.emotion,
-        }));
-        setEmotionEntries(entries);
-      } catch (error) {
-        console.error('Не удалось загрузить эмоции:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEntries();
-  }, []);
+    useEffect(() => {
+      const fetchEntries = async () => {
+        setLoading(true);
+        try {
+          const response = await fetchWithAuth('/api/v1/emotion/entries');
+          if (!response.ok) throw new Error('Ошибка загрузки');
+          const data = await response.json();
+          const entries = data.map((item: any) => ({
+            date: item.date,
+            emotion: item.emotion,
+          }));
+          setEmotionEntries(entries);
+        } catch (error) {
+          console.error('Не удалось загрузить эмоции:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchEntries();
+    }, []);
 
   const onLogout = async () => {
     try {
@@ -473,7 +472,7 @@ export default function EmotionTracker() {
                     <Tooltip
                       contentStyle={{ backgroundColor: '#faf8f0', borderColor: '#e8dcc8', borderRadius: '10px' }}
                       labelStyle={{ color: '#3d1f00' }}
-                      formatter={(value: number | undefined, name: string | undefined, props: any) => {
+                      formatter={(value: number | undefined, props: any) => {
                           // Извлекаем точку данных (payload) из props
                           const point = props?.payload;
                           // Если нет данных – возвращаем пустые значения
