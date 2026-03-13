@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="81e58e44-dce9-4fa0-ba3b-8dcb17ac5a20" name="Changes" comment="fix: emotion-tracker.tsx">
+    <list default="true" id="81e58e44-dce9-4fa0-ba3b-8dcb17ac5a20" name="Changes" comment="fix: url">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/static/assets/index-BC1oEYvy.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/static/assets/index-M1G6Vl7e.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/static/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/backend/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nginx.conf" beforeDir="false" afterPath="$PROJECT_DIR$/nginx.conf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -302,7 +300,39 @@
       <option name="project" value="LOCAL" />
       <updated>1773324244867</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="fix: npm run build">
+      <option name="closed" value="true" />
+      <created>1773325445621</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1773325445621</updated>
+    </task>
+    <task id="LOCAL-00013" summary="fix: npm run build">
+      <option name="closed" value="true" />
+      <created>1773325454046</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1773325454046</updated>
+    </task>
+    <task id="LOCAL-00014" summary="fix: nginx config">
+      <option name="closed" value="true" />
+      <created>1773384613278</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1773384613278</updated>
+    </task>
+    <task id="LOCAL-00015" summary="fix: url">
+      <option name="closed" value="true" />
+      <created>1773384982677</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1773384982677</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -359,7 +389,10 @@
     <MESSAGE value="requirements.txt" />
     <MESSAGE value="Историю починил. На TS добавил глобальную функцию проверки и рефреша access_token для jwc." />
     <MESSAGE value="fix: emotion-tracker.tsx" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix: emotion-tracker.tsx" />
+    <MESSAGE value="fix: npm run build" />
+    <MESSAGE value="fix: nginx config" />
+    <MESSAGE value="fix: url" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: url" />
     <option name="GROUP_MULTIFILE_MERGE_BY_DIRECTORY" value="true" />
   </component>
 </project>

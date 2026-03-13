@@ -5,6 +5,7 @@ annotated-types==0.7.0
 anyio==4.12.1
 attrs==25.4.0
 blinker==1.9.0
+cachelib==0.13.0
 certifi==2026.1.4
 charset-normalizer==3.4.4
 click==8.3.1
@@ -12,6 +13,7 @@ Flask==3.1.2
 flask-cors==6.0.2
 Flask-JWT-Extended==4.7.1
 Flask-Login==0.6.3
+Flask-Session==0.8.0
 Flask-SQLAlchemy==3.1.1
 frozenlist==1.8.0
 gigachat==0.1.43
@@ -24,7 +26,16 @@ itsdangerous==2.2.0
 Jinja2==3.1.6
 jsonpatch==1.33
 jsonpointer==3.0.0
+langchain==1.2.8
+langchain-core==1.2.9
+langchain-gigachat==0.3.12
+langgraph==1.0.7
+langgraph-checkpoint==4.0.0
+langgraph-prebuilt==1.0.7
+langgraph-sdk==0.3.3
+langsmith==0.6.9
 MarkupSafe==3.0.3
+msgspec==0.20.0
 multidict==6.7.1
 orjson==3.11.7
 ormsgpack==1.12.2
