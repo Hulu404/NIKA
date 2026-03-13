@@ -1,9 +1,9 @@
 networks:
   dev:
 
-volumes:
-  certbot-www:     # для ACME-вызовов
-  certbot-conf:    # для хранения сертификатов
+#volumes:
+#  certbot-www:     # для ACME-вызовов
+#  certbot-conf:    # для хранения сертификатов
 
 services:
   nginx:
