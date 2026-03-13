@@ -3,23 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
 plugins: [react()],
-server: {
-    host: '0.0.0.0',        // слушать все интерфейсы
-    port: 5173,              // порт фронта
-    proxy: {
-      // Все запросы к /api идут на Flask
-      '/api': {
-          target: 'http://178.72.164.141:5001',
-          changeOrigin: true,
-      },
-      // Все запросы к /static идут на Flask
-      '/static': {
-          target: 'http://178.72.164.141:5001',
-          changeOrigin: true,
-      }
-    },
-  },
-  build: {
+build: {
     // Собираем в папку static Flask
     outDir: '../backend/static',
     emptyOutDir: true,
@@ -27,4 +11,22 @@ server: {
   css: {
     postcss: './postcss.config.js', // Указываем конфиг PostCSS
   }
+// Локальная разработка
+// server: {
+//     host: '0.0.0.0',        // слушать все интерфейсы
+//     port: 5173,              // порт фронта
+//     proxy: {
+//       // Все запросы к /api идут на Flask
+//       '/api': {
+//           target: 'http://178.72.164.141:5001',
+//           changeOrigin: true,
+//       },
+//       // Все запросы к /static идут на Flask
+//       '/static': {
+//           target: 'http://178.72.164.141:5001',
+//           changeOrigin: true,
+//       }
+//     },
+//   },
+
 })
