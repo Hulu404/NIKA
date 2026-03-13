@@ -15,6 +15,7 @@ services:
       - './nginx.conf:/etc/nginx/nginx.conf'
       - 'certbot-www:/var/www/certbot:ro'      # для проверки домена
       - 'certbot-conf:/etc/letsencrypt:ro'      # готовые сертификаты
+      - './empty.conf:/etc/nginx/conf.d/default.conf'   # подменяем дефолтный конфиг пустым файлом
     depends_on:
       - backend
       - frontend
