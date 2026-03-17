@@ -1,9 +1,12 @@
 # app/api/v1/emotion.py
-from flask import Blueprint, request, jsonify, current_app
+from datetime import datetime
+
+from flask import Blueprint, request, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
+
 from app.models.emotion_entry import EmotionEntry
 from app.extensions import db
-from datetime import datetime
+from app.utils.responses import success_response, error_response
 from app.services.gigachat.giga_text import response_gigachat
 
 emotion_v1 = Blueprint('emotion_v1', __name__, url_prefix='/api/v1/emotion')
@@ -35,68 +38,170 @@ EMOTION_PROMPT = '''Ты — эмпатичная и заботливая асс
 @emotion_v1.route('/entries', methods=['GET'])
 @jwt_required()
 def get_entries():
-    user_id = get_jwt_identity()
+    """Список записей эмоций
+    ---
+    tags:
+      - Emotion
+    summary: Получить записи эмоций пользователя
+    security:
+      - Bearer: []
+    responses:
+      200:
+        description: Список записей
+      401:
+        description: Требуется авторизация
+    """
+    user_id: str = get_jwt_identity()
     entries = EmotionEntry.query.filter_by(user_id=user_id).order_by(EmotionEntry.date.desc()).all()
-    return jsonify([{
-        'id': e.id,
-        'date': e.date.isoformat(),
-        'emotion': e.emotion
-    } for e in entries])
+
+    return success_response(
+        data=[
+            {
+                "id": e.id,
+                "date": e.date.isoformat(),
+                "emotion": e.emotion,
+            }
+            for e in entries
+        ]
+    )
 
 
 @emotion_v1.route('/entries', methods=['POST'])
 @jwt_required()
 def add_entry():
-    user_id = get_jwt_identity()
-    data = request.get_json()
+    """Добавить запись эмоции
+    ---
+    tags:
+      - Emotion
+    summary: Добавить запись в дневник эмоций
+    security:
+      - Bearer: []
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required: [date, emotion]
+          properties:
+            date:
+              type: string
+              format: date
+              example: "2026-03-17"
+            emotion:
+              type: string
+              example: "Радость"
+    responses:
+      200:
+        description: Запись добавлена
+      400:
+        description: Ошибка валидации
+      401:
+        description: Требуется авторизация
+    """
+    user_id: str = get_jwt_identity()
+    data: dict = request.get_json() or {}
+
     try:
         # Преобразуем строку в объект date
         date_obj = datetime.strptime(data['date'], '%Y-%m-%d').date()
-    except ValueError:
-        return jsonify({'error': 'Неверный формат даты. Используйте ГГГГ-ММ-ДД'}), 400
+    except (ValueError, KeyError):
+        return error_response("Неверный формат даты. Используйте ГГГГ-ММ-ДД", 400)
+
+    emotion: str | None = data.get('emotion')
+    if not emotion:
+        return error_response("Поле emotion обязательно", 400)
 
     entry = EmotionEntry(
         user_id=user_id,
         date=date_obj,
-        emotion=data['emotion']
+        emotion=emotion,
     )
     db.session.add(entry)
     db.session.commit()
-    return jsonify({'success': True, 'id': entry.id})
+
+    return success_response(data={"id": entry.id}, message="Запись добавлена")
 
 
 @emotion_v1.route('/entries/<int:entry_id>', methods=['DELETE'])
 @jwt_required()
-def delete_entry(entry_id):
-    user_id = get_jwt_identity()
+def delete_entry(entry_id: int):
+    """Удалить запись эмоции
+    ---
+    tags:
+      - Emotion
+    summary: Удалить запись из дневника эмоций
+    security:
+      - Bearer: []
+    parameters:
+      - in: path
+        name: entry_id
+        type: integer
+        required: true
+    responses:
+      200:
+        description: Запись удалена
+      404:
+        description: Запись не найдена
+      401:
+        description: Требуется авторизация
+    """
+    user_id: str = get_jwt_identity()
     entry = EmotionEntry.query.filter_by(id=entry_id, user_id=user_id).first()
+
     if not entry:
-        return jsonify({'error': 'Запись не найдена'}), 404
+        return error_response("Запись не найдена", 404)
+
     db.session.delete(entry)
     db.session.commit()
-    return jsonify({'success': True})
+
+    return success_response(message="Запись удалена")
 
 
 @emotion_v1.route('/advice', methods=['POST'])
 @jwt_required()
 def get_emotion_advice():
-    data = request.get_json() or {}
-    prompt = data.get('prompt', '').strip()
-
-    # Формируем список сообщений для GigaChat
-    messages_for_giga = []
-
-    # Добавляем системный промпт
-    messages_for_giga.append({"role": "system", "content": EMOTION_PROMPT})
-
-    # Добавляем текущее сообщение пользователя
-    messages_for_giga.append({"role": "user", "content": prompt})
+    """AI-анализ эмоций
+    ---
+    tags:
+      - Emotion
+    summary: Получить AI-совет по эмоциям
+    security:
+      - Bearer: []
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required: [prompt]
+          properties:
+            prompt:
+              type: string
+              example: "За последний месяц у меня было 5 дней с отмеченными эмоциями. Чаще всего я чувствовал Слабость."
+    responses:
+      200:
+        description: AI-совет
+      400:
+        description: Промпт пуст
+      401:
+        description: Требуется авторизация
+    """
+    data: dict = request.get_json() or {}
+    prompt: str = data.get('prompt', '').strip()
 
     if not prompt:
-        return jsonify({'error': 'Промпт пуст'}), 400
+        return error_response("Промпт не может быть пустым", 400)
+
+    # Формируем список сообщений для GigaChat
+    messages_for_giga: list[dict] = [
+        {"role": "system", "content": EMOTION_PROMPT},
+        {"role": "user", "content": prompt},
+    ]
+
     try:
-        advice = response_gigachat(messages_for_giga)
-        return jsonify({'advice': advice})
+        advice: str = response_gigachat(messages_for_giga)
+        return success_response(data={"advice": advice})
     except Exception as e:
         current_app.logger.error(f"[EMOTION ADVICE ERROR] {e}")
-        return jsonify({'error': 'Не удалось получить совет'}), 500
+        return error_response("Не удалось получить совет", 500)

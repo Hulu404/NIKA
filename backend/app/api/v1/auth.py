@@ -1,61 +1,93 @@
 # app/api/v1/auth.py
-from flask import Blueprint, request, jsonify
+from datetime import datetime, timedelta, timezone
+
+from flask import Blueprint, request, current_app
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     jwt_required,
     get_jwt_identity,
-    get_jwt, decode_token,
+    get_jwt,
+    decode_token,
 )
-from datetime import datetime, timedelta
+
 from ...extensions import db
 from ...models.user import User
 from ...models.refresh_token import RefreshToken
-from flask import current_app  # для логирования
+from ...utils.responses import success_response, error_response
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
 
-@jwt_required()
+
 @auth_bp.post("/register")
 def register():
-    """Регистрация нового пользователя + сразу выдача токенов"""
-    data = request.get_json() or {}
+    """Регистрация нового пользователя
+    ---
+    tags:
+      - Auth
+    summary: Регистрация нового пользователя
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required: [name, last_name, email, password, gender]
+          properties:
+            name:
+              type: string
+              example: "Иван"
+            last_name:
+              type: string
+              example: "Иванов"
+            email:
+              type: string
+              example: "ivan@example.com"
+            password:
+              type: string
+              example: "securepassword123"
+            gender:
+              type: string
+              enum: [male, female]
+              example: "male"
+    responses:
+      201:
+        description: Пользователь зарегистрирован
+      400:
+        description: Ошибка валидации
+      409:
+        description: Email уже занят
+    """
+    data: dict = request.get_json() or {}
 
-    name = data.get("name", "").strip()
-    last_name = data.get("last_name", "").strip()
-    email = data.get("email", "").strip()
-    password = data.get("password", "")
+    name: str = data.get("name", "").strip()
+    last_name: str = data.get("last_name", "").strip()
+    email: str = data.get("email", "").strip()
+    password: str = data.get("password", "")
+    gender: str = data.get("gender", "").strip().lower()
 
-    # Только email и password обязательны
-    if not all([email, password]):
-        return jsonify({"success": False, "error": "Обязательны: email, password"}), 400
+    # Валидация обязательных полей
+    if not all([name, last_name, email, password, gender]):
+        return error_response("Все поля обязательны: name, last_name, email, password, gender", 400)
 
-    # name и last_name — необязательные
-    if name and len(name) < 1:
-        return jsonify({"success": False, "error": "Имя слишком короткое"}), 400
-
-    if last_name and len(last_name) < 2:
-        return jsonify({"success": False, "error": "Фамилия слишком короткая"}), 400
-
-    # gender и sport — необязательные
-    gender = data.get("gender", None)
-    sport = data.get("sport_type", None)
-
-
-
-    # Проверка длины
     if len(name) < 2:
-        return jsonify({"success": False, "error": "Имя слишком короткое (минимум 2 символа)"}), 400
+        return error_response("Имя слишком короткое (минимум 2 символа)", 400)
+
     if len(last_name) < 2:
-        return jsonify({"success": False, "error": "Фамилия слишком короткая (минимум 2 символа)"}), 400
+        return error_response("Фамилия слишком короткая (минимум 2 символа)", 400)
+
     if "@" not in email:
-        return jsonify({"success": False, "error": "Некорректный email"}), 400
+        return error_response("Некорректный email", 400)
+
     if len(password) < 6:
-        return jsonify({"success": False, "error": "Пароль должен быть минимум 6 символов"}), 400
+        return error_response("Пароль должен быть минимум 6 символов", 400)
+
+    if gender not in ("male", "female"):
+        return error_response("Допустимые значения gender: male, female", 400)
 
     # Проверка уникальности email
     if User.query.filter_by(email=email).first():
-        return jsonify({"success": False, "error": "Email уже зарегистрирован"}), 409
+        return error_response("Email уже зарегистрирован", 409)
 
     # Создаём пользователя
     user = User(
@@ -63,7 +95,6 @@ def register():
         last_name=last_name,
         email=email,
         gender=gender,
-        sport_type=sport
     )
     user.set_password(password)
 
@@ -72,132 +103,193 @@ def register():
         db.session.commit()
 
         # Генерируем токены сразу после регистрации
-        access_token = create_access_token(identity=str(user.id), fresh=True)
-        refresh_token = create_refresh_token(identity=str(user.id))
+        access_token: str = create_access_token(identity=str(user.id), fresh=True)
+        refresh_token: str = create_refresh_token(identity=str(user.id))
 
-        decoded = decode_token(refresh_token)
-        jti = decoded['jti']
+        decoded: dict = decode_token(refresh_token)
+        jti: str = decoded["jti"]
 
         token = RefreshToken(
             jti=jti,
             user_id=user.id,
             token=refresh_token,
-            expires_at=datetime.utcnow() + timedelta(days=30)
+            expires_at=datetime.now(timezone.utc) + timedelta(days=30),
         )
         db.session.add(token)
         db.session.commit()
 
-        return jsonify({
-            "success": True,
-            "message": "Регистрация успешна",
-            "access_token": access_token,
-            "refresh_token": refresh_token,
-            "user": {
-                "id": user.id,
-                "name": user.name,
-                "last_name": user.last_name,
-                "email": user.email
-            }
-        }), 201
+        return success_response(
+            data={
+                "user_id": user.id,
+                "access_token": access_token,
+                "refresh_token": refresh_token,
+            },
+            message="Регистрация успешна",
+            status_code=201,
+        )
 
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f"Ошибка регистрации: {str(e)}")
-        return jsonify({"success": False, "error": "Ошибка сервера при регистрации"}), 500
+        current_app.logger.error(f"Ошибка регистрации: {e}")
+        return error_response("Ошибка сервера при регистрации", 500)
 
 
 @auth_bp.post("/login")
 def login():
-    """Вход пользователя — получение access и refresh токенов"""
-    print("📥 Тело запроса (сырое):", request.get_data(as_text=True))
-
-    data = request.get_json() or {}
-    email = data.get("email")
-    password = data.get("password")
+    """Вход пользователя
+    ---
+    tags:
+      - Auth
+    summary: Вход пользователя — получение access и refresh токенов
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required: [email, password]
+          properties:
+            email:
+              type: string
+              example: "ivan@example.com"
+            password:
+              type: string
+              example: "securepassword123"
+    responses:
+      200:
+        description: Успешный вход
+      401:
+        description: Неверные данные
+    """
+    data: dict = request.get_json() or {}
+    email: str | None = data.get("email")
+    password: str | None = data.get("password")
 
     if not all([email, password]):
-        return jsonify({"success": False, "error": "Email и пароль обязательны"}), 400
+        return error_response("Email и пароль обязательны", 400)
 
-    user = User.query.filter_by(email=email).first()
+    user: User | None = User.query.filter_by(email=email).first()
     if not user or not user.check_password(password):
-        return jsonify({"success": False, "error": "Неверный email или пароль"}), 401
+        return error_response("Неверный email или пароль", 401)
 
-    # Преобразуем user.id в строку
-    access_token = create_access_token(identity=str(user.id), fresh=True)
-    refresh_token = create_refresh_token(identity=str(user.id))
+    access_token: str = create_access_token(identity=str(user.id), fresh=True)
+    refresh_token: str = create_refresh_token(identity=str(user.id))
 
-    decoded = decode_token(refresh_token)
-    jti = decoded['jti']
+    decoded: dict = decode_token(refresh_token)
+    jti: str = decoded["jti"]
 
     token = RefreshToken(
         jti=jti,
         user_id=user.id,
         token=refresh_token,
-        expires_at=datetime.utcnow() + timedelta(days=30)
+        expires_at=datetime.now(timezone.utc) + timedelta(days=30),
     )
     db.session.add(token)
     db.session.commit()
 
-    return jsonify({
-        "success": True,
-        "access_token": access_token,
-        "refresh_token": refresh_token,
-        "user": {
-            "id": user.id,
-            "name": user.name,
-            "last_name": user.last_name,
-            "email": user.email
+    return success_response(
+        data={
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "user": {
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+            },
         }
-    })
+    )
 
 
 @auth_bp.post("/refresh")
 @jwt_required(refresh=True)
 def refresh():
-    """Обновление access-токена по refresh-токену"""
-    user_id = get_jwt_identity()
+    """Обновление access-токена
+    ---
+    tags:
+      - Auth
+    summary: Обновление access-токена по refresh-токену
+    security:
+      - Bearer: []
+    responses:
+      200:
+        description: Новый access-токен
+      401:
+        description: Refresh-токен недействителен
+    """
+    user_id: str = get_jwt_identity()
 
-    jti = get_jwt()["jti"]
-    token = RefreshToken.query.filter_by(jti=jti).first()
+    jti: str = get_jwt()["jti"]
+    token: RefreshToken | None = RefreshToken.query.filter_by(jti=jti).first()
 
-    if not token or token.revoked or token.expires_at < datetime.utcnow():
-        return jsonify({"success": False, "error": "Refresh-токен недействителен или истёк"}), 401
+    if not token or token.revoked or token.expires_at < datetime.now(timezone.utc):
+        return error_response("Refresh-токен недействителен или истёк", 401)
 
-    new_access = create_access_token(identity=user_id)
-    return jsonify({"success": True, "access_token": new_access})
+    new_access: str = create_access_token(identity=user_id)
+    return success_response(data={"access_token": new_access})
 
 
 @auth_bp.post("/logout")
 @jwt_required(refresh=True)
 def logout():
-    """Выход — отзыв refresh-токена"""
-    jti = get_jwt()["jti"]
-    token = RefreshToken.query.filter_by(jti=jti).first()
+    """Выход пользователя
+    ---
+    tags:
+      - Auth
+    summary: Выход — отзыв refresh-токена
+    security:
+      - Bearer: []
+    responses:
+      200:
+        description: Выход выполнен
+      401:
+        description: Требуется авторизация
+    """
+    jti: str = get_jwt()["jti"]
+    token: RefreshToken | None = RefreshToken.query.filter_by(jti=jti).first()
 
     if token:
         token.revoked = True
         db.session.commit()
 
-    return jsonify({"success": True, "message": "Выход выполнен"})
+    return success_response(message="Выход выполнен")
 
 
 @auth_bp.get("/profile")
 @jwt_required()
 def profile():
-    """Профиль пользователя (защищённый маршрут)"""
-    user_id = get_jwt_identity()
-    user = User.query.get(user_id)
+    """Профиль текущего пользователя
+    ---
+    tags:
+      - Auth
+    summary: Получение профиля текущего пользователя
+    security:
+      - Bearer: []
+    responses:
+      200:
+        description: Данные профиля
+      401:
+        description: Требуется авторизация
+    """
+    user_id: str = get_jwt_identity()
+    user: User | None = db.session.get(User, int(user_id))
 
     if not user:
-        return jsonify({"success": False, "error": "Пользователь не найден"}), 404
+        return error_response("Пользователь не найден", 404)
 
-    return jsonify({
-        "success": True,
-        "user": {
+    # Время сброса лимита — следующая полночь UTC
+    tomorrow = datetime.now(timezone.utc) + timedelta(days=1)
+    requests_reset_at: str = tomorrow.replace(
+        hour=0, minute=0, second=0, microsecond=0
+    ).isoformat()
+
+    return success_response(
+        data={
             "id": user.id,
             "name": user.name,
             "last_name": user.last_name,
             "email": user.email,
-            "created_at": user.created_at.isoformat() if hasattr(user, 'created_at') else None
+            "gender": user.gender,
+            "requests_left": user.get_remaining_requests(),
+            "requests_reset_at": requests_reset_at,
         }
-    })
+    )

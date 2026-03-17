@@ -1,9 +1,11 @@
 # app/api/v1/food.py
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
+
 from app.services.gigachat.giga_text import response_gigachat
 from app.models.food_entry import FoodEntry
 from app.extensions import db
+from app.utils.responses import success_response, error_response
 
 food_v1 = Blueprint('food_v1', __name__, url_prefix='/api/v1/food')
 
@@ -36,71 +38,176 @@ FOOD_PROMPT = '''Ты — эмпатичная и заботливая асси�
 
 Совет: попробуй добавить в обед или ужин порцию ярких овощей (клетчатку) — это добавит объема блюду и поможет сохранить сытость.»'''
 
+
 @food_v1.route('/entries', methods=['GET'])
 @jwt_required()
 def get_entries():
-    user_id = get_jwt_identity()
+    """Список записей питания
+    ---
+    tags:
+      - Food
+    summary: Получить записи питания пользователя
+    security:
+      - Bearer: []
+    responses:
+      200:
+        description: Список записей
+      401:
+        description: Требуется авторизация
+    """
+    user_id: str = get_jwt_identity()
     entries = FoodEntry.query.filter_by(user_id=user_id).order_by(FoodEntry.created_at.desc()).all()
-    return jsonify([{
-        'id': e.id,
-        'name': e.name,
-        'calories': e.calories,
-        'mealType': e.meal_type,
-        'timestamp': e.created_at.isoformat()
-    } for e in entries])
+
+    return success_response(
+        data=[
+            {
+                "id": e.id,
+                "name": e.name,
+                "calories": e.calories,
+                "mealType": e.meal_type,
+                "timestamp": e.created_at.isoformat(),
+            }
+            for e in entries
+        ]
+    )
+
 
 @food_v1.route('/entries', methods=['POST'])
 @jwt_required()
 def add_entry():
-    user_id = get_jwt_identity()
-    data = request.get_json()
+    """Добавить запись питания
+    ---
+    tags:
+      - Food
+    summary: Добавить запись в дневник питания
+    security:
+      - Bearer: []
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required: [name, calories, mealType]
+          properties:
+            name:
+              type: string
+              example: "Овсянка с бананом"
+            calories:
+              type: integer
+              example: 350
+            mealType:
+              type: string
+              example: "breakfast"
+    responses:
+      200:
+        description: Запись добавлена
+      400:
+        description: Ошибка валидации
+      401:
+        description: Требуется авторизация
+    """
+    user_id: str = get_jwt_identity()
+    data: dict = request.get_json() or {}
+
+    name: str | None = data.get('name')
+    calories = data.get('calories')
+    meal_type: str | None = data.get('mealType')
+
+    if not all([name, calories is not None, meal_type]):
+        return error_response("Обязательные поля: name, calories, mealType", 400)
+
     entry = FoodEntry(
         user_id=user_id,
-        name=data['name'],
-        calories=data['calories'],
-        meal_type=data['mealType']
+        name=name,
+        calories=calories,
+        meal_type=meal_type,
     )
     db.session.add(entry)
     db.session.commit()
-    return jsonify({'success': True, 'id': entry.id})
+
+    return success_response(data={"id": entry.id}, message="Запись добавлена")
 
 
 @food_v1.route('/entries/<int:entry_id>', methods=['DELETE'])
 @jwt_required()
-def delete_entry(entry_id):
-    user_id = get_jwt_identity()
+def delete_entry(entry_id: int):
+    """Удалить запись питания
+    ---
+    tags:
+      - Food
+    summary: Удалить запись из дневника питания
+    security:
+      - Bearer: []
+    parameters:
+      - in: path
+        name: entry_id
+        type: integer
+        required: true
+    responses:
+      200:
+        description: Запись удалена
+      404:
+        description: Запись не найдена
+      401:
+        description: Требуется авторизация
+    """
+    user_id: str = get_jwt_identity()
     entry = FoodEntry.query.filter_by(id=entry_id, user_id=user_id).first()
+
     if not entry:
-        return jsonify({'error': 'Запись не найдена'}), 404
+        return error_response("Запись не найдена", 404)
+
     db.session.delete(entry)
     db.session.commit()
-    return jsonify({'success': True})
+
+    return success_response(message="Запись удалена")
 
 
 @food_v1.route('/advice', methods=['POST'])
-@jwt_required()  
+@jwt_required()
 def get_food_advice():
+    """AI-анализ питания
+    ---
+    tags:
+      - Food
+    summary: Получить AI-совет по питанию
+    security:
+      - Bearer: []
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required: [prompt]
+          properties:
+            prompt:
+              type: string
+              example: "Сегодня я съел 3100 ккал. Распределение: Завтрак 1000, Обед 1000, Ужин 900, Перекус 200."
+    responses:
+      200:
+        description: AI-совет
+      400:
+        description: Промпт пуст
+      401:
+        description: Требуется авторизация
     """
-    Получить совет по питанию от AI на основе переданного промпта.
-    Ожидает JSON: { "prompt": "строка с описанием ситуации" }
-    Возвращает: { "advice": "текст совета" }
-    """
-    data = request.get_json() or {}
-    prompt = data.get('prompt', '').strip()
-
-    messages_for_giga = []
-
-    messages_for_giga.append({"role": "system", "content": FOOD_PROMPT})
-
-    messages_for_giga.append({"role": "user", "content": prompt})
+    data: dict = request.get_json() or {}
+    prompt: str = data.get('prompt', '').strip()
 
     if not prompt:
-        return jsonify({'error': 'Промпт не может быть пустым'}), 400
+        return error_response("Промпт не может быть пустым", 400)
+
+    # Формируем список сообщений для GigaChat
+    messages_for_giga: list[dict] = [
+        {"role": "system", "content": FOOD_PROMPT},
+        {"role": "user", "content": prompt},
+    ]
 
     try:
-        # Пока что берем ту же функцию, что и в чате
-        advice = response_gigachat(messages_for_giga)
-        return jsonify({'advice': advice})
+        advice: str = response_gigachat(messages_for_giga)
+        return success_response(data={"advice": advice})
     except Exception as e:
         current_app.logger.error(f"[FOOD ADVICE ERROR] {e}")
-        return jsonify({'error': 'Не удалось получить совет'}), 500
+        return error_response("Не удалось получить совет", 500)

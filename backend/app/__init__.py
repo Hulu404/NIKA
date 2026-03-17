@@ -6,6 +6,7 @@ from flask import Flask, jsonify
 from flask_login import LoginManager
 from flask_jwt_extended import JWTManager
 from flask_session import Session
+from flasgger import Swagger
 from .config import get_config
 from dotenv import load_dotenv
 load_dotenv()  # ищет файл .env в текущей директории
@@ -115,6 +116,70 @@ def create_app(config_name=None):
     app.register_blueprint(main_bp)
     app.register_blueprint(chat_v1)
     app.register_blueprint(auth_bp)
+
+    # 5.1 Инициализация Swagger (после регистрации blueprints)
+    swagger_config: dict = {
+        "headers": [],
+        "specs": [
+            {
+                "endpoint": "apispec",
+                "route": "/api/apispec.json",
+                "rule_filter": lambda rule: True,
+                "model_filter": lambda tag: True,
+            }
+        ],
+        "static_url_path": "/flasgger_static",
+        "swagger_ui": True,
+        "specs_route": "/api/docs",
+    }
+
+    swagger_template: dict = {
+        "swagger": "2.0",
+        "info": {
+            "title": "NIKA API",
+            "description": "REST API для проекта NIKA — AI-ассистент с чатом, трекером эмоций и питания",
+            "version": "1.0.0",
+        },
+        "securityDefinitions": {
+            "Bearer": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header",
+                "description": "JWT токен. Формат: Bearer <token>",
+            }
+        },
+        "basePath": "/",
+        "schemes": ["http", "https"],
+    }
+
+    Swagger(app, config=swagger_config, template=swagger_template)
+
+    # 5.2 Глобальные обработчики ошибок (единый JSON-формат)
+    from .utils.responses import error_response
+
+    @app.errorhandler(400)
+    def bad_request(e):
+        return error_response("Неверный запрос", 400)
+
+    @app.errorhandler(401)
+    def unauthorized(e):
+        return error_response("Требуется авторизация", 401)
+
+    @app.errorhandler(404)
+    def not_found(e):
+        return error_response("Ресурс не найден", 404)
+
+    @app.errorhandler(422)
+    def unprocessable(e):
+        return error_response("Ошибка валидации данных", 422)
+
+    @app.errorhandler(429)
+    def rate_limited(e):
+        return error_response("Превышен лимит запросов", 429)
+
+    @app.errorhandler(500)
+    def server_error(e):
+        return error_response("Внутренняя ошибка сервера", 500)
 
     # 6. Импортируем модель FoodEntry перед созданием таблиц
     from .models.food_entry import FoodEntry
