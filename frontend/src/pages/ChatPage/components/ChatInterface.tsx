@@ -7,6 +7,7 @@ import { SuggestedPrompts } from './SuggestedPrompts';
 import imgImage2 from "../assets/avatar.png";
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import { fetchWithAuth } from '../../../JWT_token_refresh';
 
 export interface Message {
   id: string;
@@ -53,7 +54,7 @@ export function ChatInterface({isError}: Error) {
     try {
       const url = sessionId ? `/api/v1/chat/history?session_id=${sessionId}` : '/api/v1/chat/history';
 
-      const res = await fetch(url, {
+      const res = await fetchWithAuth(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
@@ -101,7 +102,7 @@ export function ChatInterface({isError}: Error) {
       setLoading(true);
   
       try {
-        const res = await fetch('/api/v1/chat/send', {
+        const res = await fetchWithAuth('/api/v1/chat/send', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -152,7 +153,7 @@ export function ChatInterface({isError}: Error) {
     try {
       const url = '/api/v1/chat/sessions';
 
-      const res = await fetch(url, {
+      const res = await fetchWithAuth(url, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,

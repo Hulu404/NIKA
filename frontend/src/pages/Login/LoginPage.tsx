@@ -16,7 +16,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetchWithAuth('/api/v1/auth/login', {
+      const response = await fetch('/api/v1/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ export default function LoginPage() {
         }),
       });
 
-      const data = await response.json();
+      const respData = await response.json();
 
       if (!response.ok) {
         // Разные сообщения в зависимости от ошибки бэкенда
@@ -36,13 +36,13 @@ export default function LoginPage() {
         } else if (response.status === 401) {
           throw new Error('Неверный пароль');
         } else {
-          throw new Error(data.error || 'Ошибка входа');
+          throw new Error(respData.data.error || 'Ошибка входа');
         }
       }
 
       // Сохраняем токены в localStorage
-      localStorage.setItem('access_token', data.access_token);
-      localStorage.setItem('refresh_token', data.refresh_token);
+      localStorage.setItem('access_token', respData.data.access_token);
+      localStorage.setItem('refresh_token', respData.data.refresh_token);
 
       // Переходим на страницу чата
       navigate('/chat');
