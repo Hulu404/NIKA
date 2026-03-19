@@ -49,7 +49,7 @@ export default function EmotionTracker() {
           const response = await fetchWithAuth('/api/v1/emotion/entries');
           if (!response.ok) throw new Error('Ошибка загрузки');
           const data = await response.json();
-          const entries = data.map((item: any) => ({
+          const entries = data.data.map((item: any) => ({
             date: item.date,
             emotion: item.emotion,
           }));
@@ -216,7 +216,7 @@ export default function EmotionTracker() {
 
       if (!response.ok) throw new Error('Ошибка сервера');
       const data = await response.json();
-      setAiAdvice(data.advice);
+      setAiAdvice(data.data.advice);
     } catch (error) {
       console.error('Ошибка получения совета', error);
       setAiAdvice('Не удалось получить совет. Попробуйте позже.');

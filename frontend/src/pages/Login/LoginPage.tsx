@@ -41,8 +41,9 @@ export default function LoginPage() {
       }
 
       // Сохраняем токены в localStorage
-      localStorage.setItem('access_token', data.access_token);
-      localStorage.setItem('refresh_token', data.refresh_token);
+      
+      localStorage.setItem('access_token', data.data.access_token);
+      localStorage.setItem('refresh_token', data.data.refresh_token);
 
       // Переходим на страницу чата
       navigate('/chat');

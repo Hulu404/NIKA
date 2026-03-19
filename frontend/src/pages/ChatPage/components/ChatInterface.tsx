@@ -69,7 +69,7 @@ export function ChatInterface({isError}: Error) {
       }
 
       const data = await res.json();
-      const messagesWithDates = (data.messages || []).map((msg: any) => ({
+      const messagesWithDates = (data.data.messages || []).map((msg: any) => ({
         ...msg,
         timestamp: msg.created_at ? new Date(msg.created_at) : new Date()
       }));
@@ -120,23 +120,25 @@ export function ChatInterface({isError}: Error) {
           throw new Error(data.error || 'Ошибка отправки');
         }
   
-        setSessionId(data.session_id);
-        localStorage.setItem('chat_session_id', data.session_id);
+        setSessionId(data.data.session_id);
+        localStorage.setItem('chat_session_id', data.data.session_id);
   
         setMessages((prev) => [
           ...prev,
           { 
             role: 'assistant', 
-            content: data.reply,
+            content: data.data.assistant_response,
             id: (Date.now() + 1).toString(),
             timestamp: new Date()
           },
         ]);
   
-        if (data.audio_base64) {
-          const audio = new Audio(`data:audio/mp3;base64,${data.audio_base64}`);
+        if (data.data.audio_base64) {
+          const audio = new Audio(`data:audio/mp3;base64,${data.data.audio_base64}`);
           audio.play().catch((e) => console.error('Ошибка аудио:', e));
         }
+
+        getSessions()
   
         scrollToBottom();
       } catch (err) {
@@ -169,7 +171,7 @@ export function ChatInterface({isError}: Error) {
       }
 
       const data = await res.json();
-      setSessions(data.sessions)
+      setSessions(data.data.sessions)
     } catch (err) {
       console.error(err);
     }
@@ -226,7 +228,7 @@ export function ChatInterface({isError}: Error) {
         isOpen={isSidebarOpen} 
         onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
         onNewChat={handleNewChat}
-        sessions={sessions }
+        sessions={sessions ? sessions : []}
         onHistory={(id) => onOldChatClick(id)}
       />
 

@@ -50,9 +50,9 @@ export default function Profile() {
         },
       })
       const data = await response.json()
-      setName(data.user.name)
-      setLastName(data.user.last_name)
-      setEmail(data.user.email)
+      setName(data.data.name)
+      setLastName(data.data.last_name)
+      setEmail(data.data.email)
     } catch (err) {
       console.error(err);
     }

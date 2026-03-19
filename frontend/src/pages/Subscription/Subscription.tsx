@@ -26,7 +26,7 @@ export default function Subscription() {
         </div>
 
         <div className="flex items-end justify-center gap-2 mb-10">
-          <span className="text-[#3d1f00] text-[48px] font-bold leading-none font-['Arimo:Bold',sans-serif]">700</span>
+          <span className="text-[#3d1f00] text-[48px] font-bold leading-none font-['Arimo:Bold',sans-serif]">299</span>
           <span className="text-[#83451e] text-[24px] mb-1">руб.</span>
           <span className="text-[#83451e] text-[16px] mb-2 text-opacity-60">/ мес</span>
         </div>

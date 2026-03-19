@@ -27,6 +27,7 @@ export default function FoodTracker() {
   const [selectedMealType, setSelectedMealType] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack' | null>(null);
   const [foodName, setFoodName] = useState('');
   const [calories, setCalories] = useState('');
+  const [time, setTime] = useState('')
   const [aiAdvice, setAiAdvice] = useState<string>('');
   const [loadingAdvice, setLoadingAdvice] = useState(false);
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ export default function FoodTracker() {
         if (!response.ok) throw new Error('Ошибка загрузки');
         const data = await response.json();
         // Преобразуем строки дат в объекты Date
-        const entries = data.map((item: any) => ({
+        const entries = data.data.map((item: any) => ({
           ...item,
           timestamp: new Date(item.timestamp),
         }));
@@ -88,7 +89,7 @@ export default function FoodTracker() {
 
   // ---------- 2. Сохранение новой записи на сервер ----------
   const handleSaveFood = async () => {
-    if (!foodName.trim() || !calories.trim() || !selectedMealType) return;
+    if (!foodName.trim() || !calories.trim() || !selectedMealType || !time.trim()) return;
 
     const newFood = {
       name: foodName.trim(),
@@ -111,7 +112,7 @@ export default function FoodTracker() {
         ...foodItems,
         {
           ...newFood,
-          id: result.id.toString(),
+          id: result.data.id.toString(),
           timestamp: new Date(),
         },
       ]);
@@ -223,7 +224,7 @@ export default function FoodTracker() {
 
       if (!response.ok) throw new Error('Ошибка сервера');
       const data = await response.json();
-      setAiAdvice(data.advice);
+      setAiAdvice(data.data.advice);
     } catch (error) {
       console.error('Ошибка получения совета', error);
       setAiAdvice('Не удалось получить совет. Попробуйте позже.');
@@ -533,6 +534,7 @@ export default function FoodTracker() {
                   setShowAddModal(false);
                   setFoodName('');
                   setCalories('');
+                  setTime('')
                   setSelectedMealType(null);
                 }}
                 className="text-[#83451e] hover:text-[#3d1f00]"
@@ -559,6 +561,17 @@ export default function FoodTracker() {
                   type="number"
                   value={calories}
                   onChange={(e) => setCalories(e.target.value)}
+                  placeholder="Например: 350"
+                  className="w-full h-[56px] px-6 bg-[#faf8f0] rounded-[25px] text-[#3d1f00] text-[16px] placeholder:text-[rgba(131,69,30,0.5)] focus:outline-none focus:ring-2 focus:ring-[#f5a623] focus:bg-[#f0e8d8] transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[#3d1f00] text-[14px] mb-2">Время приёма пищи</label>
+                <input
+                  type="time"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
                   placeholder="Например: 350"
                   className="w-full h-[56px] px-6 bg-[#faf8f0] rounded-[25px] text-[#3d1f00] text-[16px] placeholder:text-[rgba(131,69,30,0.5)] focus:outline-none focus:ring-2 focus:ring-[#f5a623] focus:bg-[#f0e8d8] transition-colors"
                 />
