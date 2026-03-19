@@ -119,7 +119,7 @@ def create_app(config_name=None):
         return False
 
     # 5. Регистрация blueprint'ов
-    # from .views.main import main_bp
+    from .views.main import main_bp
     from .api.v1.chat import chat_v1
     from .api.v1.auth import auth_bp
     from .api.v1.food import food_v1
@@ -127,7 +127,7 @@ def create_app(config_name=None):
 
     app.register_blueprint(emotion_v1)
     app.register_blueprint(food_v1)
-    # app.register_blueprint(main_bp)
+    app.register_blueprint(main_bp)
     app.register_blueprint(chat_v1)
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
 
