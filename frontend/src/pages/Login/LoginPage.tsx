@@ -28,6 +28,8 @@ export default function LoginPage() {
       });
 
       const data = await response.json();
+      alert('Ответ получен! Токен: ' + data.data.access_token);
+      localStorage.setItem('access_token', data.data.access_token);
 
       if (!response.ok) {
         // Разные сообщения в зависимости от ошибки бэкенда
