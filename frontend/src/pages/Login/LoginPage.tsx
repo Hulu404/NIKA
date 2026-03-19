@@ -11,60 +11,75 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  e.preventDefault();
+  console.log('✅ handleSubmit вызван');
+  console.log('📧 email:', email.trim());
+  console.log('🔑 password:', password ? '****' : 'пусто');
 
-    try {
-      const response = await fetchWithAuth('/api/v1/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email.trim(),
-          password: password,
-        }),
-      });
+  setError('');
+  setLoading(true);
 
-      const data = await response.json();
-      alert('Ответ получен! Токен: ' + data.data.access_token);
-      localStorage.setItem('access_token', data.data.access_token);
-      console.log('🔥 data from server:', data);
+  try {
+    // Используем обычный fetch, а не fetchWithAuth, чтобы исключить влияние логики обновления токенов
+    console.log('📡 Отправка запроса на /api/v1/auth/login...');
+    const response = await fetch('/api/v1/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email.trim(),
+        password: password,
+      }),
+    });
+    console.log('📨 Ответ получен. Статус:', response.status);
 
+    const data = await response.json();
+    console.log('📦 Данные ответа (data):', data);
 
-      if (!response.ok) {
-        // Разные сообщения в зависимости от ошибки бэкенда
-        if (response.status === 404) {
-          throw new Error('Пользователь с таким email не найден');
-        } else if (response.status === 401) {
-          throw new Error('Неверный пароль');
-        } else {
-          throw new Error(data.error || 'Ошибка входа');
-        }
+    // Если статус не 2xx — обрабатываем ошибку
+    if (!response.ok) {
+      console.log('❌ Статус ошибки:', response.status);
+      if (response.status === 404) {
+        throw new Error('Пользователь с таким email не найден');
+      } else if (response.status === 401) {
+        throw new Error('Неверный пароль');
+      } else {
+        throw new Error(data.error || 'Ошибка входа');
       }
+    }
 
-      // Сохраняем токены в localStorage
-      
-      localStorage.setItem('access_token', data.data.access_token);
-      localStorage.setItem('refresh_token', data.data.refresh_token);
-      console.log('После setItem:');
-      console.log('access_token =', localStorage.getItem('access_token'));
-      console.log('refresh_token =', localStorage.getItem('refresh_token'));
+    // Проверяем структуру ответа
+    console.log('🔍 Проверка структуры: data.data?.access_token =', data.data?.access_token);
+    if (!data.data?.access_token) {
+      throw new Error('В ответе отсутствует access_token');
+    }
 
-    // Проверка
+    // Сохраняем токены
+    localStorage.setItem('access_token', data.data.access_token);
+    localStorage.setItem('refresh_token', data.data.refresh_token);
+    console.log('💾 Токены сохранены в localStorage');
+
+    // Проверяем, что они действительно записались
+    console.log('🔍 access_token из localStorage:', localStorage.getItem('access_token'));
+    console.log('🔍 refresh_token из localStorage:', localStorage.getItem('refresh_token'));
+
+    // Если всё хорошо — переходим на /chat
     if (localStorage.getItem('access_token')) {
-      setTimeout(() => navigate('/chat'), 100);
+      console.log('✅ Токены есть, переходим на /chat');
+      navigate('/chat');
     } else {
-      console.error('Токен не сохранился!');
+      console.error('❌ Токен не сохранился в localStorage!');
     }
 
-    } catch (err: any) {
-      setError(err.message || 'Не удалось войти. Проверьте данные.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (err: any) {
+    console.error('🚨 Ошибка входа:', err.message);
+    setError(err.message || 'Не удалось войти. Проверьте данные.');
+  } finally {
+    setLoading(false);
+    console.log('🔄 loading = false');
+  }
+};
 
   return (
     <div className="relative min-h-screen w-full bg-[#fffee7] flex items-center justify-center px-6 py-12 font-['Manrope']">
