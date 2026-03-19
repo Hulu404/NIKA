@@ -44,9 +44,16 @@ export default function LoginPage() {
       
       localStorage.setItem('access_token', data.data.access_token);
       localStorage.setItem('refresh_token', data.data.refresh_token);
+      console.log('После setItem:');
+      console.log('access_token =', localStorage.getItem('access_token'));
+      console.log('refresh_token =', localStorage.getItem('refresh_token'));
 
-      // Переходим на страницу чата
-      navigate('/chat');
+    // Проверка
+    if (localStorage.getItem('access_token')) {
+      setTimeout(() => navigate('/chat'), 100);
+    } else {
+      console.error('Токен не сохранился!');
+    }
 
     } catch (err: any) {
       setError(err.message || 'Не удалось войти. Проверьте данные.');

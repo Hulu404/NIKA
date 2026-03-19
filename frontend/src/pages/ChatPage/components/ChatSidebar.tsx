@@ -18,21 +18,28 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat, sessions, onHistory }
   
 
   const onLogout = async () => {
-  try {
-    const response = await fetch('/api/v1/auth/logout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('refresh_token')}`,
-      },
-    })
-    if (!response.ok) {
-        throw new Error('Ошибка выхода');
-      }
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    navigate('/');
-  } catch (err) {
+  const refreshToken = localStorage.getItem('refresh_token');
+
+  if (refreshToken) {
+    try {
+      await fetch('/api/v1/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${refreshToken}`,
+        },
+      });
+    } catch (err) {
+      console.error('Logout API error:', err);
+      // Не блокируем выход, даже если API недоступен
+    }
+  }
+
+  // В любом случае очищаем localStorage и перенаправляем на главную/логин
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  navigate('/');
+} catch (err) {
     console.error(err);
   }
 }
