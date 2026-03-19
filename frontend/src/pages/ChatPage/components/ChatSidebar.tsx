@@ -11,7 +11,7 @@ interface ChatSidebarProps {
 }
 
 
-export function ChatSidebar({ isOpen, onToggle, onNewChat, sessions = [], onHistory }: ChatSidebarProps) {
+export function ChatSidebar({ isOpen, onToggle, onNewChat, sessions, onHistory }: ChatSidebarProps) {
   const navigate = useNavigate();
 
 
@@ -103,7 +103,7 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat, sessions = [], onHist
             {/* Recent Chats */}
             <div className="flex-1 px-3 overflow-y-auto">
               <div className="mb-6">
-                <div className={sessions?.length ? "flex items-center gap-2 px-3 mb-3" : 'hidden'}>
+                <div className={sessions.length ? "flex items-center gap-2 px-3 mb-3" : 'hidden'}>
                   <Clock size={14} className="text-gray-500" strokeWidth={2.5} />
                   <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Недавние</h3>
                 </div>
