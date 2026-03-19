@@ -64,7 +64,7 @@ export default function ChatPage() {
         },
         body: JSON.stringify({
           message: input,
-          with_audio: true, // или false, если хочешь только текст
+          with_audio: false, // или false, если хочешь только текст
           session_id: sessionId,
         }),
       });

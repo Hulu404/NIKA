@@ -9,6 +9,7 @@ from flask_session import Session
 from flasgger import Swagger
 from .config import get_config
 from dotenv import load_dotenv
+from werkzeug.middleware.proxy_fix import ProxyFix
 load_dotenv()  # ищет файл .env в текущей директории
 
 # Импортируем расширения и модели (только расширения на уровне модуля)
@@ -26,9 +27,22 @@ def create_app(config_name=None):
                 static_folder="../static",
                 template_folder="templates")
 
+    # Временная отладка
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
+
+    @app.before_request
+    def log_request():
+        app.logger.debug(f"Request: {request.method} {request.path}")
+        app.logger.debug(f"Headers: {dict(request.headers)}")
+        app.logger.debug(f"Cookies: {request.cookies}")
+        app.logger.debug(f"Data: {request.get_data(as_text=True)}")
+
     # 1. Загружаем конфигурацию (самое первое!)
     config_name = config_name or os.environ.get("FLASK_CONFIG", "development")
     app.config.from_object(get_config(config_name))
+
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1)
 
     # Обязательные настройки (можно переопределить в .env)
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'your-secret-key-change-me'
