@@ -1,7 +1,6 @@
 // src/pages/Login/LoginPage.tsx
 import React, { useState } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
-import { fetchWithAuth } from '../../JWT_token_refresh';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
