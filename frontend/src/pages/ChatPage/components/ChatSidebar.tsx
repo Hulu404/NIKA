@@ -1,7 +1,6 @@
 import { Plus, Clock, Search, LogOut, ChevronLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { NavLink, useNavigate} from 'react-router';
-
+import { NavLink, useNavigate } from 'react-router';
 
 interface ChatSidebarProps {
   isOpen: boolean;
@@ -11,35 +10,38 @@ interface ChatSidebarProps {
   onHistory: (id: string) => void;
 }
 
-
-export function ChatSidebar({ isOpen, onToggle, onNewChat, sessions, onHistory }: ChatSidebarProps) {
+export function ChatSidebar({
+  isOpen,
+  onToggle,
+  onNewChat,
+  sessions,
+  onHistory,
+}: ChatSidebarProps) {
   const navigate = useNavigate();
-  
-  
 
   const onLogout = async () => {
-  const refreshToken = localStorage.getItem('refresh_token');
+    const refreshToken = localStorage.getItem('refresh_token');
 
-  if (refreshToken) {
-    try {
-      await fetch('/api/v1/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${refreshToken}`,
-        },
-      });
-    } catch (err) {
-      console.error('Logout API error:', err);
-      // Не блокируем выход, даже если API недоступен
+    if (refreshToken) {
+      try {
+        await fetch('/api/v1/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${refreshToken}`,
+          },
+        });
+      } catch (err) {
+        console.error('Logout API error:', err);
+        // Не блокируем выход, даже если API недоступен
+      }
     }
-  }
 
-  // В любом случае очищаем localStorage и перенаправляем на главную/логин
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('refresh_token');
-  navigate('/');
-};
+    // В любом случае очищаем localStorage и перенаправляем на главную/логин
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    navigate('/');
+  };
 
   return (
     <>
@@ -82,7 +84,7 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat, sessions, onHistory }
                   <ChevronLeft size={18} className="text-gray-500" />
                 </button>
               </div>
-              
+
               <motion.button
                 onClick={onNewChat}
                 whileHover={{ scale: 1.02 }}
@@ -97,7 +99,11 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat, sessions, onHistory }
             {/* Search */}
             <div className="px-6 py-4">
               <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} strokeWidth={2.5} />
+                <Search
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={18}
+                  strokeWidth={2.5}
+                />
                 <input
                   type="text"
                   placeholder="Поиск..."
@@ -109,7 +115,7 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat, sessions, onHistory }
             {/* Recent Chats */}
             <div className="flex-1 px-3 overflow-y-auto">
               <div className="mb-6">
-                <div className={ (sessions.length) ? "flex items-center gap-2 px-3 mb-3" : 'hidden'}>
+                <div className={sessions.length ? 'flex items-center gap-2 px-3 mb-3' : 'hidden'}>
                   <Clock size={14} className="text-gray-500" strokeWidth={2.5} />
                   <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Недавние</h3>
                 </div>
@@ -120,7 +126,7 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat, sessions, onHistory }
                       key={s.session_id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i++  * 0.05 }}
+                      transition={{ delay: i * 0.05 }}
                       whileHover={{ x: 4 }}
                       className="w-full flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
                     >
@@ -128,7 +134,6 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat, sessions, onHistory }
                         <p className="text-sm text-gray-600 group-hover:text-gray-900 truncate transition-colors font-medium">
                           {s.last_message.content}
                         </p>
-                        
                       </div>
                     </motion.button>
                   ))}
@@ -141,70 +146,77 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat, sessions, onHistory }
                   <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Меню</h3>
                 </div>
                 <div className="space-y-1">
-                    <NavLink to='/emotion-tracker' className={({isActive}) => isActive ? 'active' : ''}>
-                      <motion.button
-                        key={'Дневник эмоций'}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: (sessions.length + 2) * 0.05 }}
-                        whileHover={{ x: 4 }}
-                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
-                      >
-                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
-                          {'Дневник эмоций'}
-                        </span>
-                      </motion.button>
-                    </NavLink>
-                    <NavLink to='/food-tracker' className={({isActive}) => isActive ? 'active' : ''}>
-                      <motion.button
-                        key={'Дневник питания'}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: (sessions.length + 2) * 0.05 }}
-                        whileHover={{ x: 4 }}
-                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
-                      >
-                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
-                          {'Трекер питания'}
-                        </span>
-                      </motion.button>
-                    </NavLink>
-                    <NavLink to='/profile' className={({isActive}) => isActive ? 'active' : ''}>
-                      <motion.button
-                        key={'Профиль'}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: (sessions.length + 2) * 0.05 }}
-                        whileHover={{ x: 4 }}
-                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
-                      >
-                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
-                          {'Профиль'}
-                        </span>
-                      </motion.button>
-                    </NavLink>
-                    <NavLink to='/FAQ' className={({isActive}) => isActive ? 'active' : ''}>
-                      <motion.button
-                        key={'FAQs'}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: (sessions.length + 3) * 0.05 }}
-                        whileHover={{ x: 4 }}
-                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
-                      >
-                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
-                          {'FAQs'}
-                        </span>
-                      </motion.button>
-                    </NavLink>
+                  <NavLink to="/emotion-tracker" className={({ isActive }) => (isActive ? 'active' : '')}>
+                    <motion.button
+                      key="emotion-tracker"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: (sessions.length + 2) * 0.05 }}
+                      whileHover={{ x: 4 }}
+                      className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
+                    >
+                      <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
+                        Дневник эмоций
+                      </span>
+                    </motion.button>
+                  </NavLink>
+                  <NavLink to="/food-tracker" className={({ isActive }) => (isActive ? 'active' : '')}>
+                    <motion.button
+                      key="food-tracker"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: (sessions.length + 2) * 0.05 }}
+                      whileHover={{ x: 4 }}
+                      className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
+                    >
+                      <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
+                        Трекер питания
+                      </span>
+                    </motion.button>
+                  </NavLink>
+                  <NavLink to="/profile" className={({ isActive }) => (isActive ? 'active' : '')}>
+                    <motion.button
+                      key="profile"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: (sessions.length + 2) * 0.05 }}
+                      whileHover={{ x: 4 }}
+                      className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
+                    >
+                      <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
+                        Профиль
+                      </span>
+                    </motion.button>
+                  </NavLink>
+                  <NavLink to="/FAQ" className={({ isActive }) => (isActive ? 'active' : '')}>
+                    <motion.button
+                      key="faq"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: (sessions.length + 3) * 0.05 }}
+                      whileHover={{ x: 4 }}
+                      className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
+                    >
+                      <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
+                        FAQs
+                      </span>
+                    </motion.button>
+                  </NavLink>
                 </div>
               </div>
             </div>
 
             {/* Footer */}
             <div className="p-4 border-t border-black/5 space-y-1">
-              <button onClick={onLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 transition-all text-gray-600 hover:text-red-500 group">
-                <LogOut size={18} className="text-gray-400 group-hover:text-red-500 transition-colors" strokeWidth={2.5} />
+              <button
+                onClick={onLogout}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 transition-all text-gray-600 hover:text-red-500 group"
+              >
+                <LogOut
+                  size={18}
+                  className="text-gray-400 group-hover:text-red-500 transition-colors"
+                  strokeWidth={2.5}
+                />
                 <span className="text-sm font-medium">Выйти</span>
               </button>
             </div>
@@ -213,4 +225,4 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat, sessions, onHistory }
       </AnimatePresence>
     </>
   );
-
+}
