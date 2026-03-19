@@ -2,7 +2,7 @@
 import os
 from datetime import timedelta
 from pathlib import Path
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_login import LoginManager
 from flask_jwt_extended import JWTManager
 from flask_session import Session
