@@ -39,11 +39,7 @@ export function ChatSidebar({ isOpen, onToggle, onNewChat, sessions, onHistory }
   localStorage.removeItem('access_token');
   localStorage.removeItem('refresh_token');
   navigate('/');
-
-  } catch (err) {
-      console.error(err);
-    }
-}
+};
 
   return (
     <>
