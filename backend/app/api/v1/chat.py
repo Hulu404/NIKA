@@ -6,7 +6,7 @@ from pathlib import Path
 
 from flask import Blueprint, request, current_app, send_file
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from sqlalchemy import desc, func
+from sqlalchemy import func, desc, and_
 
 from app.models.message import Message
 from app.models.user import User
@@ -281,40 +281,75 @@ def get_sessions():
       - Bearer: []
     responses:
       200:
-        description: Список сессий с количеством сообщений
+        description: Список сессий с количеством сообщений и последним сообщением
       401:
         description: Требуется авторизация
     """
     user_id: str = get_jwt_identity()
 
-    sessions = (
+    # Подзапрос: нумеруем сообщения в каждой сессии по убыванию created_at
+    last_msg_subq = (
         db.session.query(
             Message.session_id,
-            func.min(Message.created_at).label("created_at"),
-            func.count(Message.id).label("messages_count"),
+            Message.role.label('last_role'),
+            Message.content.label('last_content'),
+            Message.created_at.label('last_created_at'),
+            func.row_number()
+                .over(partition_by=Message.session_id,
+                      order_by=Message.created_at.desc())
+                .label('rn')
         )
-        .filter_by(user_id=user_id)
-        .group_by(Message.session_id)
-        .order_by(desc("created_at"))
+        .subquery()
+    )
+
+    # Основной запрос: группируем сообщения пользователя по сессиям
+    sessions_query = (
+        db.session.query(
+            Message.session_id,
+            func.min(Message.created_at).label('created_at'),      # первое сообщение пользователя в сессии
+            func.count(Message.id).label('messages_count'),        # сколько сообщений от пользователя
+            last_msg_subq.c.last_role,
+            last_msg_subq.c.last_content,
+            last_msg_subq.c.last_created_at
+        )
+        .filter_by(user_id=user_id)                                 # только сообщения текущего пользователя
+        .outerjoin(
+            last_msg_subq,
+            and_(
+                Message.session_id == last_msg_subq.c.session_id,
+                last_msg_subq.c.rn == 1                             # берём только последнее сообщение
+            )
+        )
+        .group_by(
+            Message.session_id,
+            last_msg_subq.c.last_role,
+            last_msg_subq.c.last_content,
+            last_msg_subq.c.last_created_at
+        )
+        .order_by(desc('created_at'))                               # сортировка по дате начала сессии
         .all()
     )
 
     result: list[dict] = [
         {
-            "session_id": s.session_id,
-            "created_at": s.created_at.isoformat() if s.created_at else None,
-            "messages_count": s.messages_count,
+            'session_id': s.session_id,
+            'created_at': s.created_at.isoformat() if s.created_at else None,
+            'messages_count': s.messages_count,
+            'last_message': {
+                'role': s.last_role,
+                'content': s.last_content,
+                'created_at': s.last_created_at.isoformat() if s.last_created_at else None
+            } if s.last_content else None,
         }
-        for s in sessions
+        for s in sessions_query
     ]
 
     return success_response(
         data={
-            "sessions": result,
-            "total_count": len(result),
+            'sessions': result,
+            'total_count': len(result),
         }
     )
-
 
 # ────────────────────────────────────────────────
 # Простой health-check
