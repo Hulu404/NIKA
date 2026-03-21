@@ -78,7 +78,7 @@ export async function fetchWithAuth(
     }
 
     const data = await refreshResponse.json();
-    const newAccessToken = data.access_token; // предполагаем, что сервер возвращает поле access_token
+    const newAccessToken = data.data.access_token; // предполагаем, что сервер возвращает поле access_token
     localStorage.setItem('access_token', newAccessToken);
 
     // Уведомляем всех ожидающих подписчиков

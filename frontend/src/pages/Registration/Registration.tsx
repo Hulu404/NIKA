@@ -37,10 +37,10 @@ export default function RegistrationPage() {
 const res = await fetch('/api/v1/auth/register', {
   method: 'POST',
   headers: {
-    'Content-Type': 'application/json',  // ← обязательно!
+    'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  body: JSON.stringify(payload),  // ← JSON.stringify обязательно!
+  body: JSON.stringify(payload),
 });
 
       const data = await res.json();
@@ -50,9 +50,9 @@ const res = await fetch('/api/v1/auth/register', {
       }
 
       // Если бэкенд после регистрации сразу возвращает токены — сохраняем их
-      if (data.access_token && data.refresh_token) {
-        localStorage.setItem('access_token', data.access_token);
-        localStorage.setItem('refresh_token', data.refresh_token);
+      if (data.data.access_token && data.data.refresh_token) {
+        localStorage.setItem('access_token', data.data.access_token);
+        localStorage.setItem('refresh_token', data.data.refresh_token);
       }
 
       // Успешная регистрация → переход на чат
