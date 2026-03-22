@@ -11,16 +11,12 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-  console.log('✅ handleSubmit вызван');
-  console.log('📧 email:', email.trim());
-  console.log('🔑 password:', password ? '****' : 'пусто');
 
   setError('');
   setLoading(true);
 
   try {
     // Используем обычный fetch, а не fetchWithAuth, чтобы исключить влияние логики обновления токенов
-    console.log('📡 Отправка запроса на /api/v1/auth/login...');
     const response = await fetch('/api/v1/auth/login', {
       method: 'POST',
       headers: {
@@ -31,10 +27,8 @@ export default function LoginPage() {
         password: password,
       }),
     });
-    console.log('📨 Ответ получен. Статус:', response.status);
 
     const data = await response.json();
-    console.log('📦 Данные ответа (data):', data);
 
     // Если статус не 2xx — обрабатываем ошибку
     if (!response.ok) {
@@ -49,7 +43,6 @@ export default function LoginPage() {
     }
 
     // Проверяем структуру ответа
-    console.log('🔍 Проверка структуры: data.data?.access_token =', data.data?.access_token);
     if (!data.data?.access_token) {
       throw new Error('В ответе отсутствует access_token');
     }
@@ -57,15 +50,9 @@ export default function LoginPage() {
     // Сохраняем токены
     localStorage.setItem('access_token', data.data.access_token);
     localStorage.setItem('refresh_token', data.data.refresh_token);
-    console.log('💾 Токены сохранены в localStorage');
-
-    // Проверяем, что они действительно записались
-    console.log('🔍 access_token из localStorage:', localStorage.getItem('access_token'));
-    console.log('🔍 refresh_token из localStorage:', localStorage.getItem('refresh_token'));
 
     // Если всё хорошо — переходим на /chat
     if (localStorage.getItem('access_token')) {
-      console.log('✅ Токены есть, переходим на /chat');
       navigate('/chat');
     } else {
       console.error('❌ Токен не сохранился в localStorage!');
