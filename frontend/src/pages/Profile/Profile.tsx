@@ -6,11 +6,25 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { fetchWithAuth } from '../../JWT_token_refresh';
 
+interface SubscriptionInfo {
+  id: number;
+  status: string;
+  expires_at: string;
+  is_active: boolean;
+  plan: {
+    name: string;
+    price_rub: number;
+    daily_requests_limit: number;
+  } | null;
+}
 
 export default function Profile() {
   const [name, setName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
+  const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [cancelling, setCancelling] = useState(false)
   const navigate = useNavigate();
 
   const onLogout = async () => {
@@ -49,12 +63,39 @@ export default function Profile() {
           'Content-Type': 'application/json',
         },
       })
+      if (!response.ok) {
+        console.error('Profile response not ok:', response.status)
+        return
+      }
       const data = await response.json()
-      setName(data.data.name)
-      setLastName(data.data.last_name)
-      setEmail(data.data.email)
+      if (data?.data) {
+        setName(data.data.name || '')
+        setLastName(data.data.last_name || '')
+        setEmail(data.data.email || '')
+        setIsAdmin(data.data.is_admin || false)
+        setSubscription(data.data.subscription || null)
+      }
+    } catch (err) {
+      console.error('getUserData error:', err);
+    }
+  }
+
+  const handleCancelSubscription = async () => {
+    if (!confirm('Вы уверены, что хотите отменить подписку?')) return;
+    setCancelling(true);
+    try {
+      const res = await fetchWithAuth('/api/v1/subscription/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSubscription(null);
+      }
     } catch (err) {
       console.error(err);
+    } finally {
+      setCancelling(false);
     }
   }
 
@@ -309,30 +350,83 @@ export default function Profile() {
                 <div className="h-[30px] relative shrink-0 w-full">
                     <p className="absolute font-['Arimo:Bold',sans-serif] font-bold leading-[30px] left-0 text-[#3d1f00] text-[20px] top-[-2.4px]">Подписка</p>
                 </div>
-                
-                <div className="flex items-center justify-between p-6 bg-[#faf8f0] rounded-[20px]">
+
+                {subscription && subscription.is_active ? (
+                  <div className="flex items-center justify-between p-6 bg-[#f0fdf4] rounded-[20px] border border-[#bbf7d0]">
                     <div>
-                        <p className="text-[#3d1f00] font-['Arimo:Bold',sans-serif] text-[18px] font-bold">Бесплатный план</p>
-                        <div className="flex flex-col gap-1 mt-2">
-                             <div className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-[#83451e]" />
-                                <p className="text-[#83451e] font-['Arimo:Regular',sans-serif] text-[14px]">ограниченное количество персональных рекомендаций</p>
-                             </div>
-                             <div className="flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 rounded-full bg-[#83451e]" />
-                                <p className="text-[#83451e] font-['Arimo:Regular',sans-serif] text-[14px]">базовый уровень анализа прогресса</p>
-                             </div>
+                      <p className="text-[#3d1f00] font-['Arimo:Bold',sans-serif] text-[18px] font-bold">
+                        {subscription.plan?.name || 'Premium'}
+                      </p>
+                      <div className="flex flex-col gap-1 mt-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
+                          <p className="text-[#83451e] font-['Arimo:Regular',sans-serif] text-[14px]">
+                            {subscription.plan?.price_rub} руб/мес
+                          </p>
                         </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
+                          <p className="text-[#83451e] font-['Arimo:Regular',sans-serif] text-[14px]">
+                            Действует до {new Date(subscription.expires_at).toLocaleDateString('ru-RU')}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
+                          <p className="text-[#83451e] font-['Arimo:Regular',sans-serif] text-[14px]">
+                            До {subscription.plan?.daily_requests_limit} запросов в день
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <button 
-                        onClick={() => navigate('/subscription')}
-                        className="bg-[#f5a623] hover:bg-[#e59615] text-white font-['Arimo:Bold',sans-serif] font-bold py-3 px-6 rounded-[15px] shadow-md transition-all active:scale-[0.98]"
+                    <button
+                      onClick={handleCancelSubscription}
+                      disabled={cancelling}
+                      className="bg-red-50 hover:bg-red-100 text-red-600 font-['Arimo:Bold',sans-serif] font-bold py-3 px-6 rounded-[15px] transition-all active:scale-[0.98] disabled:opacity-50"
                     >
-                        Купить подписку
+                      {cancelling ? 'Отмена...' : 'Отменить подписку'}
                     </button>
-                </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between p-6 bg-[#faf8f0] rounded-[20px]">
+                    <div>
+                      <p className="text-[#3d1f00] font-['Arimo:Bold',sans-serif] text-[18px] font-bold">Бесплатный план</p>
+                      <div className="flex flex-col gap-1 mt-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#83451e]" />
+                          <p className="text-[#83451e] font-['Arimo:Regular',sans-serif] text-[14px]">ограниченное количество персональных рекомендаций</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#83451e]" />
+                          <p className="text-[#83451e] font-['Arimo:Regular',sans-serif] text-[14px]">базовый уровень анализа прогресса</p>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => navigate('/subscription')}
+                      className="bg-[#f5a623] hover:bg-[#e59615] text-white font-['Arimo:Bold',sans-serif] font-bold py-3 px-6 rounded-[15px] shadow-md transition-all active:scale-[0.98]"
+                    >
+                      Купить подписку
+                    </button>
+                  </div>
+                )}
             </div>
         </div>
+
+          {/* Admin Panel */}
+          {isAdmin && (
+            <div className="bg-white rounded-[20px] p-8 shadow-sm mb-6 border-2 border-[#f5a623]">
+              <h3 className="text-[#3d1f00] text-[20px] font-semibold mb-4">
+                Админ-панель
+              </h3>
+              <button
+                onClick={() => navigate('/admin/plans')}
+                className="flex items-center justify-between w-full p-4 hover:bg-[#faf8f0] rounded-[15px] transition-colors group"
+              >
+                <span className="text-[#3d1f00] text-[16px]">Управление тарифами</span>
+                <ChevronRight className="text-[#83451e] group-hover:text-[#f5a623] transition-colors" size={20} />
+              </button>
+            </div>
+          )}
 
           {/* Additional Settings Card */}
           <div className="bg-white rounded-[20px] p-8 shadow-sm">

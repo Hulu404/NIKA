@@ -51,4 +51,6 @@ uuid_utils==0.14.0
 Werkzeug==3.1.5
 xxhash==3.6.0
 yarl==1.22.0
+yookassa==3.4.0
+APScheduler==3.10.4
 zstandard==0.25.0
