@@ -10,14 +10,14 @@ export default function MainPage() {
     <div className="relative min-h-screen w-full bg-[#fffee7] flex items-center justify-center px-6 py-12">
       {/* Main Container */}
       <div className="w-full max-w-[600px] flex flex-col items-center">
-        
+
         {/* Goddess Illustration */}
         <div className="relative w-full max-w-[360px] h-[280px] sm:h-[320px] mb-8 sm:mb-12 flex items-center justify-center">
           <div className="absolute inset-0 flex items-center justify-center overflow-visible">
-            <img 
-              alt="Greek goddess with laurel wreath" 
+            <img
+              alt="Greek goddess with laurel wreath"
               className="w-[150%] h-auto max-w-none object-contain"
-              src={imgImage2} 
+              src={imgImage2}
             />
           </div>
         </div>
@@ -34,19 +34,24 @@ export default function MainPage() {
 
         {/* Start Button */}
         <NavLink to={ isUserLoged() ? '/chat' : '/registration'} className="w-full max-w-[340px]">
-        <button
-          onClick={() => console.log('Navigate to app')}
-          className="w-full max-w-[340px] bg-[rgba(217,217,217,0.2)] hover:bg-[rgba(189,145,97,0.25)] text-[#83451e] text-[18px] sm:text-[20px] leading-[24px] h-[65px] rounded-[32.5px] transition-all flex items-center justify-center shadow-sm hover:shadow-md"
-        >
-          Начать
-        </button>
+          <button
+            onClick={() => console.log('Navigate to app')}
+            className="w-full max-w-[340px] bg-[rgba(217,217,217,0.2)] hover:bg-[rgba(189,145,97,0.25)] text-[#83451e] text-[18px] sm:text-[20px] leading-[24px] h-[65px] rounded-[32.5px] transition-all flex items-center justify-center shadow-sm hover:shadow-md"
+          >
+            Начать
+          </button>
         </NavLink>
 
-        {/* FAQ Link */}
-        <div className="mt-8 sm:mt-10">
+        {/* Links Container */}
+        <div className="mt-8 sm:mt-10 flex flex-col items-center gap-3">
           <NavLink to='/FAQ'>
-            <span  className="text-[#3d1f00] text-[13px] sm:text-[14px] leading-[20px] underline decoration-1 underline-offset-2 hover:text-[#83451e] transition-colors">
-             FAQs
+            <span className="text-[#3d1f00] text-[13px] sm:text-[14px] leading-[20px] underline decoration-1 underline-offset-2 hover:text-[#83451e] transition-colors">
+              FAQs
+            </span>
+          </NavLink>
+          <NavLink to="/policy">
+            <span className="text-[#3d1f00] text-[13px] sm:text-[14px] leading-[20px] underline decoration-1 underline-offset-2 hover:text-[#83451e] transition-colors">
+              Политика конфиденциальности и Публичная оферта
             </span>
           </NavLink>
         </div>

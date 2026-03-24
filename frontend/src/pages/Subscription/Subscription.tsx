@@ -63,6 +63,10 @@ export default function Subscription() {
           Оформить подписку
         </motion.button>
       </motion.div>
+      {/* Company Information */}
+      <div className="mt-12 text-center text-[12px] text-[#83451e] opacity-70">
+        ООО «Медицинская индустрия разработок (МИР)» ИНН 6453180874 ОГРН 1256400010987
+      </div>
     </div>
   );
 }
