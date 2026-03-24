@@ -65,6 +65,7 @@ def register():
     email: str = data.get("email", "").strip()
     password: str = data.get("password", "")
     gender: str = data.get("gender", "").strip().lower()
+    sport: str = data.get("sport", "").strip()
 
     # Валидация обязательных полей
     if not all([name, last_name, email, password, gender]):
@@ -95,6 +96,7 @@ def register():
         last_name=last_name,
         email=email,
         gender=gender,
+        sport_type=sport,
     )
     user.set_password(password)
 
@@ -289,7 +291,37 @@ def profile():
             "last_name": user.last_name,
             "email": user.email,
             "gender": user.gender,
+            "sport_type": user.sport_type or "",
             "requests_left": user.get_remaining_requests(),
             "requests_reset_at": requests_reset_at,
         }
     )
+
+@auth_bp.patch("/profile")
+@jwt_required()
+def update_profile():
+    user_id: str = get_jwt_identity()
+    user: User | None = db.session.get(User, int(user_id))
+
+    if not user:
+        return error_response("Пользователь не найден", 404)
+
+    data: dict = request.get_json(silent=True) or {}
+
+    if "name" in data:
+        user.name = data["name"].strip()
+    if "last_name" in data:
+        user.last_name = data["last_name"].strip()
+    if "gender" in data and data["gender"] in ("male", "female"):
+        user.gender = data["gender"]
+    if "sport_type" in data:
+        user.sport_type = data["sport_type"].strip()
+
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        return error_response("Ошибка сохранения", 500)
+
+    return success_response(data={"message": "Профиль обновлён"})
+

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Plus, Clock, Search, LogOut, ChevronLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router';
@@ -18,6 +19,7 @@ export function ChatSidebar({
   onHistory,
 }: ChatSidebarProps) {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const onLogout = async () => {
     const refreshToken = localStorage.getItem('refresh_token');
@@ -59,15 +61,15 @@ export function ChatSidebar({
       </AnimatePresence>
 
       {/* Sidebar */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.aside
-            initial={{ x: -320 }}
-            animate={{ x: 0 }}
-            exit={{ x: -320 }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed lg:relative z-50 h-full w-80 bg-white/80 backdrop-blur-2xl border-r border-black/5 flex flex-col"
-          >
+      <motion.div
+        initial={false}
+        animate={{ width: isOpen ? 320 : 0 }}
+        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+        className="relative z-50 h-full overflow-hidden shrink-0"
+      >
+        <aside
+          className="h-full w-80 bg-white/80 backdrop-blur-2xl border-r border-black/5 flex flex-col"
+        >
             {/* Header */}
             <div className="p-6 border-b border-black/5">
               <div className="flex items-center justify-between mb-6">
@@ -107,6 +109,8 @@ export function ChatSidebar({
                 <input
                   type="text"
                   placeholder="Поиск..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-white border border-black/10 rounded-xl pl-11 pr-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#f6b044]/30 focus:ring-2 focus:ring-[#f6b044]/10 transition-all shadow-sm"
                 />
               </div>
@@ -120,7 +124,7 @@ export function ChatSidebar({
                   <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Недавние</h3>
                 </div>
                 <div className="space-y-1">
-                  {sessions.map((s: any, i: number) => (
+                  {sessions.filter((s: any) => !searchQuery || s.last_message?.content?.toLowerCase().includes(searchQuery.toLowerCase())).map((s: any, i: number) => (
                     <motion.button
                       onClick={() => onHistory(s.session_id)}
                       key={s.session_id}
@@ -220,9 +224,8 @@ export function ChatSidebar({
                 <span className="text-sm font-medium">Выйти</span>
               </button>
             </div>
-          </motion.aside>
-        )}
-      </AnimatePresence>
+          </aside>
+      </motion.div>
     </>
   );
 }

@@ -37,10 +37,10 @@ export default function RegistrationPage() {
 const res = await fetch('/api/v1/auth/register', {
   method: 'POST',
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json',  // ← обязательно!
     'Accept': 'application/json',
   },
-  body: JSON.stringify(payload),
+  body: JSON.stringify(payload),  // ← JSON.stringify обязательно!
 });
 
       const data = await res.json();

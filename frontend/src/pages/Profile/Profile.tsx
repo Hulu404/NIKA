@@ -1,5 +1,5 @@
 import { ChevronRight} from 'lucide-react';
-
+import { motion } from 'framer-motion';
 import svgPathsBack from './imports/svg-n101rx8ak0';
 import svgPaths from './imports/svg-nfsr0erm4u';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -7,10 +7,27 @@ import { useEffect, useState } from 'react';
 import { fetchWithAuth } from '../../JWT_token_refresh';
 
 
+const sportLabels: Record<string, string> = {
+  football: 'Футбол',
+  basketball: 'Баскетбол',
+  volleyball: 'Волейбол',
+  tennis: 'Теннис',
+  swimming: 'Плавание',
+  running: 'Бег',
+  cycling: 'Велоспорт',
+  fitness: 'Фитнес',
+  yoga: 'Йога',
+  other: 'Другое',
+};
+
 export default function Profile() {
   const [name, setName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
+  const [sportType, setSportType] = useState('')
+  const [gender, setGender] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
   const navigate = useNavigate();
 
   const onLogout = async () => {
@@ -53,15 +70,41 @@ export default function Profile() {
       setName(data.data.name)
       setLastName(data.data.last_name)
       setEmail(data.data.email)
+      setSportType(data.data.sport_type || '')
+      setGender(data.data.gender || '')
     } catch (err) {
       console.error(err);
     }
   }
 
+
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const response = await fetchWithAuth('/api/v1/auth/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, last_name: lastName, gender, sport_type: sportType }),
+      });
+      const data = await response.json();
+      if (!data.success) throw new Error(data.message);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
   return (
     <div className="flex min-h-screen w-full bg-[#fffee7]">
       {/* Sidebar */}
-      <aside className="w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]">
+      <motion.aside
+        initial={{ x: -30, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className="w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]">
         {/* Logo */}
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
@@ -72,12 +115,15 @@ export default function Profile() {
       
         {/* Back to Dialog Button */}
         <NavLink to='/chat'>
-          <button className="w-full flex items-center gap-3 px-4 py-3 mb-6 text-white bg-[#f5a623] hover:bg-[#e59615] rounded-[10px] transition-colors shadow-md">
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="w-full flex items-center gap-3 px-4 py-3 mb-6 text-white bg-[#f5a623] hover:bg-[#e59615] rounded-[10px] transition-colors shadow-md">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d={svgPathsBack.p11678e00} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
            </svg>
           <span className="text-[14px]">Назад к диалогу</span>
-        </button>
+        </motion.button>
         </NavLink>
         {/* Menu Section */}
         <div className="flex-1">
@@ -88,7 +134,7 @@ export default function Profile() {
             <nav className="flex flex-col gap-1">
               {/* Личный кабинет  - ACTIVE */}
               <NavLink to='/profile'>
-              <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] bg-[#f0e8d8] rounded-[10px] h-[37px]">
+              <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] bg-[#f0e8d8] rounded-[10px] h-[37px]">
                 <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                   <div className="absolute contents inset-[12.5%_20.83%]">
                     <div className="absolute inset-[62.5%_20.83%_12.5%_20.83%]">
@@ -108,12 +154,12 @@ export default function Profile() {
                   </div>
                 </div>
                 <span className="text-[14px] leading-[21px]">Личный кабинет</span>
-              </span>
+              </motion.span>
               </NavLink>
 
               {/* Трекер питания */}
               <NavLink to='/food-tracker'>
-              <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+              <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
                 <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                   <div className="absolute contents inset-[10%]">
                     <div className="absolute inset-[10%]">
@@ -133,11 +179,11 @@ export default function Profile() {
                   </div>
                 </div>
                 <span className="text-[14px] leading-[21px]">Трекер питания</span>
-              </span>
+              </motion.span>
               </NavLink>
               {/* Дневник эмоций */}
               <NavLink to="/emotion-tracker">
-              <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+              <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
                 <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                   <div className="absolute contents inset-[10%]">
                     <div className="absolute inset-[10%]">
@@ -171,25 +217,29 @@ export default function Profile() {
                   </div>
                 </div>
                 <span className="text-[14px] leading-[21px]">Дневник эмоций</span>
-              </span>
+              </motion.span>
               </NavLink>
             </nav>
           </div>
         </div>
 
         {/* Exit Button */}
-        <button onClick={onLogout} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors">
+        <motion.button whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} onClick={onLogout} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d={svgPathsBack.p14ca9100} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
             <path d="M17.5 10H7.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
             <path d={svgPathsBack.p38966ca0} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
           </svg>
           <span className="text-[14px]">Выйти</span>
-        </button>
-      </aside>
+        </motion.button>
+      </motion.aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-8 overflow-y-auto">
+      <motion.main
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
+        className="flex-1 p-8 overflow-y-auto">
         <div className="max-w-[800px] mx-auto">
           {/* Page Header */}
           <div className="mb-10">
@@ -213,11 +263,11 @@ export default function Profile() {
                   {email}
                 </p>
                 <div className="flex gap-4">
+                  {sportType && <div className="bg-[#f0e8d8] px-4 py-2 rounded-full">
+                    <span className="text-[#83451e] text-[14px]">{sportLabels[sportType] || sportType}</span>
+                  </div>}
                   <div className="bg-[#f0e8d8] px-4 py-2 rounded-full">
-                    <span className="text-[#83451e] text-[14px]">Плавание</span>
-                  </div>
-                  <div className="bg-[#f0e8d8] px-4 py-2 rounded-full">
-                    <span className="text-[#83451e] text-[14px]">Мужской</span>
+                    <span className="text-[#83451e] text-[14px]">{gender === 'male' ? 'Мужской' : gender === 'female' ? 'Женский' : ''}</span>
                   </div>
                 </div>
               </div>
@@ -233,7 +283,8 @@ export default function Profile() {
                   </label>
                   <input
                     type="text"
-                    defaultValue={name}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     className="w-full h-[56px] px-6 bg-[#faf8f0] rounded-[25px] text-[#3d1f00] text-[16px] placeholder:text-[rgba(131,69,30,0.5)] focus:outline-none focus:ring-2 focus:ring-[#f5a623] focus:bg-[#f0e8d8] transition-colors"
                   />
                 </div>
@@ -243,7 +294,8 @@ export default function Profile() {
                   </label>
                   <input
                     type="text"
-                    defaultValue={lastName}
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
                     className="w-full h-[56px] px-6 bg-[#faf8f0] rounded-[25px] text-[#3d1f00] text-[16px] placeholder:text-[rgba(131,69,30,0.5)] focus:outline-none focus:ring-2 focus:ring-[#f5a623] focus:bg-[#f0e8d8] transition-colors"
                   />
                 </div>
@@ -256,8 +308,9 @@ export default function Profile() {
                 </label>
                 <input
                   type="email"
-                  defaultValue={email}
-                  className="w-full h-[56px] px-6 bg-[#faf8f0] rounded-[25px] text-[#3d1f00] text-[16px] placeholder:text-[rgba(131,69,30,0.5)] focus:outline-none focus:ring-2 focus:ring-[#f5a623] focus:bg-[#f0e8d8] transition-colors"
+                  value={email}
+                  disabled
+                  className="w-full h-[56px] px-6 bg-[#faf8f0] rounded-[25px] text-[#3d1f00] text-[16px] placeholder:text-[rgba(131,69,30,0.5)] focus:outline-none focus:ring-2 focus:ring-[#f5a623] focus:bg-[#f0e8d8] transition-colors opacity-60"
                 />
               </div>
 
@@ -267,16 +320,21 @@ export default function Profile() {
                   Вид спорта
                 </label>
                 <select
-                  defaultValue="Плавание"
+                  value={sportType}
+                  onChange={(e) => setSportType(e.target.value)}
                   className="w-full h-[56px] px-6 bg-[#faf8f0] rounded-[25px] text-[#3d1f00] text-[16px] focus:outline-none focus:ring-2 focus:ring-[#f5a623] focus:bg-[#f0e8d8] appearance-none cursor-pointer transition-colors"
                 >
-                  <option>Плавание</option>
-                  <option>Бег</option>
-                  <option>Велоспорт</option>
-                  <option>Футбол</option>
-                  <option>Баскетбол</option>
-                  <option>Теннис</option>
-                  <option>Волейбол</option>
+                  <option value="">Выберите вид спорта</option>
+                  <option value="football">Футбол</option>
+                  <option value="basketball">Баскетбол</option>
+                  <option value="volleyball">Волейбол</option>
+                  <option value="tennis">Теннис</option>
+                  <option value="swimming">Плавание</option>
+                  <option value="running">Бег</option>
+                  <option value="cycling">Велоспорт</option>
+                  <option value="fitness">Фитнес</option>
+                  <option value="yoga">Йога</option>
+                  <option value="other">Другое</option>
                 </select>
               </div>
 
@@ -286,10 +344,10 @@ export default function Profile() {
                   Пол
                 </label>
                 <div className="flex gap-3">
-                  <button className="flex-1 h-[56px] bg-[#faf8f0] rounded-[25px] text-[#83451e] text-[16px] hover:bg-[#f0e8d8] transition-colors">
+                  <button onClick={() => setGender('female')} className={`flex-1 h-[56px] rounded-[25px] text-[16px] transition-colors ${gender === 'female' ? 'bg-[#83451e] text-[#fffee7] shadow-md hover:bg-[#6d3918]' : 'bg-[#faf8f0] text-[#83451e] hover:bg-[#f0e8d8]'}`}>
                     Женский
                   </button>
-                  <button className="flex-1 h-[56px] bg-[#83451e] rounded-[25px] text-[#fffee7] text-[16px] shadow-md hover:bg-[#6d3918] transition-colors">
+                  <button onClick={() => setGender('male')} className={`flex-1 h-[56px] rounded-[25px] text-[16px] transition-colors ${gender === 'male' ? 'bg-[#83451e] text-[#fffee7] shadow-md hover:bg-[#6d3918]' : 'bg-[#faf8f0] text-[#83451e] hover:bg-[#f0e8d8]'}`}>
                     Мужской
                   </button>
                 </div>
@@ -297,8 +355,8 @@ export default function Profile() {
 
               {/* Save Button */}
               <div className="pt-4">
-                <button className="w-full h-[56px] bg-[#83451e] rounded-[25px] text-[#fffee7] text-[16px] shadow-[0px_4px_6px_0px_rgba(0,0,0,0.1),0px_2px_4px_0px_rgba(0,0,0,0.1)] hover:bg-[#6d3918] transition-colors">
-                  Сохранить изменения
+                <button onClick={handleSave} disabled={saving} className="w-full h-[56px] bg-[#83451e] rounded-[25px] text-[#fffee7] text-[16px] shadow-[0px_4px_6px_0px_rgba(0,0,0,0.1),0px_2px_4px_0px_rgba(0,0,0,0.1)] hover:bg-[#6d3918] transition-colors disabled:opacity-50">
+                  {saving ? 'Сохранение...' : saved ? 'Сохранено ✓' : 'Сохранить изменения'}
                 </button>
               </div>
             </div>
@@ -334,12 +392,12 @@ export default function Profile() {
             </div>
         </div>
 
-          {/* Additional Settings Card */}
+          {/* TODO: раскомментировать когда будут реализованы функции
           <div className="bg-white rounded-[20px] p-8 shadow-sm">
             <h3 className="text-[#3d1f00] text-[20px] font-semibold mb-6">
               Дополнительные настройки
             </h3>
-            
+
             <div className="space-y-3">
               <button className="w-full flex items-center justify-between p-4 hover:bg-[#faf8f0] rounded-[15px] transition-colors group">
                 <span className="text-[#3d1f00] text-[16px]">Изменить пароль</span>
@@ -352,8 +410,9 @@ export default function Profile() {
               </button>
             </div>
           </div>
+          */}
         </div>
-      </main>
+      </motion.main>
     </div>
   );
 }

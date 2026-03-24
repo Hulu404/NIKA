@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { motion } from 'framer-motion';
 import svgPathsBack from './imports/svg-n101rx8ak0';
 import svgPaths from './imports/svg-nfsr0erm4u';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -126,11 +127,15 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen bg-[#fffee7] flex">
       {/* Background Gradients */}
-      <div className="absolute bg-[rgba(246,176,68,0.08)] blur-[100px] left-[15%] opacity-50 rounded-full w-[450px] h-[450px] top-0" />
-      <div className="absolute bg-[rgba(243,156,18,0.08)] blur-[100px] right-[15%] rounded-full w-[450px] h-[450px] top-[250px]" />
+      <div className="absolute pointer-events-none bg-[rgba(246,176,68,0.08)] blur-[100px] left-[15%] opacity-50 rounded-full w-[450px] h-[450px] top-0" />
+      <div className="absolute pointer-events-none bg-[rgba(243,156,18,0.08)] blur-[100px] right-[15%] rounded-full w-[450px] h-[450px] top-[250px]" />
       
       {/* Sidebar */}
-      <aside className="w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]">
+      <motion.aside
+        initial={{ x: -30, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className="w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
             <span className="text-white text-[18px] font-bold">N</span>
@@ -139,12 +144,15 @@ export default function FAQPage() {
         </div>
 
         <NavLink to='/chat'>
-          <button className="w-full flex items-center gap-3 px-4 py-3 mb-6 text-white bg-[#f5a623] hover:bg-[#e59615] rounded-[10px] transition-colors shadow-md">
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="w-full flex items-center gap-3 px-4 py-3 mb-6 text-white bg-[#f5a623] hover:bg-[#e59615] rounded-[10px] transition-colors shadow-md">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d={svgPathsBack.p11678e00} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             <span className="text-[14px]">Назад к диалогу</span>
-          </button>
+          </motion.button>
         </NavLink>
 
         <div className="flex-1">
@@ -155,7 +163,7 @@ export default function FAQPage() {
                     <nav className="flex flex-col gap-1">
                       {/* Личный кабинет  - ACTIVE */}
                       <NavLink to='/profile'>
-                      <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+                      <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
                         <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                           <div className="absolute contents inset-[12.5%_20.83%]">
                             <div className="absolute inset-[62.5%_20.83%_12.5%_20.83%]">
@@ -175,12 +183,12 @@ export default function FAQPage() {
                           </div>
                         </div>
                         <span className="text-[14px] leading-[21px]">Личный кабинет</span>
-                      </span>
+                      </motion.span>
                       </NavLink>
         
                       {/* Трекер питания */}
                       <NavLink to='/food-tracker'>
-                      <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+                      <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
                         <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                           <div className="absolute contents inset-[10%]">
                             <div className="absolute inset-[10%]">
@@ -200,11 +208,11 @@ export default function FAQPage() {
                           </div>
                         </div>
                         <span className="text-[14px] leading-[21px]">Трекер питания</span>
-                      </span>
+                      </motion.span>
                       </NavLink>
                       {/* Дневник эмоций */}
                       <NavLink to="/emotion-tracker">
-                      <span className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+                      <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
                         <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                           <div className="absolute contents inset-[10%]">
                             <div className="absolute inset-[10%]">
@@ -238,24 +246,28 @@ export default function FAQPage() {
                           </div>
                         </div>
                         <span className="text-[14px] leading-[21px]">Дневник эмоций</span>
-                      </span>
+                      </motion.span>
                       </NavLink>
                     </nav>
                   </div>
                 </div>
 
-        <button onClick={onLogout} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors">
+        <motion.button whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} onClick={onLogout} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d={svgPathsBack.p14ca9100} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
             <path d="M17.5 10H7.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
             <path d={svgPathsBack.p38966ca0} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
           </svg>
           <span className="text-[14px]">Выйти</span>
-        </button>
-      </aside>
-      
+        </motion.button>
+      </motion.aside>
+
       {/* Main Content */}
-      <div className="flex-1 p-8 overflow-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
+        className="flex-1 p-8 overflow-auto">
         <div className="max-w-[1050px]">
           <div className="mb-12">
             <h1 className="font-['Manrope:Bold',sans-serif] text-[44px] font-bold text-[#2d3625] mb-3 tracking-tight">
@@ -268,7 +280,7 @@ export default function FAQPage() {
           
           <FAQAccordion />
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

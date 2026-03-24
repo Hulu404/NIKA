@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Menu, X, Sparkles, Mic, Paperclip, MoreVertical } from 'lucide-react';
+import { Send, Menu, Sparkles, Mic } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ChatMessage } from './ChatMessage';
 import { ChatSidebar } from './ChatSidebar';
 import { SuggestedPrompts } from './SuggestedPrompts';
 import imgImage2 from "../assets/avatar.png";
 import { useNavigate } from 'react-router-dom';
+import { fetchWithAuth } from '../../../JWT_token_refresh';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface Message {
@@ -27,9 +28,11 @@ export function ChatInterface({isError}: Error) {
   const [sessions, setSessions] = useState([])
   const isTyping = false
   const [isFocused, setIsFocused] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(localStorage.getItem('chat_session_id'));
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const recognitionRef = useRef<any>(null);
   const navigate = useNavigate();
 
   const scrollToBottom = () => {
@@ -44,27 +47,26 @@ export function ChatInterface({isError}: Error) {
         navigate('/login');
         return;
       }
-  
+
       loadHistory();
       getSessions()
     }, [navigate, sessionId]);
+
+  const prevRecording = useRef(false);
+  useEffect(() => {
+    if (prevRecording.current && !isRecording && input.trim()) {
+      sendVoiceMessage(input);
+    }
+    prevRecording.current = isRecording;
+  }, [isRecording]);
 
   const loadHistory = async () => {
     try {
       const url = sessionId ? `/api/v1/chat/history?session_id=${sessionId}` : '/api/v1/chat/history';
 
-      const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-        },
-      });
+      const res = await fetchWithAuth(url);
 
       if (!res.ok) {
-        if (res.status === 401) {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-          navigate('/login');
-        }
         throw new Error('Ошибка загрузки истории');
       }
 
@@ -80,11 +82,116 @@ export function ChatInterface({isError}: Error) {
     }
   };
 
-  const [voiceMode, setVoiceMode] = useState<boolean>(() => {
-  // Загружаем сохранённое значение из localStorage (опционально)
-  const saved = localStorage.getItem('voiceMode');
-  return saved ? saved === 'true' : false;
-  });
+  const sendVoiceMessage = (text: string) => {
+    if (!text.trim() || loading) return;
+
+    const userMessage = {
+      role: 'user',
+      content: text,
+      id: Date.now().toString(),
+      timestamp: new Date()
+    };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput('');
+    setLoading(true);
+
+    fetchWithAuth('/api/v1/chat/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: text,
+        with_audio: true,
+        session_id: sessionId,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.success) throw new Error(data.error || 'Ошибка отправки');
+
+        setSessionId(data.data.session_id);
+        localStorage.setItem('chat_session_id', data.data.session_id);
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: data.data.assistant_response,
+            id: (Date.now() + 1).toString(),
+            timestamp: new Date()
+          },
+        ]);
+
+        if (data.data.audio_base64) {
+          const audio = new Audio(`data:audio/mp3;base64,${data.data.audio_base64}`);
+          audio.play().catch((e) => console.error('Ошибка аудио:', e));
+        }
+
+        getSessions();
+        scrollToBottom();
+      })
+      .catch((err) => {
+        console.error(err);
+        isError(true);
+      })
+      .finally(() => {
+        isError(false);
+        setLoading(false);
+      });
+  };
+
+  const startRecording = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Ваш браузер не поддерживает голосовой ввод. Используйте Chrome или Edge.');
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'ru-RU';
+    recognition.interimResults = true;
+    recognition.continuous = false;
+
+    recognition.onstart = () => setIsRecording(true);
+
+    recognition.onresult = (event: any) => {
+      const transcript = Array.from(event.results)
+        .map((result: any) => result[0].transcript)
+        .join('');
+      setInput(transcript);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+      recognitionRef.current = null;
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error('Ошибка распознавания:', event.error);
+      setIsRecording(false);
+      recognitionRef.current = null;
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
+
+  const stopRecording = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.onend = () => {
+        setIsRecording(false);
+        recognitionRef.current = null;
+      };
+      recognitionRef.current.stop();
+    }
+  };
+
+  const toggleRecording = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  };
 
   const sendMessage = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -101,15 +208,14 @@ export function ChatInterface({isError}: Error) {
       setLoading(true);
   
       try {
-        const res = await fetch('/api/v1/chat/send', {
+        const res = await fetchWithAuth('/api/v1/chat/send', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           },
           body: JSON.stringify({
             message: input,
-            with_audio: voiceMode,
+            with_audio: false,
             session_id: sessionId,
           }),
         });
@@ -154,19 +260,11 @@ export function ChatInterface({isError}: Error) {
     try {
       const url = '/api/v1/chat/sessions';
 
-      const res = await fetch(url, {
+      const res = await fetchWithAuth(url, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-        },
       });
 
       if (!res.ok) {
-        if (res.status === 401) {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-          navigate('/login');
-        }
         throw new Error('Ошибка загрузки истории');
       }
 
@@ -220,8 +318,8 @@ export function ChatInterface({isError}: Error) {
   return (
     <div className="flex h-screen bg-gradient-to-br from-[#fafafa] via-[#ffffff] to-[#f5f5f5] relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-[#fafafa] via-[#ffffff] to-[#f5f5f5]">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#f6b044]/8 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#f39c12]/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-[rgba(246,176,68,0.15)] rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[rgba(243,156,18,0.15)] rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
       </div>
 
       <ChatSidebar 
@@ -232,7 +330,8 @@ export function ChatInterface({isError}: Error) {
         onHistory={(id) => onOldChatClick(id)}
       />
 
-      <div className="flex-1 flex flex-col relative z-10">
+      <div
+        className="flex-1 flex flex-col relative z-10 transition-all duration-300 ease-in-out">
         <motion.div 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -240,12 +339,14 @@ export function ChatInterface({isError}: Error) {
         >
           <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center gap-4">
-              <button
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className="p-2.5 hover:bg-black/5 rounded-xl transition-all border border-transparent hover:border-black/10"
-              >
-                {isSidebarOpen ? <X size={20} className="text-gray-600" /> : <Menu size={20} className="text-gray-600" />}
-              </button>
+              {!isSidebarOpen && (
+                <button
+                  onClick={() => setIsSidebarOpen(true)}
+                  className="p-2.5 hover:bg-black/5 rounded-xl transition-all border border-transparent hover:border-black/10"
+                >
+                  <Menu size={20} className="text-gray-600" />
+                </button>
+              )}
               
               <div className="flex items-center gap-3">
                 <div className="relative">
@@ -259,18 +360,17 @@ export function ChatInterface({isError}: Error) {
                   <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-black shadow-lg"></div>
                 </div>
                 
-                <div>
+                <motion.div
+                  initial={{ x: -10, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.2, duration: 0.3 }}
+                >
                   <h1 className="font-semibold text-gray-900 tracking-tight">NIKA</h1>
                   <p className="text-xs text-gray-500">Наш самый умный помощник</p>
-                </div>
+                </motion.div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <button className="p-2.5 hover:bg-black/5 rounded-xl transition-all border border-transparent hover:border-black/10">
-                <MoreVertical className="text-gray-600" size={20} />
-              </button>
-            </div>
           </div>
         </motion.div>
 
@@ -354,16 +454,6 @@ export function ChatInterface({isError}: Error) {
               <div className={`flex items-end gap-3 p-2 rounded-3xl bg-white backdrop-blur-xl border transition-all shadow-lg ${
                 isFocused ? 'border-[#f6b044]/30 shadow-2xl shadow-[#f6b044]/10' : 'border-black/10'
               }`}>
-                <div className="flex gap-2 px-2 pb-2">
-                  <motion.button 
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="p-2 rounded-xl hover:bg-black/5 transition-colors"
-                  >
-                    <Paperclip className="text-gray-400 hover:text-gray-600 transition-colors" size={20} />
-                  </motion.button>
-                </div>
-
                 <textarea
                   ref={inputRef}
                   value={input}
@@ -380,16 +470,16 @@ export function ChatInterface({isError}: Error) {
                 />
 
                 <div className="flex gap-2 px-2 pb-2">
-                  <motion.button 
+                  <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => setVoiceMode(!voiceMode)}
+                    onClick={toggleRecording}
                     className={`p-2 rounded-xl transition-colors ${
-                      voiceMode 
-                        ? 'bg-[#f6b044]/20 text-[#f6b044]' 
+                      isRecording
+                        ? 'bg-red-500/20 text-red-500 animate-pulse'
                         : 'text-gray-400 hover:text-gray-600 hover:bg-black/5'
                     }`}
-                    title={voiceMode ? 'Голосовой режим включён' : 'Голосовой режим выключен'}
+                    title={isRecording ? 'Остановить запись' : 'Голосовое сообщение'}
                   >
                     <Mic size={20} strokeWidth={2.5} />
                   </motion.button>
@@ -410,8 +500,8 @@ export function ChatInterface({isError}: Error) {
               NIKA может делать ошибки. Проверяйте важную информацию.
             </p>
           </div> 
-        </div> 
-      </div> 
-    </div> 
+        </div>
+      </div>
+    </div>
   );
 }
