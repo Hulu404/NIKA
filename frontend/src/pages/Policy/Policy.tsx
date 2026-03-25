@@ -572,10 +572,10 @@ export default function Policy() {
                         актуализировать их самостоятельно, путем направления Оператору уведомление на адрес электронной
                         почты Оператора{' '}
                         <a
-                          href="mailto:privacy@thismywebsite.com"
+                          href="ceo@mynika.ru"
                           className="text-[#ff6b35] underline hover:text-[#f7931e]"
                         >
-                          privacy@thismywebsite.com
+                          ceo@mynika.ru
                         </a>{' '}
                         с пометкой «Актуализация персональных данных».
                       </p>
@@ -586,10 +586,10 @@ export default function Policy() {
                         персональных данных, направив Оператору уведомление посредством электронной почты на электронный
                         адрес Оператора{' '}
                         <a
-                          href="mailto:privacy@thismywebsite.com"
+                          href="ceo@mynika.ru"
                           className="text-[#ff6b35] underline hover:text-[#f7931e]"
                         >
-                          privacy@thismywebsite.com
+                          ceo@mynika.ru
                         </a>{' '}
                         с пометкой «Отзыв согласия на обработку персональных данных».
                       </p>
@@ -688,10 +688,10 @@ export default function Policy() {
                         <strong>12.1.</strong> Пользователь может получить любые разъяснения по интересующим вопросам,
                         касающимся обработки его персональных данных, обратившись к Оператору с помощью электронной почты{' '}
                         <a
-                          href="mailto:privacy@thismywebsite.com"
+                          href="ceo@mynika.ru"
                           className="text-[#ff6b35] underline hover:text-[#f7931e]"
                         >
-                          privacy@thismywebsite.com
+                          ceo@mynika.ru
                         </a>
                         .
                       </p>
@@ -703,10 +703,10 @@ export default function Policy() {
                         <strong>12.3.</strong> Актуальная версия Политики в свободном доступе расположена в сети Интернет
                         по адресу{' '}
                         <a
-                          href="https://nikamentalhelth.ruprivacy/"
+                          href="https://nikamentalhelth.ru/privacy"
                           className="text-[#ff6b35] underline hover:text-[#f7931e]"
                         >
-                          https://nikamentalhelth.ruprivacy/
+                          https://nikamentalhelth.ru/privacy
                         </a>
                         .
                       </p>
@@ -851,7 +851,7 @@ export default function Policy() {
           <p>© 2026 NIKA AI Fitness Assistant. Все права защищены.</p>
           <p className="mt-2">
             По всем вопросам:{' '}
-            <a href="mailto:ceo@mynika.ru" className="text-[#ff6b35] underline hover:text-[#f7931e]">
+            <a href="ceo@mynika.ru" className="text-[#ff6b35] underline hover:text-[#f7931e]">
               ceo@mynika.ru
             </a>
           </p>
