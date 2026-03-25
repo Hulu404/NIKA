@@ -59,6 +59,8 @@ export default function Policy() {
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
+    console.log(element);
+    
     if (element) {
       const offset = 100;
       const elementPosition = element.offsetTop - offset;
@@ -230,7 +232,7 @@ export default function Policy() {
                   </section>
 
                   {/* Section 3 */}
-                  <section id="section3" className="mb-16 scroll-mt-32">
+                  <section id="privacy-3" className="mb-16 scroll-mt-32">
                     <h2 className="text-3xl font-bold text-[#2d3625] mb-6">
                       3. Основные права и обязанности Оператора
                     </h2>
@@ -330,7 +332,7 @@ export default function Policy() {
                   </section>
 
                   {/* Section 4 */}
-                  <section id="section4" className="mb-16 scroll-mt-32">
+                  <section id="privacy-4" className="mb-16 scroll-mt-32">
                     <h2 className="text-3xl font-bold text-[#2d3625] mb-6">
                       4. Основные права и обязанности субъектов персональных данных
                     </h2>
@@ -410,7 +412,7 @@ export default function Policy() {
                   </section>
 
                   {/* Section 5 */}
-                  <section id="section5" className="mb-16 scroll-mt-32">
+                  <section id="privacy-5" className="mb-16 scroll-mt-32">
                     <h2 className="text-3xl font-bold text-[#2d3625] mb-6">
                       5. Принципы обработки персональных данных
                     </h2>
@@ -456,7 +458,7 @@ export default function Policy() {
                   </section>
 
                   {/* Section 6 */}
-                  <section id="section6" className="mb-16 scroll-mt-32">
+                  <section id="privacy-6" className="mb-16 scroll-mt-32">
                     <h2 className="text-3xl font-bold text-[#2d3625] mb-6">
                       6. Цели обработки персональных данных
                     </h2>
@@ -503,7 +505,7 @@ export default function Policy() {
                   </section>
 
                   {/* Section 7 */}
-                  <section id="section7" className="mb-16 scroll-mt-32">
+                  <section id="privacy-7" className="mb-16 scroll-mt-32">
                     <h2 className="text-3xl font-bold text-[#2d3625] mb-6">
                       7. Условия обработки персональных данных
                     </h2>
@@ -547,7 +549,7 @@ export default function Policy() {
                   </section>
 
                   {/* Section 8 */}
-                  <section id="section8" className="mb-16 scroll-mt-32">
+                  <section id="privacy-8" className="mb-16 scroll-mt-32">
                     <h2 className="text-3xl font-bold text-[#2d3625] mb-6">
                       8. Порядок сбора, хранения, передачи и других видов обработки персональных данных
                     </h2>
@@ -627,7 +629,7 @@ export default function Policy() {
                   </section>
 
                   {/* Section 9 */}
-                  <section id="section9" className="mb-16 scroll-mt-32">
+                  <section id="privacy-9" className="mb-16 scroll-mt-32">
                     <h2 className="text-3xl font-bold text-[#2d3625] mb-6">
                       9. Перечень действий, производимых Оператором с полученными персональными данными
                     </h2>
@@ -646,7 +648,7 @@ export default function Policy() {
                   </section>
 
                   {/* Section 10 */}
-                  <section id="section10" className="mb-16 scroll-mt-32">
+                  <section id="privacy-10" className="mb-16 scroll-mt-32">
                     <h2 className="text-3xl font-bold text-[#2d3625] mb-6">
                       10. Трансграничная передача персональных данных
                     </h2>
@@ -667,7 +669,7 @@ export default function Policy() {
                   </section>
 
                   {/* Section 11 */}
-                  <section id="section11" className="mb-16 scroll-mt-32">
+                  <section id="privacy-11" className="mb-16 scroll-mt-32">
                     <h2 className="text-3xl font-bold text-[#2d3625] mb-6">
                       11. Конфиденциальность персональных данных
                     </h2>
@@ -681,7 +683,7 @@ export default function Policy() {
                   </section>
 
                   {/* Section 12 */}
-                  <section id="section12" className="mb-16 scroll-mt-32">
+                  <section id="privacy-12" className="mb-16 scroll-mt-32">
                     <h2 className="text-3xl font-bold text-[#2d3625] mb-6">12. Заключительные положения</h2>
                     <div className="space-y-4 text-[#1f2937] leading-[1.6]">
                       <p>
