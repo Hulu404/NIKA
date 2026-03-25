@@ -170,8 +170,8 @@ export default function Policy() {
                         <strong>1.2.</strong> Настоящая политика Оператора в отношении обработки персональных данных
                         (далее — Политика) применяется ко всей информации, которую Оператор может получить о
                         посетителях веб-сайта{' '}
-                        <a href="https://thismywebsite.com/" className="text-[#ff6b35] underline hover:text-[#f7931e]">
-                          https://thismywebsite.com
+                        <a href="https://nikamentalhelth.ru/" className="text-[#ff6b35] underline hover:text-[#f7931e]">
+                          https://nikamentalhelth.ru
                         </a>
                         .
                       </p>
@@ -191,7 +191,7 @@ export default function Policy() {
                         <p className="mb-2"><strong>2.2.</strong> Блокирование персональных данных — временное прекращение обработки персональных данных (за исключением случаев, если обработка необходима для уточнения персональных данных).</p>
                       </div>
                       <div>
-                        <p className="mb-2"><strong>2.3.</strong> Веб-сайт — совокупность графических и информационных материалов, а также программ для ЭВМ и баз данных, обеспечивающих их доступность в сети интернет по сетевому адресу <a href="https://thismywebsite.com/" className="text-[#ff6b35] underline">https://thismywebsite.com</a>.</p>
+                        <p className="mb-2"><strong>2.3.</strong> Веб-сайт — совокупность графических и информационных материалов, а также программ для ЭВМ и баз данных, обеспечивающих их доступность в сети интернет по сетевому адресу <a href="https://nikamentalhelth.ru" className="text-[#ff6b35] underline">https://thismywebsite.com</a>.</p>
                       </div>
                       <div>
                         <p className="mb-2"><strong>2.4.</strong> Информационная система персональных данных — совокупность содержащихся в базах данных персональных данных и обеспечивающих их обработку информационных технологий и технических средств.</p>
@@ -206,13 +206,13 @@ export default function Policy() {
                         <p className="mb-2"><strong>2.7.</strong> Оператор — государственный орган, муниципальный орган, юридическое или физическое лицо, самостоятельно или совместно с другими лицами организующие и/или осуществляющие обработку персональных данных, а также определяющие цели обработки персональных данных, состав персональных данных, подлежащих обработке, действия (операции), совершаемые с персональными данными.</p>
                       </div>
                       <div>
-                        <p className="mb-2"><strong>2.8.</strong> Персональные данные — любая информация, относящаяся прямо или косвенно к определенному или определяемому Пользователю веб-сайта <a href="https://thismywebsite.com/" className="text-[#ff6b35] underline">https://thismywebsite.com</a>.</p>
+                        <p className="mb-2"><strong>2.8.</strong> Персональные данные — любая информация, относящаяся прямо или косвенно к определенному или определяемому Пользователю веб-сайта <a href="https://nikamentalhelth.ru" className="text-[#ff6b35] underline">https://thismywebsite.com</a>.</p>
                       </div>
                       <div>
                         <p className="mb-2"><strong>2.9.</strong> Персональные данные, разрешенные субъектом персональных данных для распространения — персональные данные, доступ неограниченного круга лиц к которым предоставлен субъектом персональных данных путем дачи согласия на обработку персональных данных, разрешенных субъектом персональных данных для распространения в порядке, предусмотренном Законом о персональных данных.</p>
                       </div>
                       <div>
-                        <p className="mb-2"><strong>2.10.</strong> Пользователь — любой посетитель веб-сайта <a href="https://thismywebsite.com/" className="text-[#ff6b35] underline">https://thismywebsite.com</a>.</p>
+                        <p className="mb-2"><strong>2.10.</strong> Пользователь — любой посетитель веб-сайта <a href="https://nikamentalhelth.ru/" className="text-[#ff6b35] underline">https://thismywebsite.com</a>.</p>
                       </div>
                       <div>
                         <p className="mb-2"><strong>2.11.</strong> Предоставление персональных данных — действия, направленные на раскрытие персональных данных определенному лицу или определенному кругу лиц.</p>
@@ -703,10 +703,10 @@ export default function Policy() {
                         <strong>12.3.</strong> Актуальная версия Политики в свободном доступе расположена в сети Интернет
                         по адресу{' '}
                         <a
-                          href="https://thismywebsite.com/privacy/"
+                          href="https://nikamentalhelth.ruprivacy/"
                           className="text-[#ff6b35] underline hover:text-[#f7931e]"
                         >
-                          https://thismywebsite.com/privacy/
+                          https://nikamentalhelth.ruprivacy/
                         </a>
                         .
                       </p>
@@ -851,8 +851,8 @@ export default function Policy() {
           <p>© 2026 NIKA AI Fitness Assistant. Все права защищены.</p>
           <p className="mt-2">
             По всем вопросам:{' '}
-            <a href="mailto:privacy@thismywebsite.com" className="text-[#ff6b35] underline hover:text-[#f7931e]">
-              privacy@thismywebsite.com
+            <a href="mailto:ceo@mynika.ru" className="text-[#ff6b35] underline hover:text-[#f7931e]">
+              ceo@mynika.ru
             </a>
           </p>
         </div>
