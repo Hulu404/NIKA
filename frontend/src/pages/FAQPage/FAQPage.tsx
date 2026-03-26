@@ -6,6 +6,7 @@ import svgPaths from './imports/svg-nfsr0erm4u';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '../../JWT_token_refresh';
 
+
 interface FAQItem {
   question: string;
   answer: string;
@@ -247,6 +248,101 @@ export default function FAQPage() {
             </nav>
           </div>
         </div>
+                  <div className="mb-6">
+                    <h3 className="text-[#83451e] text-[12px] uppercase tracking-[0.6px] mb-4 px-3 leading-[18px]">
+                      МЕНЮ
+                    </h3>
+                    <nav className="flex flex-col gap-1">
+                      {/* Личный кабинет  - ACTIVE */}
+                      <NavLink to='/profile'>
+                      <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+                        <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
+                          <div className="absolute contents inset-[12.5%_20.83%]">
+                            <div className="absolute inset-[62.5%_20.83%_12.5%_20.83%]">
+                              <div className="absolute inset-[-16.67%_-7.14%]">
+                                <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 13.3333 6.66667">
+                                  <path d={svgPaths.p18dfb480} stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
+                                </svg>
+                              </div>
+                            </div>
+                            <div className="absolute inset-[12.5%_33.33%_54.17%_33.33%]">
+                              <div className="absolute inset-[-12.5%]">
+                                <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 8.3333 8.33334">
+                                  <path d={svgPaths.p9a07d80} stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <span className="text-[14px] leading-[21px]">Личный кабинет</span>
+                      </motion.span>
+                      </NavLink>
+
+                      {/* Трекер питания */}
+                      <NavLink to='/food-tracker'>
+                      <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+                        <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
+                          <div className="absolute contents inset-[10%]">
+                            <div className="absolute inset-[10%]">
+                              <div className="absolute inset-[-4.69%]">
+                                <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 17.5 17.5">
+                                  <path d={svgPaths.p1b2ea00} stroke="#83451E" strokeWidth="1.5" />
+                                </svg>
+                              </div>
+                            </div>
+                            <div className="absolute bottom-[42.5%] left-1/2 right-[35%] top-[30%]">
+                              <div className="absolute inset-[-13.64%_-25.01%_-13.64%_-25%]">
+                                <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 4.50016 7.00016">
+                                  <path d="M0.75 0.75V4.75L3.75 6.25" stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <span className="text-[14px] leading-[21px]">Трекер питания</span>
+                      </motion.span>
+                      </NavLink>
+                      {/* Дневник эмоций */}
+                      <NavLink to="/emotion-tracker">
+                      <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+                        <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
+                          <div className="absolute contents inset-[10%]">
+                            <div className="absolute inset-[10%]">
+                              <div className="absolute inset-[-5.21%]">
+                                <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 17.6667 17.6667">
+                                  <path d={svgPaths.p8bb5780} stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
+                                </svg>
+                              </div>
+                            </div>
+                            <div className="absolute inset-[55%_30%_35%_30%]">
+                              <div className="absolute inset-[-41.67%_-10.42%]">
+                                <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 9.66677 3.66672">
+                                  <path d={svgPaths.p1f71cf00} stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
+                                </svg>
+                              </div>
+                            </div>
+                            <div className="absolute inset-[37.5%_62.46%_62.5%_37.5%]">
+                              <div className="absolute inset-[-0.83px]">
+                                <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 1.675 1.66667">
+                                  <path d="M0.833335 0.833335H0.841665" stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
+                                </svg>
+                              </div>
+                            </div>
+                            <div className="absolute inset-[37.5%_37.46%_62.5%_62.5%]">
+                              <div className="absolute inset-[-0.83px]">
+                                <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 1.67497 1.66667">
+                                  <path d="M0.833335 0.833335H0.841635" stroke="#83451E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <span className="text-[14px] leading-[21px]">Дневник эмоций</span>
+                      </motion.span>
+                      </NavLink>
+                    </nav>
+                  </div>
+                </div>
 
         <motion.button whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} onClick={onLogout} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -275,19 +371,6 @@ export default function FAQPage() {
           </div>
 
           <FAQAccordion />
-
-          {/* Link to policy page */}
-          <div className="mt-12 pt-8 border-t border-[rgba(45,54,37,0.1)] text-center">
-            <p className="text-[#5a6444] text-sm mb-2">
-              Ознакомьтесь с нашими юридическими документами:
-            </p>
-            <NavLink
-              to="/policy"
-              className="text-[#f6b044] hover:text-[#f39c12] underline underline-offset-2 transition-colors font-medium"
-            >
-              Политика конфиденциальности и Публичная оферта
-            </NavLink>
-          </div>
         </div>
       </motion.div>
     </div>
