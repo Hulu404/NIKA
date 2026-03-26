@@ -205,6 +205,7 @@ def create_app(config_name=None):
     from .models.subscription_plan import SubscriptionPlan
     from .models.subscription import Subscription
     from .models.payment import Payment
+    from .models.user import User
 
     # 6.1 Запуск фонового планировщика списаний
     from .services.billing_scheduler import init_scheduler
