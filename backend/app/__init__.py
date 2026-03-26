@@ -124,12 +124,16 @@ def create_app(config_name=None):
     from .api.v1.auth import auth_bp
     from .api.v1.food import food_v1
     from .api.v1.emotion import emotion_v1
+    from .api.v1.subscription import subscription_bp
+    from .api.v1.admin_plans import admin_plans_bp
 
     app.register_blueprint(emotion_v1)
     app.register_blueprint(food_v1)
     # app.register_blueprint(main_bp)
     app.register_blueprint(chat_v1)
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
+    app.register_blueprint(subscription_bp)
+    app.register_blueprint(admin_plans_bp)
 
     # 5.1 Инициализация Swagger (после регистрации blueprints)
     swagger_config: dict = {
@@ -198,6 +202,13 @@ def create_app(config_name=None):
     # 6. Импортируем модель FoodEntry перед созданием таблиц
     from .models.food_entry import FoodEntry
     from .models.emotion_entry import EmotionEntry
+    from .models.subscription_plan import SubscriptionPlan
+    from .models.subscription import Subscription
+    from .models.payment import Payment
+
+    # 6.1 Запуск фонового планировщика списаний
+    from .services.billing_scheduler import init_scheduler
+    init_scheduler(app)
 
     # Создание таблиц базы данных (только для development)
     if app.config.get('ENV') == 'development' or app.debug:

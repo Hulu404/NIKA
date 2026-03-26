@@ -13,6 +13,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), nullable=False, unique=True)
     gender = db.Column(db.String(10), nullable=False)
     sport_type = db.Column(db.String(100), nullable=True)
+    is_admin = db.Column(db.Boolean, default=False)
     password_hash = db.Column(db.String(256), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_on = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

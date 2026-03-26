@@ -284,6 +284,13 @@ def profile():
         hour=0, minute=0, second=0, microsecond=0
     ).isoformat()
 
+    # Информация о подписке
+    from ...models.subscription import Subscription
+    sub = Subscription.query.filter_by(user_id=user.id, status='active').first()
+    subscription_data = None
+    if sub and sub.expires_at > datetime.now(timezone.utc).replace(tzinfo=None):
+        subscription_data = sub.to_dict()
+
     return success_response(
         data={
             "id": user.id,
@@ -292,8 +299,10 @@ def profile():
             "email": user.email,
             "gender": user.gender,
             "sport_type": user.sport_type or "",
+            "is_admin": user.is_admin,
             "requests_left": user.get_remaining_requests(),
             "requests_reset_at": requests_reset_at,
+            "subscription": subscription_data,
         }
     )
 

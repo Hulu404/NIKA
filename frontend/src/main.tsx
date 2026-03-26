@@ -20,6 +20,7 @@ import FoodTracker from './pages/Diet/food-tracker';
 import ProtectedRoute from './components/ProtectedRoute';
 import OldChatPage from './pages/ChatPage/OldchatPage';
 import Subscription from './pages/Subscription/Subscription';
+import AdminPlans from './pages/Admin/AdminPlans';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -35,6 +36,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path='/emotion-tracker' element={<EmotionTracker />} />
         <Route path='/food-tracker' element={<FoodTracker />} />
         <Route path='/subscription' element={<Subscription/>} />
+        <Route path='/admin/plans' element={<ProtectedRoute><AdminPlans /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
 
