@@ -80,7 +80,7 @@ def send_message():
     if not user.can_make_request():
         reset_info: dict = user.get_reset_info()
         return error_response(
-            "Лимит запросов исчерпан (10 в день)",
+            "Лимит запросов исчерпан (3 в день)",
             429,
             errors={"reset_at": reset_info["reset_time"], "remaining_seconds": reset_info["remaining_seconds"]},
         )

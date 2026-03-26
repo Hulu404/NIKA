@@ -19,7 +19,7 @@ class User(db.Model, UserMixin):
     updated_on = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Лимиты запросов для зарегистрированных пользователей
-    daily_requests_limit = db.Column(db.Integer, default=10)  # 10 запросов в день для зарегистрированных
+    daily_requests_limit = db.Column(db.Integer, default=3)  # 10 запросов в день для зарегистрированных
     requests_today = db.Column(db.Integer, default=0)
     last_request_date = db.Column(db.Date, default=datetime.utcnow().date)
 

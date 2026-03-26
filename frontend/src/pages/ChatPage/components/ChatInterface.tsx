@@ -221,7 +221,19 @@ export function ChatInterface({isError}: Error) {
         });
   
         const data = await res.json();
-  
+        
+        if (res.status === 429) {
+          const timeString = new Date(data.errors.remaining_seconds * 1000).toISOString().substr(11, 8);
+          setMessages((prev) => [
+          ...prev,
+          { 
+            role: 'assistant', 
+            content: data.message + ' Сброс лимита через ' + timeString,
+            id: (Date.now() + 1).toString(),
+            timestamp: new Date()
+          },
+        ]);
+        } else {
         if (!data.success) {
           throw new Error(data.error || 'Ошибка отправки');
         }
@@ -247,6 +259,7 @@ export function ChatInterface({isError}: Error) {
         getSessions()
   
         scrollToBottom();
+      }
       } catch (err) {
         console.error(err);
         isError(true)
