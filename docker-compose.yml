@@ -1,0 +1,46 @@
+networks:
+  dev:
+
+volumes:
+  certbot-www:     # для ACME-вызовов
+  certbot-conf:    # для хранения сертификатов
+
+services:
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - './nginx.conf:/etc/nginx/nginx.conf'
+      - 'certbot-www:/var/www/certbot:ro'
+      - '/etc/letsencrypt:/etc/letsencrypt:ro'
+      - './empty.conf:/etc/nginx/conf.d/default.conf'   # подмена дефолтного конфига пустым файлом
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - dev
+    restart: unless-stopped
+
+#  certbot:
+#    image: certbot/certbot:latest
+#    volumes:
+#      - 'certbot-www:/var/www/certbot:rw'
+#      - 'certbot-conf:/etc/letsencrypt:rw'
+#    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+#    networks:
+#      - dev
+#    # Не публикуем порты, только внутренняя сеть
+
+  backend:
+    build:
+      context: ./backend
+    networks:
+      - dev
+
+  frontend:
+    build:
+      context: ./frontend
+    networks:
+      - dev
