@@ -281,6 +281,13 @@ def create_app(config_name=None):
             'app': app
         }
 
+    @app.cli.command("update-db")
+    def update_db():
+        """Создаёт отсутствующие таблицы (без потери данных)"""
+        with app.app_context():
+            db.create_all()
+            print("✅ Таблицы обновлены")
+
     @app.post("/test-post")
     def test_post():
         return jsonify({"success": True, "message": "POST работает"})
