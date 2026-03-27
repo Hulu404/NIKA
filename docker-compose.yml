@@ -40,6 +40,10 @@ services:
       - dev
     volumes:
       - ./backend/instance:/instance
+    environment:
+      - YOOKASSA_SHOP_ID=${YOOKASSA_SHOP_ID}
+      - YOOKASSA_SECRET_KEY=${YOOKASSA_SECRET_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     restart: unless-stopped
 
   frontend:
