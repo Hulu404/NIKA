@@ -10,6 +10,7 @@ from sqlalchemy import func, desc, and_
 
 from app.models.message import Message
 from app.models.user import User
+from app.models.subscription import Subscription
 from app.extensions import db
 from app.utils.responses import success_response, error_response
 
@@ -76,8 +77,13 @@ def send_message():
     user: User | None = db.session.get(User, int(user_id))
     if not user:
         return error_response("Пользователь не найден", 404)
+    
+    sub = Subscription.query.filter_by(user_id=user.id, status='active').first()
+    subscription_data = None
+    if sub and sub.expires_at > datetime.now(timezone.utc).replace(tzinfo=None):
+        subscription_data = sub.to_dict()
 
-    if not user.can_make_request():
+    if not user.can_make_request() and not subscription_data:
         reset_info: dict = user.get_reset_info()
         return error_response(
             "Лимит запросов исчерпан (3 в день)",
