@@ -38,9 +38,13 @@ services:
       context: ./backend
     networks:
       - dev
+    volumes:
+      - ./backend/instance:/instance
+    restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
     networks:
       - dev
+    restart: unless-stopped
