@@ -245,7 +245,7 @@ export function ChatInterface({isError}: Error) {
           ...prev,
           { 
             role: 'assistant', 
-            content: data.data.assistant_response,
+            content: data.data.assistant_response + '\n' + 'Осталось запросов: ' + data.data.requests_left,
             id: (Date.now() + 1).toString(),
             timestamp: new Date()
           },

@@ -160,6 +160,8 @@ def send_message():
         # 4. Увеличиваем счётчик запросов
         user.increment_requests()
 
+        request_left = user.get_remaining_requests()
+
         db.session.commit()
 
         # 5. Формируем ответ
@@ -168,6 +170,7 @@ def send_message():
                 "assistant_response": reply,
                 "session_id": session_id,
                 "audio_url": audio_url if with_audio else None,
+                "requests_left": request_left,
             }
         )
 

@@ -427,12 +427,6 @@ export default function Profile() {
                             Действует до {new Date(subscription.expires_at).toLocaleDateString('ru-RU')}
                           </p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
-                          <p className="text-[#83451e] font-['Arimo:Regular',sans-serif] text-[14px]">
-                            До {subscription.plan?.daily_requests_limit} запросов в день
-                          </p>
-                        </div>
                       </div>
                     </div>
                     <button
