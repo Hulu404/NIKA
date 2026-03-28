@@ -39,6 +39,30 @@ def create_payment(amount_rub: float, description: str, return_url: str,
 
     idempotence_key = str(uuid.uuid4())
 
+    # Формируем данные чека
+    receipt_data = {
+        "customer": {
+            "email": metadata.get('email') if metadata else None
+        },
+        "items": [
+            {
+                "description": description[:128],  # ограничение длины
+                "quantity": "1.00",
+                "amount": {
+                    "value": f"{amount_rub:.2f}",
+                    "currency": "RUB"
+                },
+                "vat_code": "1",  # 1 = НДС не облагается
+                "payment_mode": "full_payment",
+                "payment_subject": "service"
+            }
+        ]
+    }
+
+    # Если email не передан – используем заглушку для тестов (в продакшене обязательно передавать реальный email)
+    if not receipt_data["customer"]["email"]:
+        receipt_data["customer"]["email"] = "customer@example.com"
+
     payment_data = {
         'amount': {
             'value': f'{amount_rub:.2f}',
@@ -51,6 +75,7 @@ def create_payment(amount_rub: float, description: str, return_url: str,
         'capture': True,
         'description': description,
         'save_payment_method': save_payment_method,
+        'receipt': receipt_data,
     }
 
     if metadata:

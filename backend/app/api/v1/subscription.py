@@ -111,6 +111,10 @@ def create_subscription_payment():
     if not plan or not plan.is_active:
         return error_response('Тариф не найден или неактивен', 404)
 
+    user = db.session.get(User, user_id)
+    if not user:
+        return error_response('Пользователь не найден', 404)
+
     # Проверяем, нет ли уже активной подписки
     existing = Subscription.query.filter_by(user_id=user_id, status='active').first()
     if existing and existing.expires_at > datetime.utcnow():
@@ -127,6 +131,7 @@ def create_subscription_payment():
             metadata={
                 'user_id': str(user_id),
                 'plan_id': str(plan.id),
+                'email': str(user.email)
             },
         )
     except RuntimeError as e:
