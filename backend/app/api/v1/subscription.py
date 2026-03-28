@@ -123,7 +123,7 @@ def create_subscription_payment():
             amount_rub=plan.price_rub(),
             description=f'Подписка NIKA — {plan.name}',
             return_url=return_url,
-            save_payment_method=True,
+            # save_payment_method=True,  # Раскоммитить, когда включится автоплатеж на Юкассе
             metadata={
                 'user_id': str(user_id),
                 'plan_id': str(plan.id),

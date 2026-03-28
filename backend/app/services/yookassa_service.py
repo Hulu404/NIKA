@@ -21,7 +21,7 @@ def _configure():
 
 
 def create_payment(amount_rub: float, description: str, return_url: str,
-                   save_payment_method: bool = True, metadata: dict = None):
+                   save_payment_method: bool = False, metadata: dict = None):
     """
     Создаёт платёж в ЮKassa.
 
