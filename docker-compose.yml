@@ -44,6 +44,7 @@ services:
       - YOOKASSA_SHOP_ID=${YOOKASSA_SHOP_ID}
       - YOOKASSA_SECRET_KEY=${YOOKASSA_SECRET_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - FLASK_CONFIG=${FLASK_CONFIG:-production}
     restart: unless-stopped
 
   frontend:

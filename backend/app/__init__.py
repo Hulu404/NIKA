@@ -27,17 +27,6 @@ def create_app(config_name=None):
                 static_folder="../static",
                 template_folder="templates")
 
-    # Временная отладка
-    import logging
-    logging.basicConfig(level=logging.DEBUG)
-
-    @app.before_request
-    def log_request():
-        app.logger.debug(f"Request: {request.method} {request.path}")
-        app.logger.debug(f"Headers: {dict(request.headers)}")
-        app.logger.debug(f"Cookies: {request.cookies}")
-        app.logger.debug(f"Data: {request.get_data(as_text=True)}")
-
     # 1. Загружаем конфигурацию (самое первое!)
     config_name = config_name or os.environ.get("FLASK_CONFIG", "development")
     app.config.from_object(get_config(config_name))
