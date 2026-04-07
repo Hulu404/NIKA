@@ -5,6 +5,7 @@ import svgPaths from './imports/svg-nfsr0erm4u';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { fetchWithAuth } from '../../JWT_token_refresh';
+import FeedbackForm from './components/FeedbackForm';
 
 
 const sportLabels: Record<string, string> = {
@@ -467,6 +468,11 @@ export default function Profile() {
                   </div>
                 )}
             </div>
+        </div>
+
+        {/* Feedback Form */}
+        <div className="mb-8">
+            <FeedbackForm />
         </div>
 
         {/* Admin Panel */}

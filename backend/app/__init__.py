@@ -13,7 +13,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 load_dotenv()  # ищет файл .env в текущей директории
 
 # Импортируем расширения и модели (только расширения на уровне модуля)
-from .extensions import db
+from .extensions import db, mail
 
 # Создаём экземпляры расширений на уровне модуля
 login_manager = LoginManager()
@@ -69,6 +69,17 @@ def create_app(config_name=None):
     app.config['SESSION_FILE_THRESHOLD'] = 100
     app.config['SESSION_FILE_MODE'] = 0o600
 
+    # Конфигурация email
+    app.config['MAIL_SERVER'] = 'smtp.yandex.ru'  # или ваш SMTP-сервер
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USE_SSL'] = False
+    app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+    app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+    app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
+    app.config['MAIL_MAX_EMAILS'] = None
+    app.config['MAIL_ASCII_ATTACHMENTS'] = False
+
     # Проверяем наличие URI для БД
     if not app.config.get("SQLALCHEMY_DATABASE_URI"):
         raise RuntimeError("SQLALCHEMY_DATABASE_URI не задан в конфигурации!")
@@ -91,6 +102,7 @@ def create_app(config_name=None):
 
     # 3. Инициализация расширений (ПОСЛЕ конфига!)
     db.init_app(app)
+    mail.init_app(app)
     login_manager.init_app(app)
     jwt.init_app(app)
     session.init_app(app)
@@ -126,6 +138,7 @@ def create_app(config_name=None):
     from .api.v1.emotion import emotion_v1
     from .api.v1.subscription import subscription_bp
     from .api.v1.admin_plans import admin_plans_bp
+    from app.api.v1.feedback import feedback_bp
 
     app.register_blueprint(emotion_v1)
     app.register_blueprint(food_v1)
@@ -134,6 +147,7 @@ def create_app(config_name=None):
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
     app.register_blueprint(subscription_bp)
     app.register_blueprint(admin_plans_bp)
+    app.register_blueprint(feedback_bp)
 
     # 5.1 Инициализация Swagger (после регистрации blueprints)
     swagger_config: dict = {

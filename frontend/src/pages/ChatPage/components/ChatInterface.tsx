@@ -5,7 +5,7 @@ import { ChatMessage } from './ChatMessage';
 import { ChatSidebar } from './ChatSidebar';
 import { SuggestedPrompts } from './SuggestedPrompts';
 import imgImage2 from "../assets/avatar.png";
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '../../../JWT_token_refresh';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -34,6 +34,24 @@ export function ChatInterface({isError}: Error) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
   const navigate = useNavigate();
+  const [showSystemMessage, setShowSystemMessage] = useState(false);
+  const systemMessageTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const systemMessageShownRef = useRef(false);
+
+  const showSystemMessageOnce = () => {
+  if (systemMessageShownRef.current) return;
+  systemMessageShownRef.current = true;
+  setShowSystemMessage(true);
+  if (systemMessageTimeoutRef.current) clearTimeout(systemMessageTimeoutRef.current);
+  systemMessageTimeoutRef.current = setTimeout(() => {
+    setShowSystemMessage(false);
+  }, 20000);
+    };
+
+  const closeSystemMessage = () => {
+  if (systemMessageTimeoutRef.current) clearTimeout(systemMessageTimeoutRef.current);
+  setShowSystemMessage(false);
+  };
 
   const scrollToBottom = () => {
     setTimeout(() => {
@@ -61,26 +79,26 @@ export function ChatInterface({isError}: Error) {
   }, [isRecording]);
 
   const loadHistory = async () => {
-    try {
-      const url = sessionId ? `/api/v1/chat/history?session_id=${sessionId}` : '/api/v1/chat/history';
-
-      const res = await fetchWithAuth(url);
-
-      if (!res.ok) {
-        throw new Error('Ошибка загрузки истории');
+      try {
+        const url = sessionId ? `/api/v1/chat/history?session_id=${sessionId}` : '/api/v1/chat/history';
+        const res = await fetchWithAuth(url);
+        if (!res.ok) throw new Error('Ошибка загрузки истории');
+        const data = await res.json();
+        const messagesWithDates = (data.data.messages || []).map((msg: any) => ({
+          ...msg,
+          timestamp: msg.created_at ? new Date(msg.created_at) : new Date()
+        }));
+        setMessages(messagesWithDates);
+        scrollToBottom();
+        // Если есть сообщения и системное сообщение ещё не показывали – показываем
+        if (messagesWithDates.length > 0 && !systemMessageShownRef.current) {
+          showSystemMessageOnce();
+        }
+      } catch (err) {
+        console.error(err);
       }
-
-      const data = await res.json();
-      const messagesWithDates = (data.data.messages || []).map((msg: any) => ({
-        ...msg,
-        timestamp: msg.created_at ? new Date(msg.created_at) : new Date()
-      }));
-      setMessages(messagesWithDates);
-      scrollToBottom();
-    } catch (err) {
-      console.error(err);
-    }
   };
+
 
   const sendVoiceMessage = (text: string) => {
     if (!text.trim() || loading) return;
@@ -430,7 +448,30 @@ export function ChatInterface({isError}: Error) {
                     avatarUrl={message.role === 'assistant' ? imgImage2 : undefined}
                   />
                 ))}
-                
+
+                {/* Системное сообщение (только если есть сообщения и оно активно) */}
+                {showSystemMessage && messages.length > 0 && (
+                  <div className="flex justify-center px-4 py-2 animate-fade-in">
+                    <div className="relative bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl px-5 py-3.5 shadow-sm max-w-[85%]">
+                      <button
+                        onClick={closeSystemMessage}
+                        className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 transition-colors"
+                        aria-label="Закрыть"
+                      >
+                        ✕
+                      </button>
+                      <p className="text-sm text-gray-700 pr-6">
+                        🌟 Мы стараемся улучшать NIKA каждый день! Поделитесь своим опытом — ваше мнение очень важно для нас.
+                        {' '}
+                        <NavLink to="/profile" className="text-amber-600 font-semibold hover:underline">
+                          Перейти в профиль
+                        </NavLink>
+                        , чтобы оставить отзыв или предложение.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 {isTyping && (
                   <motion.div 
                     initial={{ opacity: 0, y: 10 }}
