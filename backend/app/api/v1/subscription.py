@@ -268,7 +268,7 @@ def cancel_subscription():
     # Возвращаем лимит к бесплатному
     user = db.session.get(User, user_id)
     if user:
-        user.daily_requests_limit = 10
+        user.daily_requests_limit = 3
         db.session.commit()
 
     return success_response(sub.to_dict(), 'Подписка отменена. Доступ сохраняется до окончания оплаченного периода.')
