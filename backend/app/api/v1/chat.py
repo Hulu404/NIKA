@@ -3,7 +3,6 @@ from datetime import datetime, timezone
 import uuid
 import base64
 from pathlib import Path
-
 from flask import Blueprint, request, current_app, send_file
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import func, desc, and_
@@ -14,7 +13,6 @@ from app.models.subscription import Subscription
 from app.extensions import db
 from app.utils.responses import success_response, error_response
 
-# Импорты из сервисов (GigaChat — не трогаем)
 from app.services.gigachat.giga_text import response_gigachat, SYSTEM_PROMPT
 from app.services.salute.salute_speech import speech_syntesis
 
