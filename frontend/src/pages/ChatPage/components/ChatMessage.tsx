@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Copy, RotateCcw, ThumbsUp, ThumbsDown, Check } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import type { Message } from './ChatInterface';
 
 interface ChatMessageProps {
@@ -15,11 +16,11 @@ export function ChatMessage({ message, avatarUrl, showAvatar = true, isFirstInGr
   const [isHovered, setIsHovered] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const isUser = message.role === 'user';
-  
+
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('ru-RU', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return date.toLocaleTimeString('ru-RU', {
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -42,12 +43,12 @@ export function ChatMessage({ message, avatarUrl, showAvatar = true, isFirstInGr
     >
       <div className={`w-10 h-10 flex-shrink-0 ${showAvatar ? 'opacity-100' : 'opacity-0'}`}>
         {showAvatar && (
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className={`w-full h-full rounded-2xl flex items-center justify-center shadow-lg border ${
-              isUser 
-                ? 'bg-gradient-to-br from-[#5a6444] to-[#3d2b1f] border-black/10' 
+              isUser
+                ? 'bg-gradient-to-br from-[#5a6444] to-[#3d2b1f] border-black/10'
                 : 'overflow-hidden border-black/10'
             }`}
           >
@@ -73,9 +74,17 @@ export function ChatMessage({ message, avatarUrl, showAvatar = true, isFirstInGr
               ? 'bg-gradient-to-br from-[#f6b044]/15 to-[#f39c12]/10 border-[#f6b044]/20 text-gray-900'
               : 'bg-white/90 border-black/10 text-gray-900'
           } ${!isFirstInGroup ? (isUser ? 'rounded-tr-md' : 'rounded-tl-md') : ''} ${!isLastInGroup ? (isUser ? 'rounded-br-md' : 'rounded-bl-md') : ''}`}>
-            <p className="whitespace-pre-wrap leading-relaxed text-[15px]">
-              {message.content}
-            </p>
+
+            {/* Заменяем <p> на условный рендеринг: для ассистента — Markdown, для пользователя — обычный текст */}
+            {isUser ? (
+              <p className="whitespace-pre-wrap leading-relaxed text-[15px]">
+                {message.content}
+              </p>
+            ) : (
+              <div className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-strong:text-gray-900 prose-p:my-2 prose-ul:my-2 prose-li:my-0.5">
+                <ReactMarkdown>{message.content}</ReactMarkdown>
+              </div>
+            )}
           </div>
 
           <AnimatePresence>

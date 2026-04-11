@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '../../JWT_token_refresh';
-import ReactMarkdown from 'react-markdown';
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<any[]>([]);
@@ -120,12 +119,6 @@ export default function ChatPage() {
                 msg.role === 'user' ? 'bg-[#83451e] text-[#fffee7]' : 'bg-white text-[#3d1f00] shadow'
               }`}
             >
-              {msg.role === 'assistant' ? (
-                <ReactMarkdown>{msg.content}</ReactMarkdown>
-              ) : (
-                msg.content
-              )}
-              {msg.content}
             </div>
           </div>
         ))}
