@@ -315,6 +315,13 @@ def create_app(config_name=None):
             db.create_all()
             print("✅ Таблицы обновлены")
 
+    @app.cli.command("init-db")
+    def init_db():
+        """Создаёт ВСЕ таблицы по текущим моделям (для первого запуска)"""
+        with app.app_context():
+            db.create_all()
+            print("✅ База данных инициализирована")
+
     @app.post("/test-post")
     def test_post():
         return jsonify({"success": True, "message": "POST работает"})
