@@ -1,26 +1,61 @@
 # run.py
-from app import create_app
+"""
+Точка входа для запуска приложения.
+
+Сервер (Docker CMD):
+    python run.py
+
+CLI-команды (через FLASK_APP=run:create_app):
+    flask --help
+    flask db-info
+    flask init-db
+    flask create-admin --name Admin --email admin@test.com --password 123
+"""
 import os
-from flask import send_from_directory
-from app.extensions import db
-
-# По умолчанию development, но можно переопределить переменной окружения
-config_name = os.environ.get("FLASK_CONFIG", "development")
 
 
-app = create_app(config_name)
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def serve_react_app(path):
-    # Если файл существует в static - отдаем его
-    if path and os.path.exists(os.path.join(app.static_folder, path)):
-        return send_from_directory(app.static_folder, path)
-    # Иначе отдаем index.html (React SPA)
-    return send_from_directory(app.static_folder, 'index.html')
+def create_app():
+    """
+    App factory — вызывается Flask CLI автоматически через FLASK_APP=run:create_app.
+    Создаёт приложение БЕЗ запуска планировщика и db.create_all() (CLI-режим).
+    """
+    from app import create_app as _create_app
+    from flask import send_from_directory
 
+    # Явно помечаем CLI-режим — планировщик и db.create_all НЕ запускаются
+    os.environ['SKIP_SCHEDULER'] = '1'
+
+    config_name = os.environ.get("FLASK_CONFIG", "development")
+    application = _create_app(config_name)
+
+    @application.route('/', defaults={'path': ''})
+    @application.route('/<path:path>')
+    def serve_react_app(path):
+        if path and os.path.exists(os.path.join(application.static_folder, path)):
+            return send_from_directory(application.static_folder, path)
+        return send_from_directory(application.static_folder, 'index.html')
+
+    return application
+
+
+# ────────────────────────────────────────────────
+# Прямой запуск сервера: python run.py (Docker CMD)
+# ────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    # Для локальной разработки удобно видеть, на каком порту и в каком режиме
+    from flask import send_from_directory
+    from app import create_app as _create_app
+
+    config_name = os.environ.get("FLASK_CONFIG", "development")
+    app = _create_app(config_name)
+
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve_react_app(path):
+        if path and os.path.exists(os.path.join(app.static_folder, path)):
+            return send_from_directory(app.static_folder, path)
+        return send_from_directory(app.static_folder, 'index.html')
+
     debug = app.config.get("DEBUG", False)
     port = int(os.environ.get("PORT", 5001))
 
@@ -31,5 +66,5 @@ if __name__ == "__main__":
         host=os.environ.get("HOST", "0.0.0.0"),
         port=port,
         debug=debug,
-        use_reloader=debug
+        use_reloader=debug,
     )
