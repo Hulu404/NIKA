@@ -21,6 +21,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import OldChatPage from './pages/ChatPage/OldchatPage';
 import Subscription from './pages/Subscription/Subscription';
 import AdminPlans from './pages/Admin/AdminPlans';
+import ContactPage from './pages/Contact/ContactPage';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -37,6 +38,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path='/food-tracker' element={<FoodTracker />} />
         <Route path='/subscription' element={<Subscription/>} />
         <Route path='/admin/plans' element={<ProtectedRoute><AdminPlans /></ProtectedRoute>} />
+        <Route path='/contact' element={<ProtectedRoute><ContactPage /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
 

@@ -5,7 +5,6 @@ import svgPaths from './imports/svg-nfsr0erm4u';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { fetchWithAuth } from '../../JWT_token_refresh';
-import FeedbackForm from './components/FeedbackForm';
 
 
 const sportLabels: Record<string, string> = {
@@ -260,6 +259,16 @@ export default function Profile() {
                 <span className="text-[14px] leading-[21px]">Дневник эмоций</span>
               </motion.span>
               </NavLink>
+
+              {/* Обратная связь */}
+              <NavLink to="/contact">
+              <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#83451E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span className="text-[14px] leading-[21px]">Обратная связь</span>
+              </motion.span>
+              </NavLink>
             </nav>
           </div>
         </div>
@@ -468,11 +477,6 @@ export default function Profile() {
                   </div>
                 )}
             </div>
-        </div>
-
-        {/* Feedback Form */}
-        <div className="mb-8">
-            <FeedbackForm />
         </div>
 
         {/* Admin Panel */}
