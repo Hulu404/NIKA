@@ -233,11 +233,13 @@ def create_app(config_name=None):
     from .models.user import User
 
     # 6.1 Запуск фонового планировщика списаний
-    from .services.billing_scheduler import init_scheduler
-    init_scheduler(app)
+    # (пропускаем при миграциях — переменная SKIP_SCHEDULER ставится в migrations/env.py)
+    if not os.environ.get('SKIP_SCHEDULER'):
+        from .services.billing_scheduler import init_scheduler
+        init_scheduler(app)
 
-    # Создание таблиц базы данных (только для development)
-    if app.config.get('ENV') == 'development' or app.debug:
+    # Создание таблиц базы данных (только для development, не при миграциях)
+    if not os.environ.get('SKIP_SCHEDULER') and (app.config.get('ENV') == 'development' or app.debug):
         with app.app_context():
             db.create_all()
             print("✅ Таблицы созданы (режим разработки)")

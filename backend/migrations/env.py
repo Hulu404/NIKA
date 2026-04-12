@@ -10,6 +10,14 @@ from alembic import context
 # Добавляем корень проекта в sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from dotenv import load_dotenv
+
+# Загружаем .env из корня проекта
+_backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+_project_root = os.path.dirname(_backend_dir)
+load_dotenv(os.path.join(_project_root, '.env'))
+load_dotenv()
+
 from app import create_app
 from app.extensions import db
 
@@ -18,7 +26,10 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Создаём Flask-приложение для получения URL базы данных и метаданных
+# Отключаем запуск планировщика при миграциях
+os.environ['SKIP_SCHEDULER'] = '1'
+
+# Создаём Flask-приложение для получения метаданных и URL базы данных
 flask_app = create_app()
 target_metadata = db.metadata
 
