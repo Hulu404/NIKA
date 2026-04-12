@@ -46,6 +46,9 @@ if __name__ == "__main__":
     from flask import send_from_directory
     from app import create_app as _create_app
 
+    # Ставим флаг — только при старте сервера запускается планировщик
+    os.environ['RUN_SCHEDULER'] = '1'
+
     config_name = os.environ.get("FLASK_CONFIG", "development")
     app = _create_app(config_name)
 

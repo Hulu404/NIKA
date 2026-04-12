@@ -234,21 +234,15 @@ def create_app(config_name=None):
     from .models.payment import Payment
     from .models.user import User
 
-    # 6.1 Определяем, запущено ли приложение через CLI (flask db-*, flask shell и т.д.)
-    # В CLI-режиме НЕ запускаем планировщик и НЕ создаём таблицы.
-    # Это предотвращает зависания и лишнюю работу.
-    import sys
-    _is_cli = os.environ.get('SKIP_SCHEDULER', '').lower() in ('1', 'true', 'yes')
-    if not _is_cli and len(sys.argv) >= 1:
-        _cmd = os.path.basename(sys.argv[0] or '')
-        _is_cli = 'flask' in _cmd
-
-    if not _is_cli:
+    # 6.1 Планировщик запускается ТОЛЬКО при старте через run.py
+    # (не при flask CLI, не при python -c, не при миграциях)
+    # Переменная RUN_SCHEDULER ставится ТОЛЬКО в run.py перед стартом сервера.
+    if os.environ.get('RUN_SCHEDULER') == '1':
         from .services.billing_scheduler import init_scheduler
         init_scheduler(app)
 
-    # Создание таблиц базы данных (только для development, не при CLI)
-    if not _is_cli and (app.config.get('ENV') == 'development' or app.debug):
+    # Создание таблиц базы данных (только для development)
+    if os.environ.get('RUN_SCHEDULER') == '1' and (app.config.get('ENV') == 'development' or app.debug):
         with app.app_context():
             db.create_all()
             print("✅ Таблицы созданы (режим разработки)")

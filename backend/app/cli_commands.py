@@ -1,6 +1,5 @@
 """
 CLI-команды управления базой данных.
-Вынесены из create_app() чтобы flask --help не зависал.
 
 Использование:
     FLASK_APP=run:create_app flask --help
