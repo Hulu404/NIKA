@@ -42,6 +42,7 @@ services:
       - dev
     volumes:
       - ./backend/instance:/instance
+      - ./backend/system_prompt.txt:/system_prompt.txt
     environment:
       - YOOKASSA_SHOP_ID=${YOOKASSA_SHOP_ID}
       - YOOKASSA_SECRET_KEY=${YOOKASSA_SECRET_KEY}
@@ -54,7 +55,7 @@ services:
       - GIGACHAT_CREDENTIALS=${GIGACHAT_CREDENTIALS}
       - GIGACHAT_SCOPE=${GIGACHAT_SCOPE:-GIGACHAT_API_PERS}
       - GIGACHAT_VERIFY_SSL_CERTS=${GIGACHAT_VERIFY_SSL_CERTS:-False}
-      - SYSTEM_PROMPT=${SYSTEM_PROMPT}
+      - SYSTEM_PROMPT_PATH=/system_prompt.txt
       - SECRET_KEY=${SECRET_KEY}
       - FLASK_CONFIG=${FLASK_CONFIG:-production}
       - DATABASE_URL=${DATABASE_URL}

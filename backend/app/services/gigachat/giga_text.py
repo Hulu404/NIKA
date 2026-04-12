@@ -1,5 +1,6 @@
 import os
 import requests
+from pathlib import Path
 # import uuid
 # import logging
 # import ssl
@@ -7,10 +8,10 @@ import requests
 from app.services.gigachat.giga_credentials import GIGA_KEY
 from app.services.gigachat.giga_token import get_giga_token
 
-SYSTEM_PROMPT = os.environ.get(
-    "SYSTEM_PROMPT",
-    "Ты — Ника, ИИ-помощник и цифровой наставник для спортсменов-любителей."
-)
+prompt_path = os.getenv("SYSTEM_PROMPT_PATH")
+if prompt_path and Path(prompt_path).exists():
+    with open(prompt_path, "r", encoding="utf-8") as f:
+        SYSTEM_PROMPT = f.read()
 
 def response_gigachat(messages):
     """Функция получения ответа от ГЧ"""
