@@ -1,3 +1,14 @@
-TOKEN="8454024107:AAHoJqLh6_06u95mH5hiBKJAo3Tguq5RS88" # Для телеграмм бота
-GIGA_KEY="MDE5YTg3NmItMDE1Yy03MDA4LWEwZDQtMmUzZWU2MDRlNzZhOjNmMmIzMjNiLWEyNDAtNDBhYS04MmY2LTNmMzYzZjkyYTE3YQ==" #GigaChat token
-SALUTE_KEY="MDE5YTkxODUtNjZiOS03NGQ3LWFjMzQtZmRmYTdiYjg4NGQ1OmQ1NTdiZDhkLTI3ZmQtNGFiZi05YjE4LTE3ZTgwZmQzZTlkZQ==" #Salute token
+"""
+GigaChat credentials loaded from environment variables.
+No hardcoded secrets here.
+"""
+import os
+
+# GigaChat auth key (Base64-encoded)
+GIGA_KEY = os.environ.get("GIGA_KEY", "")
+
+# Salute Speech auth key (Base64-encoded)
+SALUTE_KEY = os.environ.get("SALUTE_KEY", "")
+
+# Telegram bot token
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")

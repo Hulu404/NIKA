@@ -3,3 +3,19 @@ __pycache__
 .venv
 .idea
 .DS_Store
+
+# Environment variables (secrets!)
+.env
+
+# Backend
+backend/instance/
+backend_db/
+backend/projects_XNIKA.venv/
+
+# Frontend
+frontend/dist/
+frontend/node_modules/
+
+# Audio cache
+audio_cache/
+backend/app/static/audio_cache/

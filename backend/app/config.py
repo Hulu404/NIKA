@@ -29,7 +29,7 @@ class DevelopmentConfig(BaseConfig):
     """Конфигурация для разработки"""
     ENV = 'development'
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, '..', 'instance', 'dev.db')
     SQLALCHEMY_ECHO = True  # Включаем логи SQL для dev
 
@@ -37,7 +37,7 @@ class ProductionConfig(BaseConfig):
     """Конфигурация для продакшена"""
     ENV = 'production'
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('PROD_DATABASE_URL') or \
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, '..', 'instance', 'prod.db')
     JWT_COOKIE_SECURE = True  # HTTPS required
 
@@ -46,7 +46,7 @@ class TestingConfig(BaseConfig):
     ENV = 'testing'
     TESTING = True
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or 'sqlite:///:memory:'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///:memory:'
     SQLALCHEMY_ECHO = False
 
 def get_config(name):

@@ -1,1 +1,8 @@
-SALUTE_KEY="MDE5YTkxODUtNjZiOS03NGQ3LWFjMzQtZmRmYTdiYjg4NGQ1OmQ1NTdiZDhkLTI3ZmQtNGFiZi05YjE4LTE3ZTgwZmQzZTlkZQ==" #Salute token
+"""
+Salute Speech credentials loaded from environment variables.
+No hardcoded secrets here.
+"""
+import os
+
+# Salute Speech auth key (Base64-encoded)
+SALUTE_KEY = os.environ.get("SALUTE_KEY", "")

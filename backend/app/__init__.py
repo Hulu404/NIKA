@@ -10,7 +10,12 @@ from flasgger import Swagger
 from .config import get_config
 from dotenv import load_dotenv
 from werkzeug.middleware.proxy_fix import ProxyFix
-load_dotenv()  # ищет файл .env в текущей директории
+
+# Load .env from project root (parent of backend/)
+_backend_dir = Path(__file__).resolve().parent.parent
+_project_root = _backend_dir.parent
+load_dotenv(_project_root / ".env")  # loads /Users/ila/Python/NIKA/.env
+load_dotenv()  # also loads .env from current directory as fallback
 
 # Импортируем расширения и модели (только расширения на уровне модуля)
 from .extensions import db, mail

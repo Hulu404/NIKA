@@ -19,9 +19,23 @@ services:
   backend:
     build:
       context: ./backend
+    env_file:
+      - .env
     environment:
       - YOOKASSA_SHOP_ID=${YOOKASSA_SHOP_ID}
       - YOOKASSA_SECRET_KEY=${YOOKASSA_SECRET_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - GIGA_KEY=${GIGA_KEY}
+      - SALUTE_KEY=${SALUTE_KEY}
+      - GIGACHAT_CREDENTIALS=${GIGACHAT_CREDENTIALS}
+      - GIGACHAT_SCOPE=${GIGACHAT_SCOPE:-GIGACHAT_API_PERS}
+      - GIGACHAT_VERIFY_SSL_CERTS=${GIGACHAT_VERIFY_SSL_CERTS:-False}
+      - SYSTEM_PROMPT=${SYSTEM_PROMPT}
+      - SECRET_KEY=${SECRET_KEY}
+      - FLASK_CONFIG=${FLASK_CONFIG:-development}
+      - DATABASE_URL=${DATABASE_URL}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
     volumes:
       - ./backend_db:/instance
     networks:
