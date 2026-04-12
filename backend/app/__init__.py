@@ -233,10 +233,22 @@ def create_app(config_name=None):
     from .models.user import User
 
     # 6.1 Запуск фонового планировщика списаний
-    # (пропускаем при миграциях — переменная SKIP_SCHEDULER ставится в migrations/env.py)
+    # Планировщик запускается ТОЛЬКО если таблицы БД уже существуют.
+    # Это предотвращает ошибки при первом запуске и при CLI-командах (init-db, db migrate и т.д.)
     if not os.environ.get('SKIP_SCHEDULER'):
-        from .services.billing_scheduler import init_scheduler
-        init_scheduler(app)
+        _tables_exist = False
+        try:
+            with app.app_context():
+                db.session.execute(db.text("SELECT 1 FROM users LIMIT 1"))
+                _tables_exist = True
+        except Exception:
+            pass
+
+        if _tables_exist:
+            from .services.billing_scheduler import init_scheduler
+            init_scheduler(app)
+        else:
+            print("⚠️ Таблицы БД ещё не созданы — планировщик отключен (запустите `flask init-db` или `flask db upgrade`)")
 
     # Создание таблиц базы данных (только для development, не при миграциях)
     if not os.environ.get('SKIP_SCHEDULER') and (app.config.get('ENV') == 'development' or app.debug):
@@ -296,8 +308,12 @@ def create_app(config_name=None):
         from .models.user import User
         from .models.message import Message
         from .models.refresh_token import RefreshToken
-        from .models.food_entry import FoodEntry  
+        from .models.food_entry import FoodEntry
         from .models.emotion_entry import EmotionEntry
+        from .models.subscription import Subscription
+        from .models.subscription_plan import SubscriptionPlan
+        from .models.payment import Payment
+        from sqlalchemy import inspect
 
         return {
             'db': db,
@@ -305,22 +321,398 @@ def create_app(config_name=None):
             'Message': Message,
             'RefreshToken': RefreshToken,
             'FoodEntry': FoodEntry,
-            'app': app
+            'EmotionEntry': EmotionEntry,
+            'Subscription': Subscription,
+            'SubscriptionPlan': SubscriptionPlan,
+            'Payment': Payment,
+            'inspect': inspect,
+            'app': app,
         }
+
+    # ═══════════════════════════════════════════════════
+    # CLI КОМАНДЫ УПРАВЛЕНИЯ БАЗОЙ ДАННЫХ
+    # ═══════════════════════════════════════════════════
+
+    # --- Инициализация и миграции ---
+
+    @app.cli.command("init-db")
+    def init_db():
+        """Создаёт ВСЕ таблицы по текущим моделям (первый запуск)
+
+        Пример:
+            flask init-db
+        """
+        with app.app_context():
+            db.create_all()
+            print("✅ База данных инициализирована")
+
+    @app.cli.command("drop-db")
+    def drop_db():
+        """УДАЛЯЕТ все таблицы (опасно!)
+
+        Пример:
+            flask drop-db
+        """
+        with app.app_context():
+            db.drop_all()
+            print("⚠️  Все таблицы удалены")
 
     @app.cli.command("update-db")
     def update_db():
-        """Создаёт отсутствующие таблицы (без потери данных)"""
+        """Создаёт отсутствующие таблицы (без потери данных)
+
+        Пример:
+            flask update-db
+        """
         with app.app_context():
             db.create_all()
             print("✅ Таблицы обновлены")
 
-    @app.cli.command("init-db")
-    def init_db():
-        """Создаёт ВСЕ таблицы по текущим моделям (для первого запуска)"""
+    # --- Просмотр ---
+
+    @app.cli.command("db-tables")
+    def db_tables():
+        """Показать все таблицы в БД
+
+        Пример:
+            flask db-tables
+        """
         with app.app_context():
-            db.create_all()
-            print("✅ База данных инициализирована")
+            from sqlalchemy import inspect as sa_inspect
+            tables = sa_inspect(db.engine).get_table_names()
+            print(f"\n📋 Таблицы в базе данных ({len(tables)}):")
+            print("-" * 40)
+            for t in sorted(tables):
+                print(f"  • {t}")
+            print()
+
+    @app.cli.command("db-schema")
+    @app.cli.argument("table_name")
+    def db_schema(table_name):
+        """Показать структуру таблицы (колонки, типы)
+
+        Пример:
+            flask db-schema users
+            flask db-schema messages
+        """
+        with app.app_context():
+            from sqlalchemy import inspect as sa_inspect
+            insp = sa_inspect(db.engine)
+            if table_name not in insp.get_table_names():
+                print(f"❌ Таблица '{table_name}' не найдена")
+                return
+            columns = insp.get_columns(table_name)
+            print(f"\n📋 Структура таблицы '{table_name}':")
+            print("-" * 60)
+            for col in columns:
+                nullable = "NULL" if col['nullable'] else "NOT NULL"
+                default = f" DEFAULT {col['default']}" if col.get('default') else ""
+                print(f"  {col['name']:25s} {str(col['type']):30s} {nullable}{default}")
+            print()
+
+    @app.cli.command("db-count")
+    @app.cli.argument("table_name")
+    def db_count(table_name):
+        """Показать количество строк в таблице
+
+        Пример:
+            flask db-count users
+        """
+        with app.app_context():
+            result = db.session.execute(db.text(f"SELECT COUNT(*) FROM {table_name}"))
+            count = result.scalar()
+            print(f"📊 {table_name}: {count} строк")
+
+    # --- Извлечение данных ---
+
+    @app.cli.command("db-query")
+    @app.cli.argument("sql")
+    def db_query(sql):
+        """Выполнить произвольный SELECT-запрос
+
+        Пример:
+            flask db-query "SELECT id, email FROM users LIMIT 5"
+            flask db-query "SELECT role, COUNT(*) FROM messages GROUP BY role"
+        """
+        with app.app_context():
+            try:
+                result = db.session.execute(db.text(sql))
+                rows = result.fetchall()
+                cols = result.keys()
+                if not rows:
+                    print("📭 Нет результатов")
+                    return
+                # Форматируем вывод
+                col_widths = [len(c) for c in cols]
+                for row in rows:
+                    for i, val in enumerate(row):
+                        col_widths[i] = max(col_widths[i], len(str(val)) if val is not None else 4)
+                header = " | ".join(str(c).ljust(col_widths[i]) for i, c in enumerate(cols))
+                print(f"\n{header}")
+                print("-" * len(header))
+                for row in rows:
+                    line = " | ".join(
+                        (str(v) if v is not None else "NULL").ljust(col_widths[i])
+                        for i, v in enumerate(row)
+                    )
+                    print(line)
+                print(f"\n📊 {len(rows)} строк\n")
+            except Exception as e:
+                print(f"❌ Ошибка: {e}")
+
+    @app.cli.command("db-get")
+    @app.cli.option("-t", "--table", required=True, help="Имя таблицы")
+    @app.cli.option("-w", "--where", default="", help="Условие WHERE (без слова WHERE)")
+    @app.cli.option("-l", "--limit", default=20, type=int, help="Лимит строк")
+    @app.cli.option("-o", "--order", default="", help="ORDER BY (без слова ORDER BY)")
+    def db_get(table, where, limit, order):
+        """Извлечь строки из таблицы с фильтрацией
+
+        Примеры:
+            flask db-get -t users -l 10
+            flask db-get -t users -w "email LIKE '%@example.com'"
+            flask db-get -t messages -w "role='assistant'" -l 5 -o "created_at DESC"
+            flask db-get -t users -w "is_admin=1"
+        """
+        with app.app_context():
+            parts = [f"SELECT * FROM {table}"]
+            if where:
+                parts.append(f"WHERE {where}")
+            if order:
+                parts.append(f"ORDER BY {order}")
+            parts.append(f"LIMIT {limit}")
+            query = " ".join(parts)
+            try:
+                result = db.session.execute(db.text(query))
+                rows = result.fetchall()
+                cols = result.keys()
+                if not rows:
+                    print(f"📭 Таблица '{table}' пуста (или нет совпадений)")
+                    return
+                col_widths = [len(c) for c in cols]
+                for row in rows:
+                    for i, val in enumerate(row):
+                        col_widths[i] = max(col_widths[i], len(str(val)) if val is not None else 4)
+                header = " | ".join(str(c).ljust(col_widths[i]) for i, c in enumerate(cols))
+                print(f"\n{header}")
+                print("-" * len(header))
+                for row in rows:
+                    line = " | ".join(
+                        (str(v) if v is not None else "NULL").ljust(col_widths[i])
+                        for i, v in enumerate(row)
+                    )
+                    print(line)
+                print(f"\n📊 {len(rows)} строк из '{table}'\n")
+            except Exception as e:
+                print(f"❌ Ошибка: {e}")
+
+    # --- Изменение данных ---
+
+    @app.cli.command("db-update")
+    @app.cli.option("-t", "--table", required=True, help="Имя таблицы")
+    @app.cli.option("-s", "--set", required=True, help="SET выра: column='value'")
+    @app.cli.option("-w", "--where", default="", help="Условие WHERE (без слова WHERE)")
+    def db_update(table, set_clause, where):
+        """Обновить строки в таблице
+
+        Примеры:
+            flask db-update -t users -s "is_admin=1" -w "email='admin@example.com'"
+            flask db-update -t users -s "daily_requests_limit=10"
+            flask db-update -t subscriptions -s "status='cancelled'" -w "user_id=1"
+        """
+        with app.app_context():
+            parts = [f"UPDATE {table} SET {set_clause}"]
+            if where:
+                parts.append(f"WHERE {where}")
+            query = " ".join(parts)
+            try:
+                result = db.session.execute(db.text(query))
+                db.session.commit()
+                print(f"✅ Обновлено {result.rowcount} строк в '{table}'")
+            except Exception as e:
+                db.session.rollback()
+                print(f"❌ Ошибка: {e}")
+
+    @app.cli.command("db-delete")
+    @app.cli.option("-t", "--table", required=True, help="Имя таблицы")
+    @app.cli.option("-w", "--where", required=True, help="Условие WHERE (без слова WHERE)")
+    def db_delete(table, where):
+        """Удалить строки из таблицы
+
+        Примеры:
+            flask db-delete -t users -w "email='test@test.com'"
+            flask db-delete -t messages -w "session_id='abc-123'"
+        """
+        with app.app_context():
+            query = f"DELETE FROM {table} WHERE {where}"
+            try:
+                result = db.session.execute(db.text(query))
+                db.session.commit()
+                print(f"✅ Удалено {result.rowcount} строк из '{table}'")
+            except Exception as e:
+                db.session.rollback()
+                print(f"❌ Ошибка: {e}")
+
+    @app.cli.command("db-insert")
+    @app.cli.option("-t", "--table", required=True, help="Имя таблицы")
+    @app.cli.option("-c", "--columns", required=True, help="Колонки через запятую")
+    @app.cli.option("-v", "--values", required=True, help="Значения через запятую")
+    def db_insert(table, columns, values):
+        """Вставить строку в таблицу
+
+        Пример:
+            flask db-insert -t users -c "name,email,gender" -v "'Test','test@test.com','male'"
+        """
+        with app.app_context():
+            query = f"INSERT INTO {table} ({columns}) VALUES ({values})"
+            try:
+                db.session.execute(db.text(query))
+                db.session.commit()
+                print(f"✅ Вставлена строка в '{table}'")
+            except Exception as e:
+                db.session.rollback()
+                print(f"❌ Ошибка: {e}")
+
+    # --- Alembic миграции (обёртки) ---
+
+    @app.cli.command("db-migrate")
+    @app.cli.option("-m", "--message", default="auto migration", help="Описание миграки")
+    def db_migrate(message):
+        """Создать миграцию из текущих моделей
+
+        Пример:
+            flask db-migrate -m "add new field to users"
+        """
+        from flask_migrate import migrate as fm
+        print(f"📝 Создаю миграку: {message}")
+        fm(directory="migrations", message=message)
+
+    @app.cli.command("db-upgrade")
+    def db_upgrade():
+        """Применить все ожидающие миграции
+
+        Пример:
+            flask db-upgrade
+        """
+        from flask_migrate import upgrade as fm_upgrade
+        print("⬆️  Применяю миграции...")
+        fm_upgrade(directory="migrations")
+        print("✅ Миграции применены")
+
+    @app.cli.command("db-downgrade")
+    @app.cli.option("-r", "--revision", default="-1", help="Ревизия для отката (по умолч. -1)")
+    def db_downgrade(revision):
+        """Откатить миграцию
+
+        Пример:
+            flask db-downgrade           # откат на 1 шаг
+            flask db-downgrade -r base   # откатить всё
+        """
+        from flask_migrate import downgrade as fm_downgrade
+        print(f"⬇️  Откатываю к ревизии: {revision}")
+        fm_downgrade(directory="migrations", revision=revision)
+        print("✅ Миграция откаатена")
+
+    @app.cli.command("db-current")
+    def db_current():
+        """Показать теку ревизию Alembic
+
+        Пример:
+            flask db-current
+        """
+        from flask_migrate import current as fm_current
+        fm_current(directory="migrations")
+
+    # --- Пользователи ---
+
+    @app.cli.command("create-test-user")
+    def create_test_user():
+        """Создать тестового пользователя (если нет пользователей)"""
+        from .models.user import User
+        if User.query.count() == 0:
+            print("👤 Создаю тестового пользователя...")
+            admin = User(
+                name="Admin",
+                last_name="User",
+                email="admin@example.com",
+                gender="male",
+                sport_type="testing",
+            )
+            admin.set_password("admin123")
+            db.session.add(admin)
+            db.session.commit()
+            print("✅ Тестовый пользователь создан (email: admin@example.com, пароль: admin123)")
+        else:
+            print(f"👤 В базе уже есть {User.query.count()} пользователей")
+
+    @app.cli.command("create-admin")
+    @app.cli.option("--name", required=True, help="Имя")
+    @app.cli.option("--email", required=True, help="Email")
+    @app.cli.option("--password", required=True, help="Пароль")
+    def create_admin(name, email, password):
+        """Создать пользователя-администратора
+
+        Пример:
+            flask create-admin --name "Ivan" --email "admin@example.com" --password "secret123"
+        """
+        from .models.user import User
+        if User.query.filter_by(email=email).first():
+            print(f"❌ Пользователь с email {email} уже существует")
+            return
+        user = User(
+            name=name,
+            last_name="Admin",
+            email=email,
+            gender="male",
+            is_admin=True,
+        )
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        print(f"✅ Администратор создан: {email}")
+
+    # --- Утилиты ---
+
+    @app.cli.command("clean-sessions")
+    def clean_sessions():
+        """Очищает старые файлы сессий (старше 32 дней)"""
+        import time
+        from pathlib import Path
+        session_dir = Path(app.config['SESSION_FILE_DIR'])
+        if not session_dir.exists():
+            print("📁 Директория сессий не найдена")
+            return
+        now = time.time()
+        max_age = 32 * 24 * 60 * 60
+        deleted = 0
+        for session_file in session_dir.glob('*'):
+            if session_file.is_file():
+                file_age = now - session_file.stat().st_mtime
+                if file_age > max_age:
+                    session_file.unlink()
+                    deleted += 1
+        print(f"🧹 Удалено старых сессий: {deleted}")
+
+    @app.cli.command("db-info")
+    def db_info():
+        """Показать информацию о базе данных и таблицах
+
+        Пример:
+            flask db-info
+        """
+        with app.app_context():
+            from sqlalchemy import inspect as sa_inspect
+            insp = sa_inspect(db.engine)
+            tables = insp.get_table_names()
+            uri = app.config.get('SQLALCHEMY_DATABASE_URI', 'unknown')
+            print(f"\n🗄️  База данных: {uri}")
+            print(f"📋 Таблиц ({len(tables)}):")
+            print("-" * 50)
+            for t in sorted(tables):
+                count = db.session.execute(db.text(f"SELECT COUNT(*) FROM {t}")).scalar()
+                cols = insp.get_columns(t)
+                print(f"  {t:30s} {count:6d} строк  {len(cols)} колонок")
+            print()
 
     @app.post("/test-post")
     def test_post():
@@ -331,7 +723,7 @@ def create_app(config_name=None):
     print(f"🗄️  База данных: {app.config['SQLALCHEMY_DATABASE_URI']}")
     print(f"📁 Сессии: {app.config.get('SESSION_FILE_DIR')}")
     print(f"🎵 Аудио-кэш: {app.config.get('AUDIO_CACHE_DIR')}")
-    print("CLI команды: flask create-test-user, flask clean-sessions, flask shell")
+    print("📖 CLI: flask --help")
     print("=" * 60)
 
     return app
