@@ -44,7 +44,6 @@ services:
       - ./backend/instance:/instance
       - ./backend/system_prompt.txt:/system_prompt.txt
     environment:
-      - FLASK_APP=run:create_app
       - YOOKASSA_SHOP_ID=${YOOKASSA_SHOP_ID}
       - YOOKASSA_SECRET_KEY=${YOOKASSA_SECRET_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}

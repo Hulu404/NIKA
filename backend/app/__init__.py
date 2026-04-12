@@ -6,7 +6,6 @@ from flask import Flask, jsonify, request
 from flask_login import LoginManager
 from flask_jwt_extended import JWTManager
 from flask_session import Session
-from flask_migrate import Migrate
 from flasgger import Swagger
 from .config import get_config
 from dotenv import load_dotenv
@@ -25,7 +24,6 @@ from .extensions import db, mail
 login_manager = LoginManager()
 jwt = JWTManager()
 session = Session()
-migrate = Migrate()
 
 
 def create_app(config_name=None):
@@ -113,7 +111,6 @@ def create_app(config_name=None):
     # 3. Инициализация расширений (ПОСЛЕ конфига!)
     db.init_app(app)
     mail.init_app(app)
-    migrate.init_app(app, db)
     login_manager.init_app(app)
     jwt.init_app(app)
     session.init_app(app)
@@ -150,7 +147,6 @@ def create_app(config_name=None):
     from .api.v1.subscription import subscription_bp
     from .api.v1.admin_plans import admin_plans_bp
     from app.api.v1.feedback import feedback_bp
-    from .cli_commands import cli_bp
 
     app.register_blueprint(emotion_v1)
     app.register_blueprint(food_v1)
@@ -160,7 +156,6 @@ def create_app(config_name=None):
     app.register_blueprint(subscription_bp)
     app.register_blueprint(admin_plans_bp)
     app.register_blueprint(feedback_bp)
-    app.register_blueprint(cli_bp)
 
     # 5.1 Инициализация Swagger (после регистрации blueprints)
     swagger_config: dict = {
@@ -292,33 +287,6 @@ def create_app(config_name=None):
                     deleted += 1
 
         print(f"🧹 Удалено старых сессий: {deleted}")
-
-    # 8. Shell context
-    @app.shell_context_processor
-    def make_shell_context():
-        from .models.user import User
-        from .models.message import Message
-        from .models.refresh_token import RefreshToken
-        from .models.food_entry import FoodEntry
-        from .models.emotion_entry import EmotionEntry
-        from .models.subscription import Subscription
-        from .models.subscription_plan import SubscriptionPlan
-        from .models.payment import Payment
-        from sqlalchemy import inspect
-
-        return {
-            'db': db,
-            'User': User,
-            'Message': Message,
-            'RefreshToken': RefreshToken,
-            'FoodEntry': FoodEntry,
-            'EmotionEntry': EmotionEntry,
-            'Subscription': Subscription,
-            'SubscriptionPlan': SubscriptionPlan,
-            'Payment': Payment,
-            'inspect': inspect,
-            'app': app,
-        }
 
     @app.post("/test-post")
     def test_post():
