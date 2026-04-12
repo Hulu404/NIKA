@@ -6,6 +6,7 @@ from flask import Flask, jsonify, request
 from flask_login import LoginManager
 from flask_jwt_extended import JWTManager
 from flask_session import Session
+from flask_migrate import Migrate
 from flasgger import Swagger
 from .config import get_config
 from dotenv import load_dotenv
@@ -24,6 +25,7 @@ from .extensions import db, mail
 login_manager = LoginManager()
 jwt = JWTManager()
 session = Session()
+migrate = Migrate()
 
 
 def create_app(config_name=None):
@@ -111,6 +113,7 @@ def create_app(config_name=None):
     # 3. Инициализация расширений (ПОСЛЕ конфига!)
     db.init_app(app)
     mail.init_app(app)
+    migrate.init_app(app, db)
     login_manager.init_app(app)
     jwt.init_app(app)
     session.init_app(app)

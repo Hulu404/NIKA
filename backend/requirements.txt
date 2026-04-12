@@ -55,3 +55,5 @@ yarl==1.22.0
 zstandard==0.25.0
 APScheduler==3.10.4
 yookassa==3.10.0
+Flask-Migrate==4.1.0
+alembic==1.14.1
