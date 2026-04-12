@@ -51,7 +51,10 @@ def create_app(config_name=None):
 
     # Обязательные настройки (можно переопределить в .env)
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'your-secret-key-change-me'
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI') or 'sqlite:///' + str(Path(app.instance_path) / 'app.db')
+    # DATABASE_URI берётся из config.py (DevelopmentConfig/ProductionConfig),
+    # но можно переопределить через DATABASE_URL в .env
+    if os.environ.get('DATABASE_URL'):
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=15)
