@@ -2,6 +2,7 @@
 import os
 from datetime import timedelta
 from pathlib import Path
+import click
 from flask import Flask, jsonify, request
 from flask_login import LoginManager
 from flask_jwt_extended import JWTManager
@@ -387,7 +388,7 @@ def create_app(config_name=None):
             print()
 
     @app.cli.command("db-schema")
-    @app.cli.argument("table_name")
+    @click.argument("table_name")
     def db_schema(table_name):
         """Показать структуру таблицы (колонки, типы)
 
@@ -411,7 +412,7 @@ def create_app(config_name=None):
             print()
 
     @app.cli.command("db-count")
-    @app.cli.argument("table_name")
+    @click.argument("table_name")
     def db_count(table_name):
         """Показать количество строк в таблице
 
@@ -426,7 +427,7 @@ def create_app(config_name=None):
     # --- Извлечение данных ---
 
     @app.cli.command("db-query")
-    @app.cli.argument("sql")
+    @click.argument("sql")
     def db_query(sql):
         """Выполнить произвольный SELECT-запрос
 
@@ -461,10 +462,10 @@ def create_app(config_name=None):
                 print(f"❌ Ошибка: {e}")
 
     @app.cli.command("db-get")
-    @app.cli.option("-t", "--table", required=True, help="Имя таблицы")
-    @app.cli.option("-w", "--where", default="", help="Условие WHERE (без слова WHERE)")
-    @app.cli.option("-l", "--limit", default=20, type=int, help="Лимит строк")
-    @app.cli.option("-o", "--order", default="", help="ORDER BY (без слова ORDER BY)")
+    @click.option("-t", "--table", required=True, help="Имя таблицы")
+    @click.option("-w", "--where", default="", help="Условие WHERE (без слова WHERE)")
+    @click.option("-l", "--limit", default=20, type=int, help="Лимит строк")
+    @click.option("-o", "--order", default="", help="ORDER BY (без слова ORDER BY)")
     def db_get(table, where, limit, order):
         """Извлечь строки из таблицы с фильтрацией
 
@@ -509,9 +510,9 @@ def create_app(config_name=None):
     # --- Изменение данных ---
 
     @app.cli.command("db-update")
-    @app.cli.option("-t", "--table", required=True, help="Имя таблицы")
-    @app.cli.option("-s", "--set", required=True, help="SET выра: column='value'")
-    @app.cli.option("-w", "--where", default="", help="Условие WHERE (без слова WHERE)")
+    @click.option("-t", "--table", required=True, help="Имя таблицы")
+    @click.option("-s", "--set", required=True, help="SET выра: column='value'")
+    @click.option("-w", "--where", default="", help="Условие WHERE (без слова WHERE)")
     def db_update(table, set_clause, where):
         """Обновить строки в таблице
 
@@ -534,8 +535,8 @@ def create_app(config_name=None):
                 print(f"❌ Ошибка: {e}")
 
     @app.cli.command("db-delete")
-    @app.cli.option("-t", "--table", required=True, help="Имя таблицы")
-    @app.cli.option("-w", "--where", required=True, help="Условие WHERE (без слова WHERE)")
+    @click.option("-t", "--table", required=True, help="Имя таблицы")
+    @click.option("-w", "--where", required=True, help="Условие WHERE (без слова WHERE)")
     def db_delete(table, where):
         """Удалить строки из таблицы
 
@@ -554,9 +555,9 @@ def create_app(config_name=None):
                 print(f"❌ Ошибка: {e}")
 
     @app.cli.command("db-insert")
-    @app.cli.option("-t", "--table", required=True, help="Имя таблицы")
-    @app.cli.option("-c", "--columns", required=True, help="Колонки через запятую")
-    @app.cli.option("-v", "--values", required=True, help="Значения через запятую")
+    @click.option("-t", "--table", required=True, help="Имя таблицы")
+    @click.option("-c", "--columns", required=True, help="Колонки через запятую")
+    @click.option("-v", "--values", required=True, help="Значения через запятую")
     def db_insert(table, columns, values):
         """Вставить строку в таблицу
 
@@ -576,7 +577,7 @@ def create_app(config_name=None):
     # --- Alembic миграции (обёртки) ---
 
     @app.cli.command("db-migrate")
-    @app.cli.option("-m", "--message", default="auto migration", help="Описание миграки")
+    @click.option("-m", "--message", default="auto migration", help="Описание миграки")
     def db_migrate(message):
         """Создать миграцию из текущих моделей
 
@@ -600,7 +601,7 @@ def create_app(config_name=None):
         print("✅ Миграции применены")
 
     @app.cli.command("db-downgrade")
-    @app.cli.option("-r", "--revision", default="-1", help="Ревизия для отката (по умолч. -1)")
+    @click.option("-r", "--revision", default="-1", help="Ревизия для отката (по умолч. -1)")
     def db_downgrade(revision):
         """Откатить миграцию
 
@@ -646,9 +647,9 @@ def create_app(config_name=None):
             print(f"👤 В базе уже есть {User.query.count()} пользователей")
 
     @app.cli.command("create-admin")
-    @app.cli.option("--name", required=True, help="Имя")
-    @app.cli.option("--email", required=True, help="Email")
-    @app.cli.option("--password", required=True, help="Пароль")
+    @click.option("--name", required=True, help="Имя")
+    @click.option("--email", required=True, help="Email")
+    @click.option("--password", required=True, help="Пароль")
     def create_admin(name, email, password):
         """Создать пользователя-администратора
 
