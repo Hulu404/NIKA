@@ -115,7 +115,7 @@ def register():
             jti=jti,
             user_id=user.id,
             token=refresh_token,
-            expires_at=datetime.now(timezone.utc) + timedelta(days=30),
+            expires_at=datetime.utcnow() + timedelta(days=30),
         )
         db.session.add(token)
         db.session.commit()
@@ -184,7 +184,7 @@ def login():
         jti=jti,
         user_id=user.id,
         token=refresh_token,
-        expires_at=datetime.now(timezone.utc) + timedelta(days=30),
+        expires_at=datetime.utcnow() + timedelta(days=30),
     )
     db.session.add(token)
     db.session.commit()
@@ -223,7 +223,7 @@ def refresh():
     jti: str = get_jwt()["jti"]
     token: RefreshToken | None = RefreshToken.query.filter_by(jti=jti).first()
 
-    if not token or token.revoked or token.expires_at < datetime.now(timezone.utc):
+    if not token or token.revoked or token.expires_at < datetime.utcnow():
         return error_response("Refresh-токен недействителен или истёк", 401)
 
     new_access: str = create_access_token(identity=user_id)
