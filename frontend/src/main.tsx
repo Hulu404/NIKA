@@ -18,6 +18,7 @@ import Profile from './pages/Profile/Profile';
 import EmotionTracker from './pages/EmotionTracker/emotion-tracker';
 import FoodTracker from './pages/Diet/food-tracker';
 import ProtectedRoute from './components/ProtectedRoute';
+import MetrikaTracker from "./components/MetrikaTracker";
 import OldChatPage from './pages/ChatPage/OldchatPage';
 import Subscription from './pages/Subscription/Subscription';
 import AdminPlans from './pages/Admin/AdminPlans';
@@ -26,6 +27,7 @@ import ContactPage from './pages/Contact/ContactPage';
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
+      <MetrikaTracker />
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/chat" element={<ProtectedRoute> <OldChatPage /> </ProtectedRoute>} />
