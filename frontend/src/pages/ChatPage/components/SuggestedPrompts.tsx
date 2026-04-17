@@ -34,7 +34,7 @@ const PROMPTS = [
 
 export function SuggestedPrompts({ onSelect }: SuggestedPromptsProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 w-full max-w-2xl px-2 md:px-0">
       {PROMPTS.map((prompt, index) => (
         <motion.button
           key={prompt.title}
@@ -44,11 +44,11 @@ export function SuggestedPrompts({ onSelect }: SuggestedPromptsProps) {
           whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => onSelect(prompt.prompt)}
-          className={`p-4 rounded-2xl backdrop-blur-xl border transition-all text-left bg-transparent shadow-sm hover:shadow-md ${prompt.color}`}
+          className={`p-3 md:p-4 rounded-2xl backdrop-blur-xl border transition-all text-left bg-transparent shadow-sm hover:shadow-md ${prompt.color}`}
         >
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white border border-black/10 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <prompt.icon className="text-gray-600" size={20} strokeWidth={2.5} />
+          <div className="flex items-start gap-2 md:gap-3">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-white border border-black/10 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <prompt.icon className="text-gray-600 w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} />
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-sm font-semibold text-gray-900 mb-1">

@@ -384,15 +384,15 @@ export function ChatInterface({isError}: Error) {
         </motion.div>
 
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto px-6 py-8">
+          <div className="max-w-4xl mx-auto px-4 md:px-6 py-4 md:py-8">
             {messages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center py-20">
+              <div className="h-full flex flex-col items-center justify-center py-4 sm:py-8 md:py-20">
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#f6b044] to-[#f39c12] flex items-center justify-center shadow-2xl shadow-[#f6b044]/20 mb-6">
+                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-3xl bg-gradient-to-br from-[#f6b044] to-[#f39c12] flex items-center justify-center shadow-2xl shadow-[#f6b044]/20 mb-4 md:mb-6">
                     <Sparkles className="text-white" size={36} strokeWidth={2.5} />
                   </div>
                 </motion.div>
@@ -401,7 +401,7 @@ export function ChatInterface({isError}: Error) {
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="text-3xl font-bold text-gray-900 mb-3"
+                  className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-3"
                 >
                   Чем могу помочь?
                 </motion.h2>
@@ -410,7 +410,7 @@ export function ChatInterface({isError}: Error) {
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="text-gray-500 mb-12 text-center max-w-md"
+                  className="text-sm md:text-base text-gray-500 mb-6 md:mb-12 text-center max-w-md"
                 >
                   Я ваш персональный спортивный помощник с искусственным интеллектом
                 </motion.p>
@@ -453,7 +453,7 @@ export function ChatInterface({isError}: Error) {
         </div>
 
         <div className="sticky bottom-0 border-t border-black/5 bg-white/80 backdrop-blur-2xl">
-          <div className="max-w-4xl mx-auto px-6 py-6">
+          <div className="max-w-4xl mx-auto px-4 py-3 md:px-6 md:py-6">
             <motion.div 
               animate={{ 
                 scale: isFocused ? 1.01 : 1,
@@ -505,7 +505,7 @@ export function ChatInterface({isError}: Error) {
                 </div>
               </div> 
             </motion.div> 
-            <p className="text-xs text-center text-gray-400 mt-4">
+            <p className="text-[10px] md:text-xs text-center text-gray-400 mt-2 md:mt-4">
               NIKA может делать ошибки. Проверяйте важную информацию.
               {' '}
               <NavLink to="/contact" className="text-amber-600 hover:underline ml-1">

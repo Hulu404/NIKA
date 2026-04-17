@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Clock, Search, LogOut, ChevronLeft } from 'lucide-react';
+import { Plus, Clock, Search, LogOut, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router';
 
@@ -55,7 +55,7 @@ export function ChatSidebar({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onToggle}
-            className="lg:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-40 cursor-pointer"
+            className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 cursor-pointer"
           />
         )}
       </AnimatePresence>
@@ -92,9 +92,10 @@ export function ChatSidebar({
                 <button
                   type="button"
                   onClick={onToggle}
-                  className="lg:hidden p-3 hover:bg-black/5 rounded-xl transition-all cursor-pointer relative z-[60] active:scale-95"
+                  onTouchEnd={(e) => { e.stopPropagation(); onToggle(); }}
+                  className="lg:hidden p-3 hover:bg-black/5 rounded-xl transition-all cursor-pointer relative z-[60] active:scale-95 text-gray-500 hover:text-gray-900"
                 >
-                  <ChevronLeft size={24} className="text-gray-500" />
+                  <X size={24} />
                 </button>
               </div>
 
