@@ -65,12 +65,12 @@ export default function Subscription() {
 
   return (
     
-    <div className="min-h-screen bg-[#fffee7] flex flex-col items-center justify-center p-8 font-['Arimo:Regular',sans-serif]">
+    <div className="min-h-screen bg-[#fffee7] flex flex-col items-center p-4 sm:p-8 font-['Arimo:Regular',sans-serif]">
       {/* Company Information */}
       
        <button
         onClick={() => navigate('/profile')}
-        className="absolute top-8 left-8 flex items-center gap-2 text-[#83451e] hover:text-[#3d1f00] transition-colors"
+        className="self-start flex items-center gap-2 text-[#83451e] hover:text-[#3d1f00] transition-colors mb-8"
       >
         <ArrowLeft size={24} />
         <span className="text-[16px]">Назад</span>
@@ -92,11 +92,11 @@ export default function Subscription() {
           </button>
         </div>
       ) : (
-        <div className="flex flex-wrap gap-8 justify-center">
+        <div className="flex flex-wrap gap-6 sm:gap-8 justify-center w-full">
           {plans.map((plan) => (
             <div
               key={plan.id}
-              className="bg-white rounded-[30px] p-12 shadow-lg max-w-md w-full relative overflow-hidden"
+              className="bg-white rounded-[30px] p-8 sm:p-12 shadow-lg w-full max-w-md relative overflow-hidden"
             >
               <div className="absolute top-0 left-0 w-full h-2 bg-[#f5a623]" />
 

@@ -24,7 +24,7 @@ export default function MainPage() {
 
         {/* Title */}
         <div className="flex flex-col items-center gap-4 mb-12 sm:mb-16">
-          <h1 className="text-[#3d1f00] text-[80px] sm:text-[120px] md:text-[160px] leading-none tracking-[0.015em] font-bold text-center">
+          <h1 className="text-[#3d1f00] text-[60px] xs:text-[70px] sm:text-[120px] md:text-[160px] leading-none tracking-[0.015em] font-bold text-center">
             NIKA
           </h1>
           <p className="text-[#83451e] text-[16px] sm:text-[18px] leading-[24px] text-center max-w-[400px]">

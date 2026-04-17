@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, X, TrendingUp, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, TrendingUp, Sparkles, Menu } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import svgPaths from './imports/svg-nfsr0erm4u';
 import svgPathsBack from './imports/svg-n101rx8ak0';
 import { fetchWithAuth } from '../../JWT_token_refresh';
@@ -41,6 +41,7 @@ export default function EmotionTracker() {
   const [aiAdvice, setAiAdvice] = useState<string>('');
   const [loadingAdvice, setLoadingAdvice] = useState(false);
   const [_loading, setLoading] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
     useEffect(() => {
@@ -241,17 +242,51 @@ export default function EmotionTracker() {
 
   return (
     <div className="min-h-screen bg-[#fffee7] flex">
+      {/* Mobile Hamburger */}
+      <button
+        onClick={() => setIsMobileMenuOpen(true)}
+        className="md:hidden fixed top-4 left-4 z-50 p-2.5 bg-[#faf8f0] rounded-xl border border-[#e8dcc8] shadow-sm"
+      >
+        <Menu size={20} className="text-[#83451e]" />
+      </button>
+
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden fixed inset-0 bg-black/30 z-40"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
       <motion.aside
         initial={{ x: -30, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
-            <span className="text-white text-[18px] font-bold">N</span>
+        className={`
+          fixed md:static inset-y-0 left-0 z-50
+          w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]
+          transition-transform duration-300
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}>
+        <div className="flex items-center justify-between gap-3 mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
+              <span className="text-white text-[18px] font-bold">N</span>
+            </div>
+            <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
           </div>
-          <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden p-1.5 text-[#83451e] hover:bg-[#f0e8d8] rounded-lg"
+          >
+            <X size={18} />
+          </button>
         </div>
         <NavLink to='/chat'>
           <motion.button
@@ -375,7 +410,7 @@ export default function EmotionTracker() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
-        className="flex-1 p-8 overflow-auto">
+        className="flex-1 p-4 sm:p-6 md:p-8 overflow-auto pt-16 md:pt-8">
         <div className="max-w-[1000px] mx-auto">
           {/* Header */}
           <div className="mb-8">
@@ -508,29 +543,29 @@ export default function EmotionTracker() {
 
       {/* Emotion Selection Modal */}
       {showModal && selectedDate && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-[20px] p-8 w-[560px] shadow-xl">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-[20px] p-6 sm:p-8 w-full max-w-[560px] shadow-xl">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-[#3d1f00] text-[24px] font-semibold">Как вы себя чувствовали?</h3>
+                <h3 className="text-[#3d1f00] text-[20px] sm:text-[24px] font-semibold">Как вы себя чувствовали?</h3>
                 <p className="text-[#83451e] text-[14px] mt-1">
                   {new Date(selectedDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
               </div>
-              <button onClick={() => { setShowModal(false); setSelectedDate(null); }} className="text-[#83451e] hover:text-[#3d1f00]">
+              <button onClick={() => { setShowModal(false); setSelectedDate(null); }} className="text-[#83451e] hover:text-[#3d1f00] p-1">
                 <X size={24} />
               </button>
             </div>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-4 sm:grid-cols-4 gap-2 sm:gap-4">
               {emotions.map(emotion => (
                 <button
                   key={emotion.type}
                   onClick={() => handleEmotionSelect(emotion.type)}
-                  className="flex flex-col items-center p-4 rounded-[15px] hover:bg-[#faf8f0] transition-all group"
+                  className="flex flex-col items-center p-2 sm:p-4 rounded-[15px] hover:bg-[#faf8f0] transition-all group"
                   style={{ backgroundColor: getEmotionForDate(selectedDate)?.type === emotion.type ? emotion.color + '20' : 'transparent' }}
                 >
-                  <span className="text-[40px] mb-2 group-hover:scale-110 transition-transform">{emotion.emoji}</span>
-                  <span className="text-[14px] text-center font-medium" style={{ color: emotion.color }}>{emotion.label}</span>
+                  <span className="text-[28px] sm:text-[40px] mb-1 sm:mb-2 group-hover:scale-110 transition-transform">{emotion.emoji}</span>
+                  <span className="text-[11px] sm:text-[14px] text-center font-medium" style={{ color: emotion.color }}>{emotion.label}</span>
                 </button>
               ))}
             </div>

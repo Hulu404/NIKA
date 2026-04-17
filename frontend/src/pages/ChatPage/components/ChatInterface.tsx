@@ -24,7 +24,7 @@ export function ChatInterface({isError}: Error) {
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth >= 1024);
   const [sessions, setSessions] = useState([])
   const isTyping = false
   const [isFocused, setIsFocused] = useState(false);

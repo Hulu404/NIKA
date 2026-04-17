@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, X, TrendingUp, Sparkles } from 'lucide-react';
+import { Plus, Trash2, X, TrendingUp, Sparkles, Menu } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import svgPathsBack from './imports/svg-n101rx8ak0';
 import svgPaths from './imports/svg-nfsr0erm4u';
 import { fetchWithAuth } from '../../JWT_token_refresh';
@@ -31,6 +31,7 @@ export default function FoodTracker() {
   const [time, setTime] = useState('')
   const [aiAdvice, setAiAdvice] = useState<string>('');
   const [loadingAdvice, setLoadingAdvice] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   // Типы приёмов пищи
@@ -237,17 +238,51 @@ export default function FoodTracker() {
   // ---------- Рендер ----------
   return (
     <div className="min-h-screen bg-[#fffee7] flex">
+      {/* Mobile Hamburger */}
+      <button
+        onClick={() => setIsMobileMenuOpen(true)}
+        className="md:hidden fixed top-4 left-4 z-50 p-2.5 bg-[#faf8f0] rounded-xl border border-[#e8dcc8] shadow-sm"
+      >
+        <Menu size={20} className="text-[#83451e]" />
+      </button>
+
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden fixed inset-0 bg-black/30 z-40"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
       <motion.aside
         initial={{ x: -30, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
-            <span className="text-white text-[18px] font-bold">N</span>
+        className={`
+          fixed md:static inset-y-0 left-0 z-50
+          w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]
+          transition-transform duration-300
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}>
+        <div className="flex items-center justify-between gap-3 mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
+              <span className="text-white text-[18px] font-bold">N</span>
+            </div>
+            <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
           </div>
-          <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden p-1.5 text-[#83451e] hover:bg-[#f0e8d8] rounded-lg"
+          >
+            <X size={18} />
+          </button>
         </div>
 
         <NavLink to='/chat'>
@@ -373,7 +408,7 @@ export default function FoodTracker() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
-        className="flex-1 p-8 overflow-auto">
+        className="flex-1 p-4 sm:p-6 md:p-8 overflow-auto pt-16 md:pt-8">
         <div className="max-w-[1000px] mx-auto">
           {/* Header */}
           <div className="mb-8">
@@ -390,7 +425,7 @@ export default function FoodTracker() {
           </div>
 
           {/* Meal Cards */}
-          <div className="grid grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
             {mealTypes.map((meal) => (
               <div key={meal.type} className="bg-white rounded-[20px] p-6 shadow-sm">
                 <div className="flex flex-col items-center">
@@ -451,7 +486,7 @@ export default function FoodTracker() {
                               <span className="text-[#3d1f00] text-[16px] font-medium">{item.calories} ккал</span>
                               <button
                                 onClick={() => handleDeleteFood(item.id)}
-                                className="opacity-0 group-hover:opacity-100 transition-opacity text-[#83451e] hover:text-[#f5a623]"
+                                className="text-[#83451e] hover:text-[#f5a623] transition-opacity"
                               >
                                 <Trash2 size={18} />
                               </button>
@@ -535,10 +570,10 @@ export default function FoodTracker() {
 
       {/* Add Food Modal */}
       {showAddModal && selectedMealType && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-[20px] p-8 w-[480px] shadow-xl">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-[20px] p-6 sm:p-8 w-full max-w-[480px] shadow-xl">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-[#3d1f00] text-[24px] font-semibold">
+              <h3 className="text-[#3d1f00] text-[20px] sm:text-[24px] font-semibold">
                 Добавить {getMealLabel(selectedMealType).toLowerCase()}
               </h3>
               <button
@@ -549,7 +584,7 @@ export default function FoodTracker() {
                   setTime('')
                   setSelectedMealType(null);
                 }}
-                className="text-[#83451e] hover:text-[#3d1f00]"
+                className="text-[#83451e] hover:text-[#3d1f00] p-1"
               >
                 <X size={24} />
               </button>

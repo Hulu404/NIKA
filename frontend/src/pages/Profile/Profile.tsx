@@ -1,5 +1,5 @@
-import { ChevronRight} from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ChevronRight, Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import svgPathsBack from './imports/svg-n101rx8ak0';
 import svgPaths from './imports/svg-nfsr0erm4u';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -43,6 +43,7 @@ export default function Profile() {
   const [cancelling, setCancelling] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const navigate = useNavigate();
 
   const onLogout = async () => {
@@ -139,18 +140,52 @@ export default function Profile() {
   };
   return (
     <div className="flex min-h-screen w-full bg-[#fffee7]">
+      {/* Mobile Hamburger */}
+      <button
+        onClick={() => setIsMobileMenuOpen(true)}
+        className="md:hidden fixed top-4 left-4 z-50 p-2.5 bg-[#faf8f0] rounded-xl border border-[#e8dcc8] shadow-sm"
+      >
+        <Menu size={20} className="text-[#83451e]" />
+      </button>
+
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden fixed inset-0 bg-black/30 z-40"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
       <motion.aside
         initial={{ x: -30, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]">
+        className={`
+          fixed md:static inset-y-0 left-0 z-50
+          w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]
+          transition-transform duration-300
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}>
         {/* Logo */}
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
-            <span className="text-white text-[18px] font-bold">N</span>
+        <div className="flex items-center justify-between gap-3 mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
+              <span className="text-white text-[18px] font-bold">N</span>
+            </div>
+            <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
           </div>
-          <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden p-1.5 text-[#83451e] hover:bg-[#f0e8d8] rounded-lg"
+          >
+            <X size={18} />
+          </button>
         </div>
       
         {/* Back to Dialog Button */}
@@ -289,7 +324,7 @@ export default function Profile() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
-        className="flex-1 p-8 overflow-y-auto">
+        className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto pt-16 md:pt-8">
         <div className="max-w-[800px] mx-auto">
           {/* Page Header */}
           <div className="mb-10">
@@ -326,7 +361,7 @@ export default function Profile() {
             {/* Profile Form */}
             <div className="space-y-5">
               {/* Name Fields Row */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="block pl-5 text-[#83451e] text-[14px]">
                     Имя
@@ -419,7 +454,7 @@ export default function Profile() {
                 </div>
                 
                 {subscription && subscription.is_active ? (
-                  <div className="flex items-center justify-between p-6 bg-[#f0fdf4] rounded-[20px] border border-[#bbf7d0]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-[#f0fdf4] rounded-[20px] border border-[#bbf7d0]">
                     <div>
                       <p className="text-[#3d1f00] font-['Arimo:Bold',sans-serif] text-[18px] font-bold">
                         {subscription.plan?.name || 'Premium'}
@@ -448,13 +483,13 @@ export default function Profile() {
                     <button
                       onClick={handleCancelSubscription}
                       disabled={cancelling}
-                      className="bg-red-50 hover:bg-red-100 text-red-600 font-['Arimo:Bold',sans-serif] font-bold py-3 px-6 rounded-[15px] transition-all active:scale-[0.98] disabled:opacity-50"
+                      className="shrink-0 bg-red-50 hover:bg-red-100 text-red-600 font-['Arimo:Bold',sans-serif] font-bold py-3 px-6 rounded-[15px] transition-all active:scale-[0.98] disabled:opacity-50"
                     >
                       {cancelling ? 'Отмена...' : 'Отменить подписку'}
                     </button>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-between p-6 bg-[#faf8f0] rounded-[20px]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 bg-[#faf8f0] rounded-[20px]">
                     <div>
                       <p className="text-[#3d1f00] font-['Arimo:Bold',sans-serif] text-[18px] font-bold">Бесплатный план</p>
                       <div className="flex flex-col gap-1 mt-2">
@@ -470,7 +505,7 @@ export default function Profile() {
                     </div>
                     <button
                       onClick={() => navigate('/subscription')}
-                      className="bg-[#f5a623] hover:bg-[#e59615] text-white font-['Arimo:Bold',sans-serif] font-bold py-3 px-6 rounded-[15px] shadow-md transition-all active:scale-[0.98]"
+                      className="shrink-0 bg-[#f5a623] hover:bg-[#e59615] text-white font-['Arimo:Bold',sans-serif] font-bold py-3 px-6 rounded-[15px] shadow-md transition-all active:scale-[0.98]"
                     >
                       Купить подписку
                     </button>
