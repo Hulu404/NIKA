@@ -156,7 +156,7 @@ export default function Profile() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsMobileMenuOpen(false)}
-            className="md:hidden fixed inset-0 bg-black/30 z-40"
+            className="md:hidden fixed inset-0 bg-black/50 z-40"
           />
         )}
       </AnimatePresence>
@@ -169,7 +169,7 @@ export default function Profile() {
         className={`
           fixed md:static inset-y-0 left-0 z-50
           w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]
-          transition-transform duration-300
+          transition-transform duration-300 shadow-2xl md:shadow-none
           ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}>
         {/* Logo */}

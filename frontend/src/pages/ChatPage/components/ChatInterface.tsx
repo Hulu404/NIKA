@@ -472,7 +472,7 @@ export function ChatInterface({isError}: Error) {
                   onBlur={() => setIsFocused(false)}
                   placeholder="Напишите сообщение или нажмите / для команд..."
                   rows={1}
-                  className="flex-1 resize-none bg-transparent px-2 py-3 focus:outline-none text-gray-900 placeholder:text-gray-400 max-h-32 overflow-y-auto"
+                  className="flex-1 resize-none bg-transparent px-2 py-3 focus:outline-none text-gray-900 placeholder:text-gray-400 max-h-32 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                   style={{
                     minHeight: '44px',
                   }}

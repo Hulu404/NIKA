@@ -65,7 +65,7 @@ export function ChatSidebar({
         initial={false}
         animate={{ width: isOpen ? 320 : 0 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="relative z-50 h-full overflow-hidden shrink-0"
+        className="fixed lg:relative inset-y-0 left-0 z-50 h-full overflow-hidden shrink-0"
       >
         <aside
           className="h-full w-80 bg-white/80 backdrop-blur-2xl border-r border-black/5 flex flex-col"
