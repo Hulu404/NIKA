@@ -254,7 +254,7 @@ export default function FoodTracker() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsMobileMenuOpen(false)}
-            className="md:hidden fixed inset-0 bg-black/50 z-40"
+            className="md:hidden fixed inset-0 bg-black/50 z-40 cursor-pointer"
           />
         )}
       </AnimatePresence>
@@ -264,6 +264,16 @@ export default function FoodTracker() {
         initial={{ x: -30, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
+        onTouchStart={(e) => {
+          e.currentTarget.dataset.touchStartX = String(e.touches[0].clientX);
+        }}
+        onTouchEnd={(e) => {
+          const startX = Number(e.currentTarget.dataset.touchStartX || '0');
+          const endX = e.changedTouches[0].clientX;
+          if (startX - endX > 50) {
+            setIsMobileMenuOpen(false);
+          }
+        }}
         className={`
           fixed md:static inset-y-0 left-0 z-50
           w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]
@@ -278,10 +288,11 @@ export default function FoodTracker() {
             <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
           </div>
           <button
+            type="button"
             onClick={() => setIsMobileMenuOpen(false)}
-            className="md:hidden p-1.5 text-[#83451e] hover:bg-[#f0e8d8] rounded-lg"
+            className="md:hidden p-3 -mr-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-lg cursor-pointer relative z-[60] active:scale-95"
           >
-            <X size={18} />
+            <X size={24} />
           </button>
         </div>
 

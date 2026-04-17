@@ -325,7 +325,7 @@ export function ChatInterface({isError}: Error) {
   
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-[#fafafa] via-[#ffffff] to-[#f5f5f5] relative overflow-hidden">
+    <div className="flex h-[100dvh] bg-gradient-to-br from-[#fafafa] via-[#ffffff] to-[#f5f5f5] relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-[#fafafa] via-[#ffffff] to-[#f5f5f5]">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-[rgba(246,176,68,0.15)] rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[rgba(243,156,18,0.15)] rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>

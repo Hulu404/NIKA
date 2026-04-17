@@ -55,7 +55,7 @@ export function ChatSidebar({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onToggle}
-            className="lg:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            className="lg:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-40 cursor-pointer"
           />
         )}
       </AnimatePresence>
@@ -65,6 +65,16 @@ export function ChatSidebar({
         initial={false}
         animate={{ width: isOpen ? 320 : 0 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+        onTouchStart={(e) => {
+          e.currentTarget.dataset.touchStartX = String(e.touches[0].clientX);
+        }}
+        onTouchEnd={(e) => {
+          const startX = Number(e.currentTarget.dataset.touchStartX || '0');
+          const endX = e.changedTouches[0].clientX;
+          if (startX - endX > 50) {
+            onToggle();
+          }
+        }}
         className="fixed lg:relative inset-y-0 left-0 z-50 h-full overflow-hidden shrink-0"
       >
         <aside
@@ -80,10 +90,11 @@ export function ChatSidebar({
                   <span className="font-semibold text-gray-900">NIKA</span>
                 </div>
                 <button
+                  type="button"
                   onClick={onToggle}
-                  className="p-2 hover:bg-black/5 rounded-xl transition-all"
+                  className="lg:hidden p-3 hover:bg-black/5 rounded-xl transition-all cursor-pointer relative z-[60] active:scale-95"
                 >
-                  <ChevronLeft size={18} className="text-gray-500" />
+                  <ChevronLeft size={24} className="text-gray-500" />
                 </button>
               </div>
 
