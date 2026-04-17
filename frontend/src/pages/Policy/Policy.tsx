@@ -112,10 +112,10 @@ export default function Policy() {
         </div>
       </header>
 
-      <div className="max-w-[1400px] mx-auto px-8 py-12">
-        <div className="flex gap-8 relative">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-8 sm:py-12">
+        <div className="flex flex-col lg:flex-row gap-8 relative">
           {/* Sticky Sidebar Navigation */}
-          <aside className="w-[280px] flex-shrink-0">
+          <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <nav className="sticky top-32">
               <div className="backdrop-blur-[20px] bg-[rgba(255,255,255,0.6)] rounded-[20px] p-6 shadow-lg border border-[rgba(255,255,255,0.8)] max-h-[calc(100vh-10rem)] flex flex-col">
                 <h2 className="text-sm font-bold text-[#2d3625] mb-4 uppercase tracking-wider flex-shrink-0">
@@ -148,7 +148,7 @@ export default function Policy() {
 
           {/* Main Content */}
           <main className="flex-1 min-w-0">
-            <div className="backdrop-blur-[20px] bg-[rgba(255,255,255,0.4)] rounded-[20px] p-12 shadow-lg border border-[rgba(255,255,255,0.8)]">
+            <div className="backdrop-blur-[20px] bg-[rgba(255,255,255,0.4)] rounded-[20px] p-6 sm:p-8 lg:p-12 shadow-lg border border-[rgba(255,255,255,0.8)]">
               {activeTab === 'privacy' ? (
                 /* Privacy Policy Content */
                 <>

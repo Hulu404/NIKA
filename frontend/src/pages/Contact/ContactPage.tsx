@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X } from 'lucide-react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { fetchWithAuth } from '../../JWT_token_refresh';
 import svgPathsBack from './imports/svg-n101rx8ak0';
 import svgPaths from './imports/svg-nfsr0erm4u';
 
 export default function ContactPage() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: '',
@@ -74,18 +76,64 @@ export default function ContactPage() {
 
   return (
     <div className="flex min-h-screen w-full bg-[#fffee7]">
+      {/* Mobile Hamburger */}
+      <button
+        onClick={() => setIsMobileMenuOpen(true)}
+        className="md:hidden fixed top-4 left-4 z-50 p-2.5 bg-[#faf8f0] rounded-xl border border-[#e8dcc8] shadow-sm"
+      >
+        <Menu size={20} className="text-[#83451e]" />
+      </button>
+
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden fixed inset-0 bg-black/50 z-40 cursor-pointer"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
       <motion.aside
         initial={{ x: -30, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]">
+        onTouchStart={(e) => {
+          e.currentTarget.dataset.touchStartX = String(e.touches[0].clientX);
+        }}
+        onTouchEnd={(e) => {
+          const startX = Number(e.currentTarget.dataset.touchStartX || '0');
+          const endX = e.changedTouches[0].clientX;
+          if (startX - endX > 50) {
+            setIsMobileMenuOpen(false);
+          }
+        }}
+        className={`
+          fixed md:static inset-y-0 left-0 z-50
+          w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]
+          transition-transform duration-300 shadow-2xl md:shadow-none
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}
+      >
         {/* Logo */}
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
-            <span className="text-white text-[18px] font-bold">N</span>
+        <div className="flex items-center justify-between gap-3 mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
+              <span className="text-white text-[18px] font-bold">N</span>
+            </div>
+            <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
           </div>
-          <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden p-3 -mr-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-lg cursor-pointer relative z-[60] active:scale-95"
+          >
+            <X size={24} />
+          </button>
         </div>
 
         {/* Back to Dialog Button */}
@@ -232,11 +280,11 @@ export default function ContactPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
-        className="flex-1 p-8 overflow-y-auto">
+        className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto pt-16 md:pt-8">
         <div className="max-w-[800px] mx-auto">
           {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="font-bold text-[36px] leading-[54px] text-[#3d1f00] mb-2">
+          <div className="mb-8 md:mb-12">
+            <h1 className="font-bold text-[28px] sm:text-[36px] leading-tight sm:leading-[54px] text-[#3d1f00] mb-2">
               Свяжитесь с нами
             </h1>
             <p className="text-[14px] leading-[21px] text-[#83451e]">
