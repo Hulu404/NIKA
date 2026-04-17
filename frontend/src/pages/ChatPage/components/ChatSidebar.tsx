@@ -7,6 +7,7 @@ interface ChatSidebarProps {
   isOpen: boolean;
   sessions: Array<object>;
   onToggle: () => void;
+  onClose: () => void;
   onNewChat: () => void;
   onHistory: (id: string) => void;
 }
@@ -14,6 +15,7 @@ interface ChatSidebarProps {
 export function ChatSidebar({
   isOpen,
   onToggle,
+  onClose,
   onNewChat,
   sessions,
   onHistory,
@@ -54,8 +56,8 @@ export function ChatSidebar({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onToggle}
-            className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 cursor-pointer"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
+            className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 cursor-pointer pointer-events-auto"
           />
         )}
       </AnimatePresence>
@@ -72,7 +74,7 @@ export function ChatSidebar({
           const startX = Number(e.currentTarget.dataset.touchStartX || '0');
           const endX = e.changedTouches[0].clientX;
           if (startX - endX > 50) {
-            onToggle();
+            onClose();
           }
         }}
         className="fixed lg:relative inset-y-0 left-0 z-50 h-full overflow-hidden shrink-0"
@@ -91,8 +93,8 @@ export function ChatSidebar({
                 </div>
                 <button
                   type="button"
-                  onClick={onToggle}
-                  onTouchEnd={(e) => { e.stopPropagation(); onToggle(); }}
+                  onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
                   className="lg:hidden p-3 hover:bg-black/5 rounded-xl transition-all cursor-pointer relative z-[60] active:scale-95 text-gray-500 hover:text-gray-900"
                 >
                   <X size={24} />

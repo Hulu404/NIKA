@@ -336,7 +336,7 @@ export default function Profile() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
-        className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto pt-16 md:pt-8">
+        className={`flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto pt-16 md:pt-8 ${isMobileMenuOpen ? 'max-md:pointer-events-none max-md:overflow-hidden max-md:touch-none max-md:opacity-50' : ''}`}>
         <div className="max-w-[800px] mx-auto">
           {/* Page Header */}
           <div className="mb-10">
