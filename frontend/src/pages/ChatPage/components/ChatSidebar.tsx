@@ -92,6 +92,11 @@ export function ChatSidebar({
                 <button
                   type="button"
                   onClick={onToggle}
+                  onTouchEnd={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    onToggle();
+                  }}
                   className="lg:hidden p-3 hover:bg-black/5 rounded-xl transition-all cursor-pointer relative z-[60] active:scale-95"
                 >
                   <ChevronLeft size={24} className="text-gray-500" />

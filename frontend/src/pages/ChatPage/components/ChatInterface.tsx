@@ -383,10 +383,10 @@ export function ChatInterface({isError}: Error) {
           </div>
         </motion.div>
 
-        <div className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto px-6 py-8">
+        <div className={`flex-1 ${messages.length === 0 ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-8 h-full">
             {messages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center py-20">
+              <div className="h-full flex flex-col items-center justify-center sm:py-20">
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -410,7 +410,7 @@ export function ChatInterface({isError}: Error) {
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="text-gray-500 mb-12 text-center max-w-md"
+                  className="text-gray-500 mb-6 sm:mb-12 text-center max-w-md text-sm sm:text-base"
                 >
                   Я ваш персональный спортивный помощник с искусственным интеллектом
                 </motion.p>
