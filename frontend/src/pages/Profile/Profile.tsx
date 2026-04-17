@@ -193,11 +193,6 @@ export default function Profile() {
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(false)}
-            onTouchEnd={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              setIsMobileMenuOpen(false);
-            }}
             className="md:hidden p-3 -mr-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-lg cursor-pointer relative z-[60] active:scale-95"
           >
             <X size={24} />
