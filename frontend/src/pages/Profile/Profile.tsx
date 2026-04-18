@@ -155,8 +155,10 @@ export default function Profile() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="md:hidden fixed inset-0 bg-black/50 z-40 cursor-pointer"
+            onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); setIsMobileMenuOpen(false); }}
+            onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setIsMobileMenuOpen(false); }}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsMobileMenuOpen(false); }}
+            className="md:hidden fixed inset-0 bg-black/50 z-[45] cursor-pointer" style={{ touchAction: 'none' }}
           />
         )}
       </AnimatePresence>

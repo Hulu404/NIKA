@@ -35,6 +35,17 @@ export function ChatInterface({isError}: Error) {
   const recognitionRef = useRef<any>(null);
   const navigate = useNavigate();
 
+  // Lock body scroll when sidebar is open on mobile
+  useEffect(() => {
+    const isMobile = window.innerWidth < 1024;
+    if (isMobile && isSidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isSidebarOpen]);
+
   const scrollToBottom = () => {
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -340,8 +351,8 @@ export function ChatInterface({isError}: Error) {
         onHistory={(id) => onOldChatClick(id)}
       />
 
-      <div
-        className={`flex-1 flex flex-col relative z-10 transition-all duration-300 ease-in-out ${isSidebarOpen ? 'max-lg:pointer-events-none max-lg:overflow-hidden max-lg:touch-none max-lg:opacity-50' : ''}`}>
+      {/* Main content — full width always (sidebar is fixed overlay on mobile) */}
+      <div className="flex-1 flex flex-col relative z-10 min-w-0">
         <motion.div 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}

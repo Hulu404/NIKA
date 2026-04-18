@@ -49,39 +49,46 @@ export function ChatSidebar({
 
   return (
     <>
-      {/* Mobile overlay */}
+      {/* Mobile overlay — full-screen, highest z that still sits below sidebar */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
+            onTouchStart={(e) => { e.stopPropagation(); }}
+            onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
-            className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40 cursor-pointer pointer-events-auto"
+            className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[45] cursor-pointer"
+            style={{ touchAction: 'none' }}
           />
         )}
       </AnimatePresence>
 
-      {/* Sidebar */}
-      <motion.div
-        initial={false}
-        animate={{ width: isOpen ? 320 : 0 }}
-        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+      {/* Sidebar panel */}
+      <aside
         onTouchStart={(e) => {
-          e.currentTarget.dataset.touchStartX = String(e.touches[0].clientX);
+          (e.currentTarget as any)._touchStartX = e.touches[0].clientX;
         }}
         onTouchEnd={(e) => {
-          const startX = Number(e.currentTarget.dataset.touchStartX || '0');
+          const startX = (e.currentTarget as any)._touchStartX ?? 0;
           const endX = e.changedTouches[0].clientX;
           if (startX - endX > 50) {
+            e.stopPropagation();
             onClose();
           }
         }}
-        className="fixed lg:relative inset-y-0 left-0 z-50 h-full overflow-hidden shrink-0"
+        className={[
+          'fixed lg:static inset-y-0 left-0 h-full z-[50]',
+          'w-80 bg-white/90 backdrop-blur-2xl border-r border-black/5 flex flex-col',
+          'transition-transform duration-300 ease-in-out',
+          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+          // On desktop always visible with layout width; on mobile it's overlay (no width shift)
+          'lg:relative lg:translate-x-0',
+        ].join(' ')}
       >
-        <aside
-          className="h-full w-80 bg-white/80 backdrop-blur-2xl border-r border-black/5 flex flex-col"
-        >
+        <div className="h-full flex flex-col">
             {/* Header */}
             <div className="p-6 border-b border-black/5">
               <div className="flex items-center justify-between mb-6">
@@ -238,8 +245,8 @@ export function ChatSidebar({
                 <span className="text-sm font-medium">Выйти</span>
               </button>
             </div>
-          </aside>
-      </motion.div>
+        </div>
+      </aside>
     </>
   );
 }
