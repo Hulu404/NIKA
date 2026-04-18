@@ -135,19 +135,13 @@ export default function FAQPage() {
       </button>
 
       {/* Mobile Overlay */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); setIsMobileMenuOpen(false); }}
-            onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setIsMobileMenuOpen(false); }}
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsMobileMenuOpen(false); }}
-            className="md:hidden fixed inset-0 bg-black/50 z-[45] cursor-pointer" style={{ touchAction: 'none' }}
-          />
-        )}
-      </AnimatePresence>
+      {isMobileMenuOpen && (
+        <div
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="fixed inset-0 bg-black/50 z-[45] cursor-pointer"
+          style={{ touchAction: 'none' }}
+        />
+      )}
 
       {/* Sidebar */}
       <motion.aside
