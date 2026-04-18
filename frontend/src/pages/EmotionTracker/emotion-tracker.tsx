@@ -254,16 +254,13 @@ export default function EmotionTracker() {
       {isMobileMenuOpen && (
         <div
           onClick={() => setIsMobileMenuOpen(false)}
-          className="fixed inset-0 bg-black/50 z-[45] cursor-pointer"
+          className="fixed inset-0 bg-black/50 z-40 cursor-pointer"
           style={{ touchAction: 'none' }}
         />
       )}
 
       {/* Sidebar */}
-      <motion.aside
-        initial={{ x: -30, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
+      <aside
         onTouchStart={(e) => {
           e.currentTarget.dataset.touchStartX = String(e.touches[0].clientX);
         }}
@@ -411,7 +408,7 @@ export default function EmotionTracker() {
           </svg>
           <span className="text-[14px]">Выйти</span>
         </motion.button>
-      </motion.aside>
+      </aside>
 
       {/* Main Content */}
       <motion.main
