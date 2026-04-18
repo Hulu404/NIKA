@@ -44,22 +44,22 @@ export function SuggestedPrompts({ onSelect }: SuggestedPromptsProps) {
           whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => onSelect(prompt.prompt)}
-          className={`p-2.5 md:p-4 rounded-[14px] md:rounded-2xl backdrop-blur-xl border transition-all text-left bg-transparent shadow-sm hover:shadow-md flex flex-col md:flex-row gap-2 md:gap-3 ${prompt.color}`}
+          className={`p-3 md:p-4 rounded-[14px] md:rounded-2xl backdrop-blur-xl border transition-all text-left bg-transparent shadow-sm hover:shadow-md flex flex-col md:flex-row gap-2 md:gap-3 ${prompt.color}`}
         >
           <div className="flex items-start md:items-center gap-2 md:gap-3 w-full">
-            <div className="w-7 h-7 md:w-10 md:h-10 rounded-[10px] md:rounded-xl bg-white border border-black/10 flex items-center justify-center flex-shrink-0 shadow-sm">
-              <prompt.icon className="text-gray-600 w-3.5 h-3.5 md:w-5 md:h-5" strokeWidth={2.5} />
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-[10px] md:rounded-xl bg-white border border-black/10 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <prompt.icon className="text-gray-600 w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-[12px] md:text-sm font-semibold text-gray-900 mb-0.5 md:mb-1 truncate md:whitespace-normal">
+              <h3 className="text-[13px] md:text-sm font-semibold text-gray-900 mb-0.5 md:mb-1 truncate md:whitespace-normal">
                 {prompt.title}
               </h3>
-              <p className="text-[10px] md:text-xs text-gray-600 hidden md:block line-clamp-2">
+              <p className="text-[11px] md:text-xs text-gray-600 hidden md:block line-clamp-2">
                 {prompt.prompt}
               </p>
             </div>
           </div>
-          <p className="text-[10px] text-gray-600 block md:hidden line-clamp-2 mt-0.5 leading-snug">
+          <p className="text-[11px] text-gray-600 block md:hidden line-clamp-2 mt-0.5 leading-snug">
             {prompt.prompt}
           </p>
         </motion.button>
