@@ -5,6 +5,7 @@ import svgPathsBack from './imports/svg-n101rx8ak0';
 import svgPaths from './imports/svg-nfsr0erm4u';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '../../JWT_token_refresh';
+import { Menu, X } from 'lucide-react'; // Добавляем иконки для меню
 
 interface FAQItem {
   question: string;
@@ -58,34 +59,34 @@ function FAQAccordion() {
   };
 
   return (
-    <div className="max-w-[1000px] space-y-4">
+    <div className="w-full max-w-[1000px] space-y-3 md:space-y-4">
       {faqData.map((item, index) => {
         const isOpen = openIndex === index;
 
         return (
           <div
             key={index}
-            className="backdrop-blur-[25px] bg-white/50 rounded-[20px] border-2 border-white/70 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.06)] overflow-hidden transition-all hover:shadow-[0px_8px_32px_0px_rgba(0,0,0,0.1)] hover:border-white/90"
+            className="backdrop-blur-[25px] bg-white/50 rounded-[15px] md:rounded-[20px] border-2 border-white/70 shadow-[0px_4px_24px_0px_rgba(0,0,0,0.06)] overflow-hidden transition-all hover:shadow-[0px_8px_32px_0px_rgba(0,0,0,0.1)] hover:border-white/90"
           >
             <button
               onClick={() => toggleItem(index)}
-              className="w-full px-8 py-6 flex items-center justify-between text-left transition-all group"
+              className="w-full px-5 md:px-8 py-4 md:py-6 flex items-center justify-between text-left transition-all group"
             >
-              <span className="font-['Manrope:SemiBold',sans-serif] font-semibold text-[19px] text-[#2d3625] pr-8 leading-relaxed group-hover:text-[#f6b044] transition-colors">
+              <span className="font-['Manrope:SemiBold',sans-serif] font-semibold text-[16px] md:text-[19px] text-[#2d3625] pr-4 md:pr-8 leading-snug md:leading-relaxed group-hover:text-[#f6b044] transition-colors">
                 {item.question}
               </span>
-              <div className="flex-shrink-0 w-11 h-11 rounded-full bg-gradient-to-br from-[#f6b044] to-[#f39c12] flex items-center justify-center transition-all group-hover:scale-110 shadow-md">
+              <div className="flex-shrink-0 w-9 h-9 md:w-11 md:h-11 rounded-full bg-gradient-to-br from-[#f6b044] to-[#f39c12] flex items-center justify-center transition-all group-hover:scale-110 shadow-md">
                 {isOpen ? (
-                  <ChevronUp size={22} className="text-white" strokeWidth={2.5} />
+                  <ChevronUp size={18} className="text-white md:size-[22px]" strokeWidth={2.5} />
                 ) : (
-                  <ChevronDown size={22} className="text-white" strokeWidth={2.5} />
+                  <ChevronDown size={18} className="text-white md:size-[22px]" strokeWidth={2.5} />
                 )}
               </div>
             </button>
 
             {isOpen && (
-              <div className="px-8 pb-6 pt-3 border-t-2 border-white/60 backdrop-blur-sm bg-white/20">
-                <p className="font-['Manrope:Regular',sans-serif] text-[17px] text-[#5a6444] leading-[1.75]">
+              <div className="px-5 md:px-8 pb-5 md:pb-6 pt-2 md:pt-3 border-t-2 border-white/60 backdrop-blur-sm bg-white/20">
+                <p className="font-['Manrope:Regular',sans-serif] text-[15px] md:text-[17px] text-[#5a6444] leading-relaxed md:leading-[1.75]">
                   {item.answer}
                 </p>
               </div>
@@ -99,6 +100,10 @@ function FAQAccordion() {
 
 export default function FAQPage() {
   const navigate = useNavigate();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
   const onLogout = async () => {
     try {
       const response = await fetchWithAuth('/api/v1/auth/logout', {
@@ -120,26 +125,54 @@ export default function FAQPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fffee7] flex">
+    <div className="min-h-screen bg-[#fffee7] flex flex-col md:flex-row relative">
       {/* Background Gradients */}
       <div className="absolute pointer-events-none bg-[rgba(246,176,68,0.08)] blur-[100px] left-[15%] opacity-50 rounded-full w-[450px] h-[450px] top-0" />
       <div className="absolute pointer-events-none bg-[rgba(243,156,18,0.08)] blur-[100px] right-[15%] rounded-full w-[450px] h-[450px] top-[250px]" />
 
+      {/* Mobile Header Toggle */}
+      <div className="md:hidden flex items-center p-4 bg-[#faf8f0] border-b border-[#e8dcc8] sticky top-0 z-[50] gap-3">
+        <button onClick={toggleSidebar} className="p-1 text-[#83451e]">
+          {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-[#f5a623] flex items-center justify-center">
+            <span className="text-white text-[14px] font-bold">N</span>
+          </div>
+          <span className="text-[#3d1f00] text-[16px] font-bold">NIKA</span>
+        </div>
+      </div>
+
+      {/* Backdrop for Mobile */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[55] md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <motion.aside
-        initial={{ x: -30, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]"
+        initial={false}
+        animate={{ 
+          x: typeof window !== 'undefined' && window.innerWidth < 768 ? (isSidebarOpen ? 0 : -264) : 0,
+          opacity: 1
+        }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className={`fixed md:relative top-0 left-0 h-full w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8] z-[60] md:z-10`}
       >
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
             <span className="text-white text-[18px] font-bold">N</span>
           </div>
           <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
+          {/* Close button on sidebar for mobile */}
+          <button onClick={() => setIsSidebarOpen(false)} className="md:hidden ml-auto">
+            <X size={20} className="text-[#83451e]" />
+          </button>
         </div>
 
-        <NavLink to="/chat">
+        <NavLink to="/chat" onClick={() => setIsSidebarOpen(false)}>
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
@@ -152,14 +185,14 @@ export default function FAQPage() {
           </motion.button>
         </NavLink>
 
-        <div className="flex-1">
+        <div className="flex-1 overflow-y-auto">
           <div className="mb-6">
             <h3 className="text-[#83451e] text-[12px] uppercase tracking-[0.6px] mb-4 px-3 leading-[18px]">
               МЕНЮ
             </h3>
             <nav className="flex flex-col gap-1">
               {/* Личный кабинет */}
-              <NavLink to="/profile">
+              <NavLink to="/profile" onClick={() => setIsSidebarOpen(false)}>
                 <motion.span
                   whileHover={{ x: 4 }}
                   whileTap={{ scale: 0.97 }}
@@ -188,7 +221,7 @@ export default function FAQPage() {
               </NavLink>
 
               {/* Трекер питания */}
-              <NavLink to="/food-tracker">
+              <NavLink to="/food-tracker" onClick={() => setIsSidebarOpen(false)}>
                 <motion.span
                   whileHover={{ x: 4 }}
                   whileTap={{ scale: 0.97 }}
@@ -217,7 +250,7 @@ export default function FAQPage() {
               </NavLink>
 
               {/* Дневник эмоций */}
-              <NavLink to="/emotion-tracker">
+              <NavLink to="/emotion-tracker" onClick={() => setIsSidebarOpen(false)}>
                 <motion.span
                   whileHover={{ x: 4 }}
                   whileTap={{ scale: 0.97 }}
@@ -266,7 +299,7 @@ export default function FAQPage() {
           whileHover={{ x: 4 }}
           whileTap={{ scale: 0.97 }}
           onClick={onLogout}
-          className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors"
+          className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors mt-auto"
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d={svgPathsBack.p14ca9100} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
@@ -282,14 +315,14 @@ export default function FAQPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
-        className="flex-1 p-8 overflow-auto"
+        className="flex-1 p-5 md:p-8 overflow-auto"
       >
         <div className="max-w-[1050px]">
-          <div className="mb-12">
-            <h1 className="font-['Manrope:Bold',sans-serif] text-[44px] font-bold text-[#2d3625] mb-3 tracking-tight">
+          <div className="mb-8 md:mb-12">
+            <h1 className="font-['Manrope:Bold',sans-serif] text-[28px] md:text-[44px] font-bold text-[#2d3625] mb-2 md:mb-3 tracking-tight leading-tight">
               Часто задаваемые вопросы
             </h1>
-            <p className="font-['Manrope:Regular',sans-serif] text-[18px] text-[#5a6444] leading-relaxed">
+            <p className="font-['Manrope:Regular',sans-serif] text-[15px] md:text-[18px] text-[#5a6444] leading-relaxed">
               Ответы на самые популярные вопросы о НИКЕ
             </p>
           </div>

@@ -142,7 +142,7 @@ export default function LoginPage() {
               disabled={loading}
             />
           </div>
-                    {/* Кнопка "Войти" */}
+          {/* Кнопка "Войти" */}
           <button
             type="submit"
             disabled={loading}

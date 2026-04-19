@@ -4,9 +4,13 @@ import { useNavigate, NavLink } from 'react-router-dom';
 import { fetchWithAuth } from '../../JWT_token_refresh';
 import svgPathsBack from './imports/svg-n101rx8ak0';
 import svgPaths from './imports/svg-nfsr0erm4u';
+import { Menu, X } from 'lucide-react';
 
 export default function ContactPage() {
   const navigate = useNavigate();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -73,23 +77,50 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full bg-[#fffee7]">
+    <div className="flex flex-col md:flex-row min-h-screen w-full bg-[#fffee7] relative">
+      {/* Mobile Header Toggle */}
+      <div className="md:hidden flex items-center p-4 bg-[#faf8f0] border-b border-[#e8dcc8] sticky top-0 z-[50] gap-3">
+        <button onClick={toggleSidebar} className="p-1 text-[#83451e]">
+          {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-[#f5a623] flex items-center justify-center">
+            <span className="text-white text-[14px] font-bold">N</span>
+          </div>
+          <span className="text-[#3d1f00] text-[16px] font-bold">NIKA</span>
+        </div>
+      </div>
+
+      {/* Backdrop for Mobile */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[55] md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <motion.aside
-        initial={{ x: -30, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]">
+        initial={false}
+        animate={{ 
+          x: typeof window !== 'undefined' && window.innerWidth < 768 ? (isSidebarOpen ? 0 : -264) : 0,
+        }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className={`fixed md:relative top-0 left-0 h-full w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8] z-[60] md:z-10`}
+      >
         {/* Logo */}
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
             <span className="text-white text-[18px] font-bold">N</span>
           </div>
           <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
+          <button onClick={() => setIsSidebarOpen(false)} className="md:hidden ml-auto">
+            <X size={20} className="text-[#83451e]" />
+          </button>
         </div>
 
         {/* Back to Dialog Button */}
-        <NavLink to='/chat'>
+        <NavLink to='/chat' onClick={() => setIsSidebarOpen(false)}>
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
@@ -102,12 +133,12 @@ export default function ContactPage() {
         </NavLink>
 
         {/* Menu Section */}
-        <div className="flex-1">
+        <div className="flex-1 overflow-y-auto">
           <div className="mb-6">
             <h3 className="text-[#83451e] text-[12px] uppercase tracking-[0.6px] mb-4 px-3 leading-[18px]">МЕНЮ</h3>
             <nav className="flex flex-col gap-1">
               {/* Личный кабинет */}
-              <NavLink to='/profile'>
+              <NavLink to='/profile' onClick={() => setIsSidebarOpen(false)}>
                 <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
                   <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                     <div className="absolute contents inset-[12.5%_20.83%]">
@@ -132,7 +163,7 @@ export default function ContactPage() {
               </NavLink>
 
               {/* Трекер питания */}
-              <NavLink to='/food-tracker'>
+              <NavLink to='/food-tracker' onClick={() => setIsSidebarOpen(false)}>
                 <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
                   <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                     <div className="absolute contents inset-[10%]">
@@ -157,7 +188,7 @@ export default function ContactPage() {
               </NavLink>
 
               {/* Дневник эмоций */}
-              <NavLink to="/emotion-tracker">
+              <NavLink to="/emotion-tracker" onClick={() => setIsSidebarOpen(false)}>
                 <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
                   <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                     <div className="absolute contents inset-[10%]">
@@ -195,8 +226,20 @@ export default function ContactPage() {
                 </motion.span>
               </NavLink>
 
+              {/* FAQs */}
+              <NavLink to="/FAQ" onClick={() => setIsSidebarOpen(false)}>
+                <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#83451E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M9.09 9C9.3251 8.33167 9.78915 7.76811 10.4 7.40913C11.0108 7.05016 11.7289 6.91894 12.4272 7.03871C13.1255 7.15849 13.7588 7.52152 14.2151 8.06353C14.6713 8.60553 14.9211 9.29152 14.92 10C14.92 12 11.92 13 11.92 13" stroke="#83451E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 17H12.01" stroke="#83451E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span className="text-[14px] leading-[21px]">FAQs</span>
+                </motion.span>
+              </NavLink>
+
               {/* Обратная связь - ACTIVE */}
-              <NavLink to="/contact">
+              <NavLink to="/contact" onClick={() => setIsSidebarOpen(false)}>
                 <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] bg-[#f0e8d8] rounded-[10px] h-[37px]">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#83451E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -217,7 +260,7 @@ export default function ContactPage() {
             localStorage.removeItem('refresh_token');
             navigate('/');
           }}
-          className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors">
+          className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors mt-auto">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d={svgPathsBack.p14ca9100} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
             <path d="M17.5 10H7.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
@@ -232,24 +275,24 @@ export default function ContactPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
-        className="flex-1 p-8 overflow-y-auto">
+        className="flex-1 p-5 md:p-8 overflow-y-auto">
         <div className="max-w-[800px] mx-auto">
           {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="font-bold text-[36px] leading-[54px] text-[#3d1f00] mb-2">
+          <div className="mb-6 md:mb-8">
+            <h1 className="font-bold text-[28px] md:text-[36px] leading-tight md:leading-[54px] text-[#3d1f00] mb-2 font-['Manrope:Bold']">
               Свяжитесь с нами
             </h1>
-            <p className="text-[14px] leading-[21px] text-[#83451e]">
+            <p className="text-[13px] md:text-[14px] leading-relaxed md:leading-[21px] text-[#83451e] font-['Manrope:Regular']">
               Мы будем рады услышать вас. Отправьте сообщение и мы ответим как можно скорее.
             </p>
           </div>
 
           {/* Form Card */}
-          <div className="bg-white rounded-[20px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)] p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="bg-white rounded-[15px] md:rounded-[20px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)] p-6 md:p-8">
+            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
               {/* Full Name */}
               <div>
-                <label htmlFor="fullName" className="block text-[14px] leading-[21px] text-[#83451e] mb-2 ml-5">
+                <label htmlFor="fullName" className="block text-[14px] leading-[21px] text-[#83451e] mb-1.5 md:mb-2 ml-4 md:ml-5">
                   Полное имя *
                 </label>
                 <input
@@ -257,19 +300,19 @@ export default function ContactPage() {
                   id="fullName"
                   value={formData.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  className={`w-full h-[56px] px-6 bg-[#faf8f0] rounded-[25px] text-[16px] leading-[24px] text-[#3d1f00] outline-none transition-all ${
+                  className={`w-full h-[48px] md:h-[56px] px-5 md:px-6 bg-[#faf8f0] rounded-[20px] md:rounded-[25px] text-[15px] md:text-[16px] leading-[24px] text-[#3d1f00] outline-none transition-all ${
                     errors.fullName ? 'ring-2 ring-[#d4183d]' : 'focus:ring-2 focus:ring-[#83451e]'
                   }`}
                   placeholder="Введите ваше полное имя"
                 />
                 {errors.fullName && (
-                  <p className="mt-2 ml-5 text-[14px] text-[#d4183d]">{errors.fullName}</p>
+                  <p className="mt-1.5 ml-4 md:ml-5 text-[12px] md:text-[14px] text-[#d4183d]">{errors.fullName}</p>
                 )}
               </div>
 
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-[14px] leading-[21px] text-[#83451e] mb-2 ml-5">
+                <label htmlFor="email" className="block text-[14px] leading-[21px] text-[#83451e] mb-1.5 md:mb-2 ml-4 md:ml-5">
                   Email адрес *
                 </label>
                 <input
@@ -277,19 +320,19 @@ export default function ContactPage() {
                   id="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  className={`w-full h-[56px] px-6 bg-[#faf8f0] rounded-[25px] text-[16px] leading-[24px] text-[#3d1f00] outline-none transition-all ${
+                  className={`w-full h-[48px] md:h-[56px] px-5 md:px-6 bg-[#faf8f0] rounded-[20px] md:rounded-[25px] text-[15px] md:text-[16px] leading-[24px] text-[#3d1f00] outline-none transition-all ${
                     errors.email ? 'ring-2 ring-[#d4183d]' : 'focus:ring-2 focus:ring-[#83451e]'
                   }`}
                   placeholder="your.email@example.com"
                 />
                 {errors.email && (
-                  <p className="mt-2 ml-5 text-[14px] text-[#d4183d]">{errors.email}</p>
+                  <p className="mt-1.5 ml-4 md:ml-5 text-[12px] md:text-[14px] text-[#d4183d]">{errors.email}</p>
                 )}
               </div>
 
               {/* Subject */}
               <div>
-                <label htmlFor="subject" className="block text-[14px] leading-[21px] text-[#83451e] mb-2 ml-5">
+                <label htmlFor="subject" className="block text-[14px] leading-[21px] text-[#83451e] mb-1.5 md:mb-2 ml-4 md:ml-5">
                   Тема
                 </label>
                 <input
@@ -297,28 +340,28 @@ export default function ContactPage() {
                   id="subject"
                   value={formData.subject}
                   onChange={(e) => handleInputChange('subject', e.target.value)}
-                  className="w-full h-[56px] px-6 bg-[#faf8f0] rounded-[25px] text-[16px] leading-[24px] text-[#3d1f00] outline-none focus:ring-2 focus:ring-[#83451e] transition-all"
+                  className="w-full h-[48px] md:h-[56px] px-5 md:px-6 bg-[#faf8f0] rounded-[20px] md:rounded-[25px] text-[15px] md:text-[16px] leading-[24px] text-[#3d1f00] outline-none focus:ring-2 focus:ring-[#83451e] transition-all"
                   placeholder="О чем ваш запрос?"
                 />
               </div>
 
               {/* Message */}
               <div>
-                <label htmlFor="message" className="block text-[14px] leading-[21px] text-[#83451e] mb-2 ml-5">
+                <label htmlFor="message" className="block text-[14px] leading-[21px] text-[#83451e] mb-1.5 md:mb-2 ml-4 md:ml-5">
                   Сообщение *
                 </label>
                 <textarea
                   id="message"
                   value={formData.message}
                   onChange={(e) => handleInputChange('message', e.target.value)}
-                  rows={6}
-                  className={`w-full px-6 py-4 bg-[#faf8f0] rounded-[25px] text-[16px] leading-[24px] text-[#3d1f00] outline-none resize-none transition-all ${
+                  rows={4}
+                  className={`w-full px-5 md:px-6 py-3 md:py-4 bg-[#faf8f0] rounded-[20px] md:rounded-[25px] text-[15px] md:text-[16px] leading-[24px] text-[#3d1f00] outline-none resize-none transition-all ${
                     errors.message ? 'ring-2 ring-[#d4183d]' : 'focus:ring-2 focus:ring-[#83451e]'
                   }`}
                   placeholder="Расскажите подробнее о вашем запросе..."
                 />
                 {errors.message && (
-                  <p className="mt-2 ml-5 text-[14px] text-[#d4183d]">{errors.message}</p>
+                  <p className="mt-1.5 ml-4 md:ml-5 text-[12px] md:text-[14px] text-[#d4183d]">{errors.message}</p>
                 )}
               </div>
 
@@ -360,7 +403,7 @@ export default function ContactPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-[56px] bg-[#83451e] text-[#fffee7] text-[16px] leading-[24px] font-normal rounded-[25px] shadow-[0px_4px_6px_0px_rgba(0,0,0,0.1),0px_2px_4px_0px_rgba(0,0,0,0.1)] hover:bg-[#6b3718] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full h-[50px] md:h-[56px] bg-[#83451e] text-[#fffee7] text-[16px] leading-[24px] font-normal rounded-[20px] md:rounded-[25px] shadow-[0px_4px_6px_0px_rgba(0,0,0,0.1),0px_2px_4px_0px_rgba(0,0,0,0.1)] hover:bg-[#6b3718] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? 'Отправка...' : 'Отправить сообщение'}
               </button>

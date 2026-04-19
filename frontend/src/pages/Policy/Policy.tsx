@@ -72,35 +72,37 @@ export default function Policy() {
     <div className="min-h-screen bg-[#faf7ec] relative">
       {/* Header with Back Button and Tabs */}
       <header className="sticky top-0 z-50 backdrop-blur-md bg-[rgba(250,247,236,0.8)] border-b border-[rgba(45,54,37,0.1)]">
-        <div className="max-w-[1400px] mx-auto px-8 py-4">
-          <div className="flex items-center gap-4 mb-4">
-            <button
-              onClick={() => window.history.back()}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg backdrop-blur-md bg-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.8)] transition-all text-[#2d3625] font-medium"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span>Назад</span>
-            </button>
-            <h1 className="text-2xl font-bold text-[#2d3625]">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-3 md:py-4">
+          <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => window.history.back()}
+                className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg backdrop-blur-md bg-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.8)] transition-all text-[#2d3625] font-medium text-sm md:text-base"
+              >
+                <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
+                <span>Назад</span>
+              </button>
+            </div>
+            <h1 className="text-xl md:text-2xl font-bold text-[#2d3625] truncate">
               {activeTab === 'privacy' ? 'Политика конфиденциальности' : 'Публичная оферта'}
             </h1>
           </div>
 
-          {/* Tabs */}
-          <div className="flex gap-6 border-b border-[rgba(45,54,37,0.1)]">
+          {/* Tabs - Scrollable on mobile */}
+          <div className="flex gap-4 md:gap-6 border-b border-[rgba(45,54,37,0.1)] overflow-x-auto no-scrollbar whitespace-nowrap">
             <button
               onClick={() => setActiveTab('privacy')}
-              className={`pb-3 px-2 text-lg font-medium transition-all ${
+              className={`pb-3 px-1 md:px-2 text-sm md:text-lg font-medium transition-all ${
                 activeTab === 'privacy'
                   ? 'text-[#ff6b35] border-b-2 border-[#ff6b35]'
                   : 'text-[#2d3625] hover:text-[#ff6b35]'
               }`}
             >
-              Политика конфиденциальности
+              Конфиденциальность
             </button>
             <button
               onClick={() => setActiveTab('offer')}
-              className={`pb-3 px-2 text-lg font-medium transition-all ${
+              className={`pb-3 px-1 md:px-2 text-sm md:text-lg font-medium transition-all ${
                 activeTab === 'offer'
                   ? 'text-[#ff6b35] border-b-2 border-[#ff6b35]'
                   : 'text-[#2d3625] hover:text-[#ff6b35]'
@@ -112,30 +114,30 @@ export default function Policy() {
         </div>
       </header>
 
-      <div className="max-w-[1400px] mx-auto px-8 py-12">
-        <div className="flex gap-8 relative">
-          {/* Sticky Sidebar Navigation */}
-          <aside className="w-[280px] flex-shrink-0">
-            <nav className="sticky top-32">
-              <div className="backdrop-blur-[20px] bg-[rgba(255,255,255,0.6)] rounded-[20px] p-6 shadow-lg border border-[rgba(255,255,255,0.8)] max-h-[calc(100vh-10rem)] flex flex-col">
-                <h2 className="text-sm font-bold text-[#2d3625] mb-4 uppercase tracking-wider flex-shrink-0">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-6 md:py-12">
+        <div className="flex flex-col lg:flex-row gap-8 relative">
+          {/* Sidebar Navigation - Hidden on mobile, shown as a floating menu or top list */}
+          <aside className="w-full lg:w-[280px] lg:flex-shrink-0">
+            <nav className="lg:sticky lg:top-40">
+              <div className="backdrop-blur-[20px] bg-[rgba(255,255,255,0.6)] rounded-[20px] p-4 md:p-6 shadow-lg border border-[rgba(255,255,255,0.8)] max-h-[50vh] lg:max-h-[calc(100vh-12rem)] flex flex-col">
+                <h2 className="text-xs md:text-sm font-bold text-[#2d3625] mb-3 md:mb-4 uppercase tracking-wider flex-shrink-0">
                   Содержание
                 </h2>
-                <ul className="space-y-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[rgba(255,107,53,0.3)] scrollbar-track-transparent hover:scrollbar-thumb-[rgba(255,107,53,0.5)]">
+                <ul className="space-y-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[rgba(255,107,53,0.3)] scrollbar-track-transparent">
                   {sections.map((section, index) => (
                     <li key={section.id}>
                       <button
                         onClick={() => scrollToSection(section.id)}
-                        className={`w-full text-left px-3 py-2.5 rounded-lg transition-all text-sm relative ${
+                        className={`w-full text-left px-3 py-2 rounded-lg transition-all text-xs md:text-sm relative ${
                           activeSection === section.id
-                            ? 'text-[#2d3625] font-semibold'
+                            ? 'text-[#2d3625] font-semibold bg-[rgba(255,255,255,0.8)]'
                             : 'text-[#1f2937] hover:bg-[rgba(255,255,255,0.4)]'
                         }`}
                       >
                         {activeSection === section.id && (
-                          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-[#ff6b35] to-[#f7931e] rounded-r-full" />
+                          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-3/4 bg-gradient-to-b from-[#ff6b35] to-[#f7931e] rounded-r-full" />
                         )}
-                        <span className="block pl-3">
+                        <span className="block pl-3 transition-transform duration-200 group-hover:translate-x-1">
                           {index + 1}. {section.title}
                         </span>
                       </button>
@@ -148,13 +150,13 @@ export default function Policy() {
 
           {/* Main Content */}
           <main className="flex-1 min-w-0">
-            <div className="backdrop-blur-[20px] bg-[rgba(255,255,255,0.4)] rounded-[20px] p-12 shadow-lg border border-[rgba(255,255,255,0.8)]">
+            <div className="backdrop-blur-[20px] bg-[rgba(255,255,255,0.4)] rounded-[20px] p-6 md:p-12 shadow-lg border border-[rgba(255,255,255,0.8)]">
               {activeTab === 'privacy' ? (
                 /* Privacy Policy Content */
                 <>
                   {/* Section 1 */}
-                  <section id="privacy-1" className="mb-16 scroll-mt-32">
-                    <h2 className="text-3xl font-bold text-[#2d3625] mb-6">1. Общие положения</h2>
+                  <section id="privacy-1" className="mb-12 md:mb-16 scroll-mt-32">
+                    <h2 className="text-2xl md:text-3xl font-bold text-[#2d3625] mb-4 md:mb-6">1. Общие положения</h2>
                     <div className="space-y-4 text-[#1f2937] leading-[1.6]">
                       <p>
                         Настоящая политика обработки персональных данных составлена в соответствии с требованиями
@@ -848,12 +850,12 @@ export default function Policy() {
       </div>
 
       {/* Footer */}
-      <footer className="mt-16 py-8 border-t border-[rgba(45,54,37,0.1)]">
-        <div className="max-w-[1400px] mx-auto px-8 text-center text-sm text-[#1f2937]">
+      <footer className="mt-8 md:mt-16 py-6 md:py-8 border-t border-[rgba(45,54,37,0.1)]">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-8 text-center text-xs md:text-sm text-[#1f2937]">
           <p>© 2026 NIKA AI Fitness Assistant. Все права защищены.</p>
-          <p className="mt-2">
+          <p className="mt-2 text-[10px] md:text-sm">
             По всем вопросам:{' '}
-            <a href="ceo@mynika.ru" className="text-[#ff6b35] underline hover:text-[#f7931e]">
+            <a href="mailto:ceo@mynika.ru" className="text-[#ff6b35] underline hover:text-[#f7931e]">
               ceo@mynika.ru
             </a>
           </p>
