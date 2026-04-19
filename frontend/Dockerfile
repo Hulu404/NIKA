@@ -4,7 +4,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run build
+# Принудительно собираем в dist, игнорируя outDir из vite.config.ts
+RUN npx vite build --outDir dist
 
 # Production stage
 FROM nginx:stable-alpine
