@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Clock, Search, LogOut, ChevronLeft } from 'lucide-react';
+import { Plus, Clock, Search, LogOut, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router';
 
@@ -20,6 +20,15 @@ export function ChatSidebar({
 }: ChatSidebarProps) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+
+  const handleMobileNav = (id?: string) => {
+    if (window.innerWidth < 1024) {
+      onToggle();
+    }
+    if (id) {
+      onHistory(id);
+    }
+  };
 
   const onLogout = async () => {
     const refreshToken = localStorage.getItem('refresh_token');
@@ -55,27 +64,27 @@ export function ChatSidebar({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onToggle}
-            className="lg:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-40 cursor-pointer"
+            className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-md z-[45] cursor-pointer"
           />
         )}
       </AnimatePresence>
 
-      {/* Sidebar */}
       <motion.div
         initial={false}
-        animate={{ width: isOpen ? 320 : 0 }}
-        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        onTouchStart={(e) => {
-          e.currentTarget.dataset.touchStartX = String(e.touches[0].clientX);
+        animate={{ 
+          x: isOpen ? 0 : -320,
+          width: isOpen ? 320 : 0 
         }}
-        onTouchEnd={(e) => {
-          const startX = Number(e.currentTarget.dataset.touchStartX || '0');
-          const endX = e.changedTouches[0].clientX;
-          if (startX - endX > 50) {
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.05}
+        onDragEnd={(_e, info) => {
+          if (info.offset.x < -50) {
             onToggle();
           }
         }}
-        className="fixed lg:relative inset-y-0 left-0 z-50 h-full overflow-hidden shrink-0"
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className="fixed lg:relative inset-y-0 left-0 z-50 h-full overflow-hidden shrink-0 shadow-2xl lg:shadow-none touch-none lg:touch-auto"
       >
         <aside
           className="h-full w-80 bg-white/80 backdrop-blur-2xl border-r border-black/5 flex flex-col"
@@ -92,14 +101,17 @@ export function ChatSidebar({
                 <button
                   type="button"
                   onClick={onToggle}
-                  className="lg:hidden p-3 hover:bg-black/5 rounded-xl transition-all cursor-pointer relative z-[60] active:scale-95"
+                  className="lg:hidden p-2 hover:bg-black/5 rounded-xl transition-all cursor-pointer relative z-[60] active:scale-95 border border-black/5"
                 >
-                  <ChevronLeft size={24} className="text-gray-500" />
+                  <X size={20} className="text-gray-500" />
                 </button>
               </div>
 
               <motion.button
-                onClick={onNewChat}
+                onClick={() => {
+                  onNewChat();
+                  if (window.innerWidth < 1024) onToggle();
+                }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="w-full bg-gradient-to-r from-[#f6b044] to-[#f39c12] hover:from-[#f39c12] hover:to-[#f6b044] text-white rounded-2xl px-4 py-3.5 flex items-center justify-center gap-2.5 shadow-lg shadow-[#f6b044]/20 transition-all group font-medium"
@@ -137,7 +149,7 @@ export function ChatSidebar({
                 <div className="space-y-1">
                   {sessions.filter((s: any) => !searchQuery || s.last_message?.content?.toLowerCase().includes(searchQuery.toLowerCase())).map((s: any, i: number) => (
                     <motion.button
-                      onClick={() => onHistory(s.session_id)}
+                      onClick={() => handleMobileNav(s.session_id)}
                       key={s.session_id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -161,7 +173,7 @@ export function ChatSidebar({
                   <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Меню</h3>
                 </div>
                 <div className="space-y-1">
-                  <NavLink to="/emotion-tracker" className={({ isActive }) => (isActive ? 'active' : '')}>
+                  <NavLink to="/emotion-tracker" onClick={() => handleMobileNav()} className={({ isActive }) => (isActive ? 'active' : '')}>
                     <motion.button
                       key="emotion-tracker"
                       initial={{ opacity: 0, x: -20 }}
@@ -175,7 +187,7 @@ export function ChatSidebar({
                       </span>
                     </motion.button>
                   </NavLink>
-                  <NavLink to="/food-tracker" className={({ isActive }) => (isActive ? 'active' : '')}>
+                  <NavLink to="/food-tracker" onClick={() => handleMobileNav()} className={({ isActive }) => (isActive ? 'active' : '')}>
                     <motion.button
                       key="food-tracker"
                       initial={{ opacity: 0, x: -20 }}
@@ -189,7 +201,7 @@ export function ChatSidebar({
                       </span>
                     </motion.button>
                   </NavLink>
-                  <NavLink to="/profile" className={({ isActive }) => (isActive ? 'active' : '')}>
+                  <NavLink to="/profile" onClick={() => handleMobileNav()} className={({ isActive }) => (isActive ? 'active' : '')}>
                     <motion.button
                       key="profile"
                       initial={{ opacity: 0, x: -20 }}
@@ -203,7 +215,7 @@ export function ChatSidebar({
                       </span>
                     </motion.button>
                   </NavLink>
-                  <NavLink to="/FAQ" className={({ isActive }) => (isActive ? 'active' : '')}>
+                  <NavLink to="/FAQ" onClick={() => handleMobileNav()} className={({ isActive }) => (isActive ? 'active' : '')}>
                     <motion.button
                       key="faq"
                       initial={{ opacity: 0, x: -20 }}
@@ -214,6 +226,20 @@ export function ChatSidebar({
                     >
                       <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
                         FAQs
+                      </span>
+                    </motion.button>
+                  </NavLink>
+                  <NavLink to="/contact" onClick={() => handleMobileNav()} className={({ isActive }) => (isActive ? 'active' : '')}>
+                    <motion.button
+                      key="contact"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: (sessions.length + 4) * 0.05 }}
+                      whileHover={{ x: 4 }}
+                      className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-black/5 transition-all group text-left border border-transparent hover:border-black/10"
+                    >
+                      <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
+                        Обратная связь
                       </span>
                     </motion.button>
                   </NavLink>

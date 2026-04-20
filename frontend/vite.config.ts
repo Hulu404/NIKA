@@ -11,22 +11,21 @@ build: {
   css: {
     postcss: './postcss.config.js', // Указываем конфиг PostCSS
   },
-// // Локальная разработка
-// server: {
-//     host: '0.0.0.0',        // слушать все интерфейсы
-//     port: 5173,              // порт фронта
-//     proxy: {
-//       // Все запросы к /api идут на Flask
-//       '/api': {
-//           target: 'http://127.0.0.1:5001',
-//           changeOrigin: true,
-//       },
-//       // Все запросы к /static идут на Flask
-//       '/static': {
-//           target: 'http://127.0.0.1:5001',
-//           changeOrigin: true,
-//       }
-//     },
-//   },
+  server: {
+    host: '0.0.0.0',        // слушать все интерфейсы
+    port: 5173,              // порт фронта
+    proxy: {
+      // Все запросы к /api идут на Flask
+      '/api': {
+          target: 'http://127.0.0.1:5001',
+          changeOrigin: true,
+      },
+      // Все запросы к /static идут на Flask
+      '/static': {
+          target: 'http://127.0.0.1:5001',
+          changeOrigin: true,
+      }
+    },
+  },
 
 })

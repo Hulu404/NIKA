@@ -344,9 +344,9 @@ export function ChatInterface({isError}: Error) {
         <motion.div 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="sticky top-0 z-20 backdrop-blur-2xl bg-white/80 border-b border-black/5"
+          className="sticky top-0 z-20 backdrop-blur-2xl bg-white/80 border-b border-black/5 flex-shrink-0"
         >
-          <div className="flex items-center justify-between px-6 py-4">
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
             <div className="flex items-center gap-4">
               {!isSidebarOpen && (
                 <button
@@ -383,17 +383,17 @@ export function ChatInterface({isError}: Error) {
           </div>
         </motion.div>
 
-        <div className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto px-6 py-8">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
             {messages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center py-20">
+              <div className="h-full flex flex-col items-center justify-center py-4 sm:py-20">
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#f6b044] to-[#f39c12] flex items-center justify-center shadow-2xl shadow-[#f6b044]/20 mb-6">
-                    <Sparkles className="text-white" size={36} strokeWidth={2.5} />
+                  <div className="w-12 h-12 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#f6b044] to-[#f39c12] flex items-center justify-center shadow-2xl shadow-[#f6b044]/20 mb-4 sm:mb-6">
+                    <Sparkles className="text-white" size={24} sm:size={36} strokeWidth={2.5} />
                   </div>
                 </motion.div>
                 
@@ -401,7 +401,7 @@ export function ChatInterface({isError}: Error) {
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="text-3xl font-bold text-gray-900 mb-3"
+                  className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3"
                 >
                   Чем могу помочь?
                 </motion.h2>
@@ -410,7 +410,7 @@ export function ChatInterface({isError}: Error) {
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="text-gray-500 mb-12 text-center max-w-md"
+                  className="text-gray-500 mb-6 sm:mb-12 text-center max-w-md text-sm sm:text-base"
                 >
                   Я ваш персональный спортивный помощник с искусственным интеллектом
                 </motion.p>
@@ -452,8 +452,8 @@ export function ChatInterface({isError}: Error) {
           </div>
         </div>
 
-        <div className="sticky bottom-0 border-t border-black/5 bg-white/80 backdrop-blur-2xl">
-          <div className="max-w-4xl mx-auto px-6 py-6">
+        <div className="sticky bottom-0 border-t border-black/5 bg-white/80 backdrop-blur-2xl flex-shrink-0">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 sm:py-6">
             <motion.div 
               animate={{ 
                 scale: isFocused ? 1.01 : 1,
@@ -470,7 +470,7 @@ export function ChatInterface({isError}: Error) {
                   onKeyDown={handleKeyDown}
                   onFocus={() => setIsFocused(true)}
                   onBlur={() => setIsFocused(false)}
-                  placeholder="Напишите сообщение или нажмите / для команд..."
+                  placeholder="Сообщение..."
                   rows={1}
                   className="flex-1 resize-none bg-transparent px-2 py-3 focus:outline-none text-gray-900 placeholder:text-gray-400 max-h-32 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                   style={{
@@ -505,13 +505,12 @@ export function ChatInterface({isError}: Error) {
                 </div>
               </div> 
             </motion.div> 
-            <p className="text-xs text-center text-gray-400 mt-4">
-              NIKA может делать ошибки. Проверяйте важную информацию.
-              {' '}
-              <NavLink to="/contact" className="text-amber-600 hover:underline ml-1">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 mt-2 sm:mt-4 text-[10px] sm:text-xs text-gray-400">
+              <span className="hidden sm:inline">NIKA может делать ошибки. Проверяйте важную информацию.</span>
+              <NavLink to="/contact" className="text-amber-600 hover:underline">
                 Обратная связь
               </NavLink>
-            </p>
+            </div>
           </div> 
         </div>
       </div>

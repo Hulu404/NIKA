@@ -86,7 +86,7 @@ export default function LoginPage() {
       <div className="w-full max-w-[480px] relative z-10">
         {/* Заголовок */}
         <div className="flex flex-col gap-3 mb-14 text-center">
-          <h1 className="text-[#3d1f00] text-[40px] leading-[50px]">Вход</h1>
+          <h1 className="text-[#3d1f00] text-[32px] sm:text-[40px] leading-tight sm:leading-[50px]">Вход</h1>
           <p className="text-[#83451e] text-[16px] leading-[24px]">
             Войдите в свой аккаунт
           </p>

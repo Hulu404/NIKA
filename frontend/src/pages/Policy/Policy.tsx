@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Policy() {
   const [activeTab, setActiveTab] = useState<'privacy' | 'offer'>('privacy');
@@ -72,50 +73,64 @@ export default function Policy() {
     <div className="min-h-screen bg-[#faf7ec] relative">
       {/* Header with Back Button and Tabs */}
       <header className="sticky top-0 z-50 backdrop-blur-md bg-[rgba(250,247,236,0.8)] border-b border-[rgba(45,54,37,0.1)]">
-        <div className="max-w-[1400px] mx-auto px-8 py-4">
-          <div className="flex items-center gap-4 mb-4">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
             <button
               onClick={() => window.history.back()}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg backdrop-blur-md bg-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.8)] transition-all text-[#2d3625] font-medium"
+              className="flex items-center self-start gap-2 px-4 py-2 rounded-lg backdrop-blur-md bg-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.8)] transition-all text-[#2d3625] font-medium text-sm sm:text-base"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               <span>Назад</span>
             </button>
-            <h1 className="text-2xl font-bold text-[#2d3625]">
+            <h1 className="text-xl sm:text-2xl font-bold text-[#2d3625]">
               {activeTab === 'privacy' ? 'Политика конфиденциальности' : 'Публичная оферта'}
             </h1>
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-6 border-b border-[rgba(45,54,37,0.1)]">
+          <div className="flex gap-4 sm:gap-8 border-b border-[rgba(45,54,37,0.1)]">
             <button
               onClick={() => setActiveTab('privacy')}
-              className={`pb-3 px-2 text-lg font-medium transition-all ${
+              className={`pb-3 px-1 text-sm sm:text-lg font-medium transition-all relative ${
                 activeTab === 'privacy'
-                  ? 'text-[#ff6b35] border-b-2 border-[#ff6b35]'
+                  ? 'text-[#ff6b35]'
                   : 'text-[#2d3625] hover:text-[#ff6b35]'
               }`}
             >
-              Политика конфиденциальности
+              <span className="hidden sm:inline">Политика конфиденциальности</span>
+              <span className="inline sm:hidden">Политика</span>
+              {activeTab === 'privacy' && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#ff6b35]"
+                />
+              )}
             </button>
             <button
               onClick={() => setActiveTab('offer')}
-              className={`pb-3 px-2 text-lg font-medium transition-all ${
+              className={`pb-3 px-1 text-sm sm:text-lg font-medium transition-all relative ${
                 activeTab === 'offer'
-                  ? 'text-[#ff6b35] border-b-2 border-[#ff6b35]'
+                  ? 'text-[#ff6b35]'
                   : 'text-[#2d3625] hover:text-[#ff6b35]'
               }`}
             >
-              Публичная оферта
+              <span className="hidden sm:inline">Публичная оферта</span>
+              <span className="inline sm:hidden">Оферта</span>
+              {activeTab === 'offer' && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#ff6b35]"
+                />
+              )}
             </button>
           </div>
         </div>
       </header>
 
-      <div className="max-w-[1400px] mx-auto px-8 py-12">
-        <div className="flex gap-8 relative">
-          {/* Sticky Sidebar Navigation */}
-          <aside className="w-[280px] flex-shrink-0">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-6 sm:py-12">
+        <div className="flex flex-col lg:flex-row gap-8 relative">
+          {/* Sticky Sidebar Navigation - Hidden on mobile, shown on desktop */}
+          <aside className="hidden lg:block lg:w-[280px] flex-shrink-0">
             <nav className="sticky top-32">
               <div className="backdrop-blur-[20px] bg-[rgba(255,255,255,0.6)] rounded-[20px] p-6 shadow-lg border border-[rgba(255,255,255,0.8)] max-h-[calc(100vh-10rem)] flex flex-col">
                 <h2 className="text-sm font-bold text-[#2d3625] mb-4 uppercase tracking-wider flex-shrink-0">
@@ -148,13 +163,13 @@ export default function Policy() {
 
           {/* Main Content */}
           <main className="flex-1 min-w-0">
-            <div className="backdrop-blur-[20px] bg-[rgba(255,255,255,0.4)] rounded-[20px] p-12 shadow-lg border border-[rgba(255,255,255,0.8)]">
+            <div className="backdrop-blur-[20px] bg-[rgba(255,255,255,0.4)] rounded-[20px] p-6 sm:p-12 shadow-lg border border-[rgba(255,255,255,0.8)]">
               {activeTab === 'privacy' ? (
                 /* Privacy Policy Content */
                 <>
                   {/* Section 1 */}
-                  <section id="privacy-1" className="mb-16 scroll-mt-32">
-                    <h2 className="text-3xl font-bold text-[#2d3625] mb-6">1. Общие положения</h2>
+                  <section id="privacy-1" className="mb-12 sm:mb-16 scroll-mt-32">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-[#2d3625] mb-4 sm:mb-6">1. Общие положения</h2>
                     <div className="space-y-4 text-[#1f2937] leading-[1.6]">
                       <p>
                         Настоящая политика обработки персональных данных составлена в соответствии с требованиями

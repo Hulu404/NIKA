@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import svgPathsBack from './imports/svg-n101rx8ak0';
 import svgPaths from './imports/svg-nfsr0erm4u';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '../../JWT_token_refresh';
+import { Menu, X } from 'lucide-react';
 
 interface FAQItem {
   question: string;
@@ -69,12 +70,12 @@ function FAQAccordion() {
           >
             <button
               onClick={() => toggleItem(index)}
-              className="w-full px-8 py-6 flex items-center justify-between text-left transition-all group"
+              className="w-full px-5 sm:px-8 py-5 sm:py-6 flex items-center justify-between text-left transition-all group"
             >
-              <span className="font-['Manrope:SemiBold',sans-serif] font-semibold text-[19px] text-[#2d3625] pr-8 leading-relaxed group-hover:text-[#f6b044] transition-colors">
+              <span className="font-['Manrope:SemiBold',sans-serif] font-semibold text-[17px] sm:text-[19px] text-[#2d3625] pr-4 sm:pr-8 leading-relaxed group-hover:text-[#f6b044] transition-colors">
                 {item.question}
               </span>
-              <div className="flex-shrink-0 w-11 h-11 rounded-full bg-gradient-to-br from-[#f6b044] to-[#f39c12] flex items-center justify-center transition-all group-hover:scale-110 shadow-md">
+              <div className="flex-shrink-0 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-[#f6b044] to-[#f39c12] flex items-center justify-center transition-all group-hover:scale-110 shadow-md">
                 {isOpen ? (
                   <ChevronUp size={22} className="text-white" strokeWidth={2.5} />
                 ) : (
@@ -84,8 +85,8 @@ function FAQAccordion() {
             </button>
 
             {isOpen && (
-              <div className="px-8 pb-6 pt-3 border-t-2 border-white/60 backdrop-blur-sm bg-white/20">
-                <p className="font-['Manrope:Regular',sans-serif] text-[17px] text-[#5a6444] leading-[1.75]">
+              <div className="px-5 sm:px-8 pb-6 pt-2 border-t-2 border-white/60 backdrop-blur-sm bg-white/20">
+                <p className="font-['Manrope:Regular',sans-serif] text-[15px] sm:text-[17px] text-[#5a6444] leading-[1.75]">
                   {item.answer}
                 </p>
               </div>
@@ -99,6 +100,7 @@ function FAQAccordion() {
 
 export default function FAQPage() {
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const onLogout = async () => {
     try {
       const response = await fetchWithAuth('/api/v1/auth/logout', {
@@ -120,26 +122,70 @@ export default function FAQPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fffee7] flex">
+    <div className="min-h-screen bg-[#fffee7] flex relative overflow-x-hidden">
       {/* Background Gradients */}
       <div className="absolute pointer-events-none bg-[rgba(246,176,68,0.08)] blur-[100px] left-[15%] opacity-50 rounded-full w-[450px] h-[450px] top-0" />
       <div className="absolute pointer-events-none bg-[rgba(243,156,18,0.08)] blur-[100px] right-[15%] rounded-full w-[450px] h-[450px] top-[250px]" />
 
+      {/* Mobile Hamburger */}
+      <button
+        onClick={() => setIsMobileMenuOpen(true)}
+        className="md:hidden fixed top-4 left-4 z-50 p-2.5 bg-[#faf8f0] rounded-xl border border-[#e8dcc8] shadow-sm"
+      >
+        <Menu size={20} className="text-[#83451e]" />
+      </button>
+
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-md z-[45] cursor-pointer"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
       <motion.aside
-        initial={{ x: -30, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]"
-      >
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
-            <span className="text-white text-[18px] font-bold">N</span>
+        initial={false}
+        animate={{ 
+          x: isMobileMenuOpen ? 0 : (window.innerWidth < 768 ? '-100%' : 0),
+          opacity: 1 
+        }}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.05}
+        onDragEnd={(_e, info) => {
+          if (info.offset.x < -50) {
+            setIsMobileMenuOpen(false);
+          }
+        }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className={`
+          fixed md:static inset-y-0 left-0 z-50
+          w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]
+          shadow-2xl md:shadow-none touch-none md:touch-auto
+        `}>
+        <div className="flex items-center justify-between gap-3 mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
+              <span className="text-white text-[18px] font-bold">N</span>
+            </div>
+            <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
           </div>
-          <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden p-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-xl transition-all cursor-pointer relative z-[60] active:scale-95 border border-[#e8dcc8]"
+          >
+            <X size={20} />
+          </button>
         </div>
 
-        <NavLink to="/chat">
+        <NavLink to="/chat" onClick={() => setIsMobileMenuOpen(false)}>
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
@@ -159,7 +205,7 @@ export default function FAQPage() {
             </h3>
             <nav className="flex flex-col gap-1">
               {/* Личный кабинет */}
-              <NavLink to="/profile">
+              <NavLink to="/profile" onClick={() => setIsMobileMenuOpen(false)}>
                 <motion.span
                   whileHover={{ x: 4 }}
                   whileTap={{ scale: 0.97 }}
@@ -188,7 +234,7 @@ export default function FAQPage() {
               </NavLink>
 
               {/* Трекер питания */}
-              <NavLink to="/food-tracker">
+              <NavLink to="/food-tracker" onClick={() => setIsMobileMenuOpen(false)}>
                 <motion.span
                   whileHover={{ x: 4 }}
                   whileTap={{ scale: 0.97 }}
@@ -217,7 +263,7 @@ export default function FAQPage() {
               </NavLink>
 
               {/* Дневник эмоций */}
-              <NavLink to="/emotion-tracker">
+              <NavLink to="/emotion-tracker" onClick={() => setIsMobileMenuOpen(false)}>
                 <motion.span
                   whileHover={{ x: 4 }}
                   whileTap={{ scale: 0.97 }}
@@ -282,14 +328,14 @@ export default function FAQPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
-        className="flex-1 p-8 overflow-auto"
+        className="flex-1 p-4 sm:p-6 md:p-8 overflow-auto pt-16 md:pt-8"
       >
         <div className="max-w-[1050px]">
-          <div className="mb-12">
-            <h1 className="font-['Manrope:Bold',sans-serif] text-[44px] font-bold text-[#2d3625] mb-3 tracking-tight">
+          <div className="mb-8 sm:mb-12">
+            <h1 className="font-['Manrope:Bold',sans-serif] text-[32px] sm:text-[44px] font-bold text-[#2d3625] mb-3 tracking-tight">
               Часто задаваемые вопросы
             </h1>
-            <p className="font-['Manrope:Regular',sans-serif] text-[18px] text-[#5a6444] leading-relaxed">
+            <p className="font-['Manrope:Regular',sans-serif] text-[16px] sm:text-[18px] text-[#5a6444] leading-relaxed">
               Ответы на самые популярные вопросы о НИКЕ
             </p>
           </div>

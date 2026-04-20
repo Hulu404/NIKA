@@ -19,3 +19,5 @@ frontend/node_modules/
 # Audio cache
 audio_cache/
 backend/app/static/audio_cache/
+backend/venv/
+backend/system_prompt.txt

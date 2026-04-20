@@ -73,7 +73,7 @@ const res = await fetch('/api/v1/auth/register', {
         <div className="w-full max-w-md">
           {/* Заголовок */}
           <div className="text-center mb-12">
-            <h1 className="text-[#3d1f00] mb-2 text-4xl font-['Manrope']">Регистрация</h1>
+            <h1 className="text-[#3d1f00] mb-2 text-3xl sm:text-4xl font-['Manrope']">Регистрация</h1>
             <p className="text-[#83451e] text-sm font-['Manrope']">Создайте аккаунт для продолжения</p>
           </div>
 

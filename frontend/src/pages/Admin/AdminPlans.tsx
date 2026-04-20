@@ -166,8 +166,8 @@ export default function AdminPlans() {
           <span className="text-[16px]">Назад</span>
         </button>
 
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-[#3d1f00] text-[32px] font-bold font-['Arimo:Bold',sans-serif]">
+        <div className="flex flex-col sm:items-center sm:flex-row justify-between gap-4 mb-8">
+          <h1 className="text-[#3d1f00] text-[28px] sm:text-[32px] font-bold font-['Arimo:Bold',sans-serif]">
             Управление тарифами
           </h1>
           <button
@@ -176,7 +176,7 @@ export default function AdminPlans() {
               setEditingId(null);
               setForm(emptyForm);
             }}
-            className="flex items-center gap-2 bg-[#f5a623] hover:bg-[#e59615] text-white font-bold py-3 px-6 rounded-[15px] shadow-md transition-all"
+            className="flex items-center justify-center gap-2 bg-[#f5a623] hover:bg-[#e59615] text-white font-bold py-3 px-6 rounded-[15px] shadow-md transition-all"
           >
             <Plus size={20} />
             Новый тариф
@@ -189,20 +189,20 @@ export default function AdminPlans() {
 
         {/* Create form */}
         {showCreate && (
-          <div className="bg-white rounded-[20px] p-8 shadow-sm mb-6">
+          <div className="bg-white rounded-[20px] p-5 sm:p-8 shadow-sm mb-6">
             <h2 className="text-[#3d1f00] text-[20px] font-bold mb-6">Новый тариф</h2>
             <PlanFormFields form={form} setForm={setForm} />
-            <div className="flex gap-3 mt-6">
+            <div className="flex flex-col sm:flex-row gap-3 mt-6">
               <button
                 onClick={handleCreate}
-                className="flex items-center gap-2 bg-[#f5a623] hover:bg-[#e59615] text-white font-bold py-3 px-6 rounded-[15px] transition-all"
+                className="flex items-center justify-center gap-2 bg-[#f5a623] hover:bg-[#e59615] text-white font-bold py-3 px-6 rounded-[15px] transition-all"
               >
                 <Save size={18} />
                 Создать
               </button>
               <button
                 onClick={cancelEdit}
-                className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 px-6 rounded-[15px] transition-all"
+                className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 px-6 rounded-[15px] transition-all"
               >
                 <X size={18} />
                 Отмена
@@ -216,22 +216,22 @@ export default function AdminPlans() {
           {plans.map((plan) => (
             <div
               key={plan.id}
-              className={`bg-white rounded-[20px] p-8 shadow-sm ${!plan.is_active ? 'opacity-50' : ''}`}
+              className={`bg-white rounded-[20px] p-5 sm:p-8 shadow-sm ${!plan.is_active ? 'opacity-50' : ''}`}
             >
               {editingId === plan.id ? (
                 <>
                   <PlanFormFields form={form} setForm={setForm} />
-                  <div className="flex gap-3 mt-6">
+                  <div className="flex flex-col sm:flex-row gap-3 mt-6">
                     <button
                       onClick={() => handleUpdate(plan.id)}
-                      className="flex items-center gap-2 bg-[#f5a623] hover:bg-[#e59615] text-white font-bold py-3 px-6 rounded-[15px] transition-all"
+                      className="flex items-center justify-center gap-2 bg-[#f5a623] hover:bg-[#e59615] text-white font-bold py-3 px-6 rounded-[15px] transition-all"
                     >
                       <Save size={18} />
                       Сохранить
                     </button>
                     <button
                       onClick={cancelEdit}
-                      className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 px-6 rounded-[15px] transition-all"
+                      className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 px-6 rounded-[15px] transition-all"
                     >
                       <X size={18} />
                       Отмена
@@ -239,10 +239,10 @@ export default function AdminPlans() {
                   </div>
                 </>
               ) : (
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-[#3d1f00] text-[20px] font-bold">{plan.name}</h3>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-3 mb-2">
+                      <h3 className="text-[#3d1f00] text-[20px] font-bold truncate">{plan.name}</h3>
                       {!plan.is_active && (
                         <span className="bg-gray-200 text-gray-500 text-[12px] px-3 py-1 rounded-full">
                           Неактивен
@@ -250,15 +250,15 @@ export default function AdminPlans() {
                       )}
                     </div>
                     {plan.description && (
-                      <p className="text-[#83451e] text-[14px] mb-2">{plan.description}</p>
+                      <p className="text-[#83451e] text-[14px] mb-2 line-clamp-2">{plan.description}</p>
                     )}
-                    <div className="flex gap-4 text-[#83451e] text-[14px]">
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-[#83451e] text-[14px]">
                       <span>{plan.price_rub} руб.</span>
                       <span>{plan.duration_days} дней</span>
-                      <span>{plan.daily_requests_limit} запросов/день</span>
+                      <span>{plan.daily_requests_limit} зап/дн</span>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 self-end sm:self-center">
                     <button
                       onClick={() => startEdit(plan)}
                       className="p-3 hover:bg-[#faf8f0] rounded-full transition-colors text-[#83451e]"
@@ -302,8 +302,8 @@ function PlanFormFields({
     'w-full h-[48px] px-5 bg-[#faf8f0] rounded-[15px] text-[#3d1f00] text-[16px] focus:outline-none focus:ring-2 focus:ring-[#f5a623] transition-colors';
 
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <div className="space-y-2">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="space-y-1 sm:space-y-2">
         <label className="block pl-3 text-[#83451e] text-[14px]">Название</label>
         <input
           type="text"
@@ -313,7 +313,7 @@ function PlanFormFields({
           className={inputClass}
         />
       </div>
-      <div className="space-y-2">
+      <div className="space-y-1 sm:space-y-2">
         <label className="block pl-3 text-[#83451e] text-[14px]">Цена (руб.)</label>
         <input
           type="number"
@@ -323,7 +323,7 @@ function PlanFormFields({
           className={inputClass}
         />
       </div>
-      <div className="col-span-2 space-y-2">
+      <div className="col-span-1 sm:col-span-2 space-y-1 sm:space-y-2">
         <label className="block pl-3 text-[#83451e] text-[14px]">Описание</label>
         <input
           type="text"
@@ -333,7 +333,7 @@ function PlanFormFields({
           className={inputClass}
         />
       </div>
-      <div className="space-y-2">
+      <div className="space-y-1 sm:space-y-2">
         <label className="block pl-3 text-[#83451e] text-[14px]">Длительность (дней)</label>
         <input
           type="number"
@@ -342,7 +342,7 @@ function PlanFormFields({
           className={inputClass}
         />
       </div>
-      <div className="space-y-2">
+      <div className="space-y-1 sm:space-y-2">
         <label className="block pl-3 text-[#83451e] text-[14px]">Лимит запросов/день</label>
         <input
           type="number"

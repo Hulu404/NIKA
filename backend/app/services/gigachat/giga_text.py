@@ -12,6 +12,9 @@ prompt_path = os.getenv("SYSTEM_PROMPT_PATH")
 if prompt_path and Path(prompt_path).exists():
     with open(prompt_path, "r", encoding="utf-8") as f:
         SYSTEM_PROMPT = f.read()
+else:
+    from app.services.Agents.prompts import MAIN_PROMPT
+    SYSTEM_PROMPT = MAIN_PROMPT
 
 def response_gigachat(messages):
     """Функция получения ответа от ГЧ"""

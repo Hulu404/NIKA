@@ -156,31 +156,31 @@ export default function Profile() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsMobileMenuOpen(false)}
-            className="md:hidden fixed inset-0 bg-black/50 z-40 cursor-pointer"
+            className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-md z-[45] cursor-pointer"
           />
         )}
       </AnimatePresence>
 
       {/* Sidebar */}
       <motion.aside
-        initial={{ x: -30, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-        onTouchStart={(e) => {
-          e.currentTarget.dataset.touchStartX = String(e.touches[0].clientX);
+        initial={false}
+        animate={{ 
+          x: isMobileMenuOpen ? 0 : (window.innerWidth < 768 ? '-100%' : 0),
+          opacity: 1 
         }}
-        onTouchEnd={(e) => {
-          const startX = Number(e.currentTarget.dataset.touchStartX || '0');
-          const endX = e.changedTouches[0].clientX;
-          if (startX - endX > 50) {
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.05}
+        onDragEnd={(_e, info) => {
+          if (info.offset.x < -50) {
             setIsMobileMenuOpen(false);
           }
         }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
         className={`
           fixed md:static inset-y-0 left-0 z-50
           w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]
-          transition-transform duration-300 shadow-2xl md:shadow-none
-          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+          shadow-2xl md:shadow-none touch-none md:touch-auto
         `}>
         {/* Logo */}
         <div className="flex items-center justify-between gap-3 mb-8">
@@ -193,9 +193,9 @@ export default function Profile() {
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(false)}
-            className="md:hidden p-3 -mr-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-lg cursor-pointer relative z-[60] active:scale-95"
+            className="md:hidden p-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-xl transition-all cursor-pointer relative z-[60] active:scale-95 border border-[#e8dcc8]"
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
       
@@ -219,7 +219,7 @@ export default function Profile() {
             </h3>
             <nav className="flex flex-col gap-1">
               {/* Личный кабинет  - ACTIVE */}
-              <NavLink to='/profile'>
+              <NavLink to='/profile' onClick={() => setIsMobileMenuOpen(false)}>
               <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] bg-[#f0e8d8] rounded-[10px] h-[37px]">
                 <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                   <div className="absolute contents inset-[12.5%_20.83%]">
@@ -244,7 +244,7 @@ export default function Profile() {
               </NavLink>
 
               {/* Трекер питания */}
-              <NavLink to='/food-tracker'>
+              <NavLink to='/food-tracker' onClick={() => setIsMobileMenuOpen(false)}>
               <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
                 <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                   <div className="absolute contents inset-[10%]">
@@ -268,7 +268,7 @@ export default function Profile() {
               </motion.span>
               </NavLink>
               {/* Дневник эмоций */}
-              <NavLink to="/emotion-tracker">
+              <NavLink to="/emotion-tracker" onClick={() => setIsMobileMenuOpen(false)}>
               <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
                 <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                   <div className="absolute contents inset-[10%]">
@@ -307,7 +307,7 @@ export default function Profile() {
               </NavLink>
 
               {/* Обратная связь */}
-              <NavLink to="/contact">
+              <NavLink to="/contact" onClick={() => setIsMobileMenuOpen(false)}>
               <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#83451E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { fetchWithAuth } from '../../JWT_token_refresh';
 import svgPathsBack from './imports/svg-n101rx8ak0';
 import svgPaths from './imports/svg-nfsr0erm4u';
+import { Menu, X } from 'lucide-react';
 
 export default function ContactPage() {
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -73,23 +75,68 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full bg-[#fffee7]">
+    <div className="flex min-h-screen w-full bg-[#fffee7] relative overflow-x-hidden">
+      {/* Mobile Hamburger */}
+      <button
+        onClick={() => setIsMobileMenuOpen(true)}
+        className="md:hidden fixed top-4 left-4 z-50 p-2.5 bg-[#faf8f0] rounded-xl border border-[#e8dcc8] shadow-sm"
+      >
+        <Menu size={20} className="text-[#83451e]" />
+      </button>
+
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-md z-[45] cursor-pointer"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
       <motion.aside
-        initial={{ x: -30, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]">
+        initial={false}
+        animate={{ 
+          x: isMobileMenuOpen ? 0 : (window.innerWidth < 768 ? '-100%' : 0),
+          opacity: 1 
+        }}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.05}
+        onDragEnd={(_e, info) => {
+          if (info.offset.x < -50) {
+            setIsMobileMenuOpen(false);
+          }
+        }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className={`
+          fixed md:static inset-y-0 left-0 z-50
+          w-[264px] bg-[#faf8f0] flex flex-col p-6 shrink-0 border-r border-[#e8dcc8]
+          shadow-2xl md:shadow-none touch-none md:touch-auto
+        `}>
         {/* Logo */}
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
-            <span className="text-white text-[18px] font-bold">N</span>
+        <div className="flex items-center justify-between gap-3 mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#f5a623] flex items-center justify-center shadow-md">
+              <span className="text-white text-[18px] font-bold">N</span>
+            </div>
+            <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
           </div>
-          <span className="text-[#3d1f00] text-[18px] font-bold">NIKA</span>
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden p-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-xl transition-all cursor-pointer relative z-[60] active:scale-95 border border-[#e8dcc8]"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         {/* Back to Dialog Button */}
-        <NavLink to='/chat'>
+        <NavLink to='/chat' onClick={() => setIsMobileMenuOpen(false)}>
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
@@ -107,7 +154,7 @@ export default function ContactPage() {
             <h3 className="text-[#83451e] text-[12px] uppercase tracking-[0.6px] mb-4 px-3 leading-[18px]">МЕНЮ</h3>
             <nav className="flex flex-col gap-1">
               {/* Личный кабинет */}
-              <NavLink to='/profile'>
+              <NavLink to='/profile' onClick={() => setIsMobileMenuOpen(false)}>
                 <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
                   <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                     <div className="absolute contents inset-[12.5%_20.83%]">
@@ -132,7 +179,7 @@ export default function ContactPage() {
               </NavLink>
 
               {/* Трекер питания */}
-              <NavLink to='/food-tracker'>
+              <NavLink to='/food-tracker' onClick={() => setIsMobileMenuOpen(false)}>
                 <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
                   <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                     <div className="absolute contents inset-[10%]">
@@ -157,7 +204,7 @@ export default function ContactPage() {
               </NavLink>
 
               {/* Дневник эмоций */}
-              <NavLink to="/emotion-tracker">
+              <NavLink to="/emotion-tracker" onClick={() => setIsMobileMenuOpen(false)}>
                 <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] hover:bg-[#f0e8d8] rounded-[10px] transition-colors h-[37px]">
                   <div className="h-[20px] w-[20px] overflow-clip relative shrink-0">
                     <div className="absolute contents inset-[10%]">
@@ -196,7 +243,7 @@ export default function ContactPage() {
               </NavLink>
 
               {/* Обратная связь - ACTIVE */}
-              <NavLink to="/contact">
+              <NavLink to="/contact" onClick={() => setIsMobileMenuOpen(false)}>
                 <motion.span whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-3 px-3 py-2 text-[#83451e] bg-[#f0e8d8] rounded-[10px] h-[37px]">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#83451E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -232,20 +279,20 @@ export default function ContactPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
-        className="flex-1 p-8 overflow-y-auto">
+        className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto pt-16 md:pt-8">
         <div className="max-w-[800px] mx-auto">
           {/* Page Header */}
           <div className="mb-8">
-            <h1 className="font-bold text-[36px] leading-[54px] text-[#3d1f00] mb-2">
+            <h1 className="font-bold text-[28px] sm:text-[36px] leading-tight sm:leading-[54px] text-[#3d1f00] mb-2">
               Свяжитесь с нами
             </h1>
-            <p className="text-[14px] leading-[21px] text-[#83451e]">
+            <p className="text-[14px] leading-relaxed text-[#83451e]">
               Мы будем рады услышать вас. Отправьте сообщение и мы ответим как можно скорее.
             </p>
           </div>
 
           {/* Form Card */}
-          <div className="bg-white rounded-[20px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)] p-8">
+          <div className="bg-white rounded-[20px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.1)] p-5 sm:p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Full Name */}
               <div>
